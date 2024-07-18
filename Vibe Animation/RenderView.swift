@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RenderView: View {
     var body: some View {
-        Colors.black
+        ColorPalette.black
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .cornerRadius(4)
     }

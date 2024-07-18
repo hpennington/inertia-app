@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct PanelView: View {
+    @Environment(\.appColors) private var appColors
+    
     var body: some View {
-        Colors.gray0
+        appColors.backgroundPrimary
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

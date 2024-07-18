@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     private let hierarchyViewWidth: CGFloat = 300
     private let renderViewportViewWidth: CGFloat = 750
     private let renderViewportViewHeight: CGFloat = 550
@@ -26,6 +28,10 @@ struct ContentView: View {
     }
     
     @State private var appMode: AppMode = .design
+    
+    var appColors: Colors {
+        colorScheme == .dark ? ColorsDark() : ColorsLight()
+    }
     
     var body: some View {
         VStack {
@@ -68,6 +74,9 @@ struct ContentView: View {
                     .frame(height: timelineViewHeight)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(appColors.backgroundSecondary)
+        .environment(\.appColors, appColors)
     }
 }
 

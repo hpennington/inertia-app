@@ -12,10 +12,19 @@ struct Vibe_AnimationApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Colors.black)
         }
         .windowToolbarStyle(.unifiedCompact)
         .windowStyle(.hiddenTitleBar)
+    }
+}
+
+private struct AppColorsKey: EnvironmentKey {
+    static let defaultValue: Colors = ColorsLight()
+}
+
+extension EnvironmentValues {
+    var appColors: Colors {
+        get { self[AppColorsKey.self] }
+        set { self[AppColorsKey.self] = newValue }
     }
 }
