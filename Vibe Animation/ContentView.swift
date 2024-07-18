@@ -33,41 +33,43 @@ struct ContentView: View {
         colorScheme == .dark ? ColorsDark() : ColorsLight()
     }
     
+    struct WithPanelBackground: ViewModifier {
+        func body(content: Content) -> some View {
+            ZStack {
+                PanelView()
+                content
+            }
+        }
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
                 PanelView()
                     .frame(width: hierarchyViewWidth)
             } content: {
-                ZStack {
-                    PanelView()
-                    
-                    RenderView()
-                        .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
-                        .cornerRadius(renderViewportCornerRadius)
-                }
-                .frame(minWidth: renderViewWidth, minHeight: renderViewHieght)
+                RenderView()
+                    .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
+                    .cornerRadius(renderViewportCornerRadius)
+                    .modifier(WithPanelBackground())
+                    .frame(minWidth: renderViewWidth, minHeight: renderViewHieght)
             } trailing: {
-                ZStack {
-                    PanelView()
-                    
-                    VStack {
-                        Picker(selection: $appMode) {
-                            Text("Design")
-                                .tag(AppMode.design)
-                            Text("Animate")
-                                .tag(AppMode.animate)
-                        } label: {
-                            EmptyView()
-                        }
-                        .pickerStyle(.segmented)
-                        .frame(width: segmentedPickerWidth)
-                        .padding()
-                        
-                        Spacer(minLength: .zero)
+                VStack {
+                    Picker(selection: $appMode) {
+                        Text("Design")
+                            .tag(AppMode.design)
+                        Text("Animate")
+                            .tag(AppMode.animate)
+                    } label: {
+                        EmptyView()
                     }
-                   
+                    .pickerStyle(.segmented)
+                    .frame(width: segmentedPickerWidth)
+                    .padding()
+                    
+                    Spacer(minLength: .zero)
                 }
+                .modifier(WithPanelBackground())
                 .frame(width: propertiesViewWidth)
             } bottom: {
                 PanelView()
