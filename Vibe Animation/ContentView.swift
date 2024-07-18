@@ -9,13 +9,23 @@ import SwiftUI
 
 struct ContentView: View {
     private let hierarchyViewWidth: CGFloat = 300
-    private let renderViewportViewWidth: CGFloat = 300
-    private let renderViewportViewHieght: CGFloat = 550
+    private let renderViewportViewWidth: CGFloat = 750
+    private let renderViewportViewHeight: CGFloat = 550
     private let renderViewWidth: CGFloat = 650
     private let renderViewHieght: CGFloat = 650
     private let propertiesViewWidth: CGFloat = 300
     private let timelineViewHeight: CGFloat = 300
     private let renderViewportCornerRadius: CGFloat = 24
+    private let segmentedPickerWidth: CGFloat = 250
+    
+    enum AppMode: Identifiable  {
+        case design
+        case animate
+        
+        var id: Self { self }
+    }
+    
+    @State private var appMode: AppMode = .design
     
     var body: some View {
         VStack {
@@ -25,16 +35,34 @@ struct ContentView: View {
             } content: {
                 ZStack {
                     PanelView()
-                        
+                    
                     RenderView()
-                        .frame(width: renderViewportViewWidth, height: renderViewportViewHieght)
+                        .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
                         .cornerRadius(renderViewportCornerRadius)
                 }
                 .frame(minWidth: renderViewWidth, minHeight: renderViewHieght)
-                
             } trailing: {
-                PanelView()
-                    .frame(width: propertiesViewWidth)
+                ZStack {
+                    PanelView()
+                    
+                    VStack {
+                        Picker(selection: $appMode) {
+                            Text("Design")
+                                .tag(AppMode.design)
+                            Text("Animate")
+                                .tag(AppMode.animate)
+                        } label: {
+                            EmptyView()
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(width: segmentedPickerWidth)
+                        .padding()
+                        
+                        Spacer(minLength: .zero)
+                    }
+                   
+                }
+                .frame(width: propertiesViewWidth)
             } bottom: {
                 PanelView()
                     .frame(height: timelineViewHeight)
