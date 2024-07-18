@@ -9,5 +9,5 @@ import SwiftUI
 
 struct Colors {
     static let black = Color.black
-    static let gray0 = Color(red: 28 / 255.0, green: 28 / 255.0, blue: 28 / 255.0)
+    static let gray0 = Color(red: 18 / 255.0, green: 18 / 255.0, blue: 18 / 255.0)
 }
