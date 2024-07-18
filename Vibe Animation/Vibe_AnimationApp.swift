@@ -12,6 +12,10 @@ struct Vibe_AnimationApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Colors.black)
         }
+        .windowToolbarStyle(.unifiedCompact)
+        .windowStyle(.hiddenTitleBar)
     }
 }
