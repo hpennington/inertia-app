@@ -12,7 +12,9 @@ struct WKWebViewWrapper: NSViewRepresentable {
     let url: URL
     
     func makeNSView(context: Context) -> WKWebView {
-        return WKWebView()
+        let webView = WKWebView(frame: .zero)
+        webView.underPageBackgroundColor = .black
+        return webView
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
