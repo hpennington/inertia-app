@@ -9,12 +9,19 @@ import SwiftUI
 
 @main
 struct Vibe_AnimationApp: App {
+    @State private var isShowingLaunchView = false
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if isShowingLaunchView {
+                LaunchFlowView()
+                    .frame(width: 775, height: 445)
+            } else {
+                ContentView()
+            }
         }
         .windowToolbarStyle(.unifiedCompact)
         .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
     }
 }
 

@@ -13,12 +13,14 @@ struct ContentView: View {
     private let hierarchyViewWidth: CGFloat = 300
     private let renderViewportViewWidth: CGFloat = 750
     private let renderViewportViewHeight: CGFloat = 550
-    private let renderViewWidth: CGFloat = 650
-    private let renderViewHieght: CGFloat = 650
+    private let renderViewMinimumWidth: CGFloat = 850
+    private let renderViewMinimumHieght: CGFloat = 650
     private let propertiesViewWidth: CGFloat = 300
     private let timelineViewHeight: CGFloat = 300
-    private let renderViewportCornerRadius: CGFloat = 24
+    private let renderViewportCornerRadius: CGFloat = 8
     private let segmentedPickerWidth: CGFloat = 250
+    private let spacing: CGFloat = 3
+    private let cornerRadius: CGFloat = 4
     
     enum AppMode: Identifiable  {
         case design
@@ -48,29 +50,54 @@ struct ContentView: View {
                 PanelView()
                     .frame(width: hierarchyViewWidth)
             } content: {
-                RenderView()
+                WebRenderView()
+//                MacRenderView(size: CGSize(width: renderViewportViewWidth, height: renderViewportViewHeight))
                     .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
                     .cornerRadius(renderViewportCornerRadius)
                     .modifier(WithPanelBackground())
-                    .frame(minWidth: renderViewWidth, minHeight: renderViewHieght)
+                    .frame(minWidth: renderViewMinimumWidth, minHeight: renderViewMinimumHieght)
             } trailing: {
                 VStack {
-                    Picker(selection: $appMode) {
-                        Text("Design")
-                            .tag(AppMode.design)
-                        Text("Animate")
-                            .tag(AppMode.animate)
-                    } label: {
-                        EmptyView()
+                    VStack {
+                        Picker(selection: $appMode) {
+                            Text("Design")
+                                .tag(AppMode.design)
+                            Text("Animate")
+                                .tag(AppMode.animate)
+                        } label: {
+                            EmptyView()
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(width: segmentedPickerWidth)
+                        .padding()
+                        
+                        Spacer(minLength: .zero)
                     }
-                    .pickerStyle(.segmented)
-                    .frame(width: segmentedPickerWidth)
-                    .padding()
+                    .modifier(WithPanelBackground())
+                    .cornerRadius(bottomLeft: cornerRadius)
                     
-                    Spacer(minLength: .zero)
+                    Spacer(minLength: spacing)
+                    
+                    VStack {
+                        Text("Testing")
+                    }
+                    .frame(width: segmentedPickerWidth)
+                    .frame(maxHeight: .infinity)
+                    .modifier(WithPanelBackground())
+                    .cornerRadius(topLeft: cornerRadius, bottomLeft: cornerRadius)
+                    
+                    Spacer(minLength: spacing)
+                    
+                    VStack {
+                        Text("Testing")
+                    }
+                    .frame(width: segmentedPickerWidth)
+                    .frame(maxHeight: .infinity)
+                    .modifier(WithPanelBackground())
+                    .cornerRadius(topLeft: cornerRadius)
                 }
-                .modifier(WithPanelBackground())
                 .frame(width: propertiesViewWidth)
+                .frame(maxHeight: .infinity)
             } bottom: {
                 PanelView()
                     .frame(height: timelineViewHeight)
