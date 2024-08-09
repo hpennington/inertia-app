@@ -87,13 +87,92 @@ struct ProjectSelectionView: View {
     }
 }
 
+struct SetupFlowBase<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+    
+    var body: some View {
+        VStack {
+            content()
+        }
+        .background(ColorPalette.gray2)
+    }
+}
+
+struct SetupFlowSetupWeb: View {
+    @Binding var title: String
+    @Binding var serverURL: String
+    
+    var body: some View {
+        SetupFlowBase {
+            Text("Setup")
+            
+            TextField("Title", text: $title)
+            TextField("Server URL", text: $serverURL)
+            
+            Button {
+                
+            } label: {
+                Text("Continue")
+            }
+        }
+    }
+}
+
+struct SetupFlowProjectType: View {
+    @Binding var web: Bool?
+    
+    var body: some View {
+        SetupFlowBase {
+            Text("Project Type")
+            
+            Button {
+                web = false
+            } label: {
+                Text("iOS (SwiftUI)")
+            }
+            
+            Button {
+                web = true
+            } label: {
+                Text("Web (React)")
+            }
+            
+            Button {
+                
+            } label: {
+                Text("Continue")
+            }
+            .disabled(web == nil)
+        }
+    }
+}
+
 struct LaunchFlowView: View {
     var body: some View {
         ProjectSelectionView()
-        
     }
 }
 
 #Preview {
-    LaunchFlowView()
+    SetupFlowBase {
+        Text("Project Type")
+        
+        Button {
+            
+        } label: {
+            Text("iOS (SwiftUI)")
+        }
+        
+        Button {
+            
+        } label: {
+            Text("Web (React)")
+        }
+        
+        Button {
+            
+        } label: {
+            Text("Continue")
+        }
+    }
 }

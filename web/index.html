@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Vibe</title>
+        <style>
+            :root {
+                --border-width: 1px;
+                --border-color: limegreen;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #fff;
+                margin: 0;
+                padding: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+
+            h1 {
+                width: 100%;
+                text-align: center;
+                color: #666;
+                font-size: 1.5em;
+                font-weight: bold;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                width: calc(100% - var(--border-width) * 2);
+                height: calc(100% - var(--border-width) * 2);
+                margin: 0;
+                background-color: #fff;
+                padding: 0;
+                border: var(--border-width) solid var(--border-color);
+                border-radius: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Vibe A</h1>
+            <h1>Vibe B</h1>
+            <input type='checkbox'>Toggle Button</input>
+        </div>
+    </body>
+</html>
