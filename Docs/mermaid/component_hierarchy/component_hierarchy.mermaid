@@ -1,0 +1,7 @@
+%% Combined UML Component Diagrams - Dependency Diagram and View Hierarchy
+graph TD
+    VibeContainer[VibeContainer] -.->|Child| VibeDataModel[VibeDataModel]
+    VibeContainer[VibeContainer] -.->|Child| VibeContext[VibeContext]
+    VibeContext[VibeContext]-.->|References|VibeDataModel[VibeDataModel]
+    VibeContainer[VibeContainer] -.->|Child| Vibeable[Vibeable]
+    Vibeable[Vibeable]-.->|References|VibeContext[VibeContext]
