@@ -1,5 +1,9 @@
+//
 // Vibe SwiftUI animation library
+// Created by Hayden Pennington
+//
 // Copyright (c) 2024 Vector Studio. All rights reserved.
+//
 
 import SwiftUI
 
