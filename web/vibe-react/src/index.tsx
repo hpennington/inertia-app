@@ -1,15 +1,11 @@
 import React from 'react'
-import {vibeHello} from 'vibe-base'
+import {VibeDataModel} from 'vibe-base'
 import './index.scss'
 
-type Props = {
-    name: string
+type VibeContainerProps = {
+    children: React.ReactNode,
 }
 
-export const VibeHelloReact = (props: Props): React.Component => {
-    vibeHello(props.name)
-    return (
-        <h1 className="VibeHelloReact">{"VibeHello"}</h1>
-    )
+export const VibeContainer: React.FC<VibeContainerProps> = ({children}) => {
+    return <>{children}</>
 }
-
