@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+public class VibeDataModel {
+    let id: String
+    
+    public init(id: String) {
+        self.id = id
+    }
+}
+
 public struct VibeContainer<Content: View>: View {
     @ViewBuilder let content: () -> Content
     
