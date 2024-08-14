@@ -1,11 +1,11 @@
 export class VibeDataModel {
-    private id: string
+    private containerId: string
 
-    constructor(id: string) {
-        this.id = id
+    constructor(containerId: string) {
+        this.containerId = containerId
     }
 
     public getId(): string {
-        return this.id;
+        return this.containerId;
     }
 }
