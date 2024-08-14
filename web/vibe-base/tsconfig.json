@@ -1,12 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "target": "ES6",                         // Transpile to ES6
+    "module": "ES6",                         // Use ES6 module system (import/export)
+    "strict": true,                          // Enable strict type-checking options
+    "esModuleInterop": true,                 // Enables emit interoperability between CommonJS and ES Modules
+    "forceConsistentCasingInFileNames": true,// Ensure consistent casing in imports
+    "skipLibCheck": true,                    // Skip type checking of declaration files
+    "declaration": true,                     // Generate .d.ts files alongside the output
+    "outDir": "./dist",                      // Redirect output structure to the dist folder
+    "rootDir": "./src",                      // Specifies the root directory of input files
+    "moduleResolution": "node",              // TypeScript will look for modules in Node.js-style
+    "resolveJsonModule": true,               // Include modules imported with .json extensions
+    "allowSyntheticDefaultImports": true,    // Allow default imports from modules with no default export
+    "lib": ["ES6", "DOM"]                    // Specify a set of bundled library declaration files
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src"],                        // Specify the input directory (source files)
+  "exclude": ["node_modules", "dist"]        // Exclude node_modules and dist folders from compilation
 }

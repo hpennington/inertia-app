@@ -8,7 +8,7 @@
 import SwiftUI
 
 public class VibeDataModel {
-    let id: String
+    public let id: String
     
     public init(id: String) {
         self.id = id
@@ -19,7 +19,7 @@ public struct VibeContainer<Content: View>: View {
     @ViewBuilder let content: () -> Content
     
     public init(
-        @ViewBuilder let content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.content = content
     }
@@ -33,7 +33,7 @@ public struct Vibeable<Content: View>: View {
     @ViewBuilder let content: () -> Content
     
     public init(
-        @ViewBuilder let content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.content = content
     }

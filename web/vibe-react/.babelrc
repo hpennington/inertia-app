@@ -1,7 +1,19 @@
 {
-     "presets": [
-        "@babel/preset-env",
-        "@babel/preset-typescript",
-        ["@babel/preset-react", {"runtime": "automatic"}]
-     ]
- }
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": "> 0.25%, not dead" // Targeting browsers with more than 0.25% usage and not outdated
+        },
+        "bugfixes": true, // Apply optimizations
+        "modules": false // Keep ES modules
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-logical-assignment-operators"
+  ]
+}
+
