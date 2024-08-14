@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     ts: {
       default: {
         tsconfig: true,
-        src: ['src/**/*.ts', 'src/**/*.tsx'],
+        src: ['src/**/*.ts'],
         dest: 'dist',
         options: {
           sourceMap: true,
