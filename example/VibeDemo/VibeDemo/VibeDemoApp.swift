@@ -12,7 +12,7 @@ import Vibe
 struct VibeDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            VibeContainer {
+            VibeContainer(id: "1234") {
                 ContentView()
             }
         }

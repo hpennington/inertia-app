@@ -7,29 +7,49 @@
 
 import SwiftUI
 
-public class VibeDataModel {
-    public let id: String
+private struct VibeDataModelKey: EnvironmentKey {
+    static let defaultValue = VibeDataModel(containerId: "")
+}
+
+extension EnvironmentValues {
+    var vibeDataModel: VibeDataModel {
+        get { self[VibeDataModelKey.self] }
+        set { self[VibeDataModelKey.self] = newValue }
+    }
+}
+
+public final class VibeDataModel {
+    public let containerId: String
     
-    public init(id: String) {
-        self.id = id
+    public init(containerId: String) {
+        self.containerId = containerId
     }
 }
 
 public struct VibeContainer<Content: View>: View {
+    let id: String
+    
+    @State private var vibeDataModel: VibeDataModel
     @ViewBuilder let content: () -> Content
     
     public init(
+        id: String,
         @ViewBuilder content: @escaping () -> Content
     ) {
+        self.id = id
         self.content = content
+        self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
     }
     
     public var body: some View {
         content()
+            .environment(\.vibeDataModel, self.vibeDataModel)
     }
 }
 
 public struct Vibeable<Content: View>: View {
+    @Environment(\.vibeDataModel) var vibeDataModel: VibeDataModel
+    
     @ViewBuilder let content: () -> Content
     
     public init(
@@ -40,5 +60,8 @@ public struct Vibeable<Content: View>: View {
     
     public var body: some View {
         content()
+            .onAppear {
+                print(vibeDataModel.containerId)
+            }
     }
 }

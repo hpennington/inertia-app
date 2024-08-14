@@ -18,7 +18,13 @@ struct ContentView: View {
             }
             
             Vibeable {
-                Text("Hello, world!")
+                VibeContainer(id: "321123") {
+                    VStack {
+                        Vibeable {
+                            Text("Hello, world!")
+                        }
+                    }
+                }
             }
         }
         .padding()
