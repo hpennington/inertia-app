@@ -2,7 +2,7 @@
   "name": "vibe-react",
   "version": "0.1.0",
   "description": "",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
@@ -28,7 +28,6 @@
     "grunt-sass": "^3.1.0",
     "grunt-ts": "^6.0.0-beta.22",
     "grunt-typescript": "^0.8.0",
-    "react": "^18.3.1",
     "sass": "^1.77.8",
     "sass-loader": "^16.0.0",
     "style-loader": "^4.0.0",
