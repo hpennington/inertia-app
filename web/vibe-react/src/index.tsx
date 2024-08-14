@@ -1,6 +1,5 @@
 import React from 'react'
 import {VibeDataModel} from 'vibe-base'
-// import './styles/index.scss'
 
 export type VibeContainerProps = {
     children: React.ReactElement,
@@ -22,7 +21,7 @@ const useVibeDataModel = () => {
     return vibeDataModel
 }
 
-export const VibeContainer = ({children, id}: VibeContainerProps): React.ReactNode => {
+export const VibeContainer = ({children, id}: VibeContainerProps): React.ReactElement => {
     const [vibeDataModel, setVibeDataModel] = React.useState<VibeDataModel|undefined>(new VibeDataModel(id))
     return (
         <VibeContext.Provider value={vibeDataModel}>
@@ -31,7 +30,7 @@ export const VibeContainer = ({children, id}: VibeContainerProps): React.ReactNo
     )
 }
 
-export const Vibeable = ({children}: VibeableProps): React.ReactNode => {
+export const Vibeable = ({children}: VibeableProps): React.ReactElement => {
     const vibeDataModel = useVibeDataModel()
 
     console.log({vibeDataModel})

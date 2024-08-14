@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-import {VibeContainer} from 'vibe-react'
+import {VibeContainer, Vibeable} from 'vibe-react'
 import './App.css';
 
 function App() {
@@ -8,9 +8,11 @@ function App() {
     <div className="App">
       <VibeContainer id={'123'}>
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <Vibeable>
+            <img src={logo} className="App-logo" alt="logo" />
+          </Vibeable>
           <p>
-            Edit <code>src/App.tsx</code> and save to reload.
+            Edit <code>src/App.js</code> and save to reload.
           </p>
           <a
             className="App-link"
