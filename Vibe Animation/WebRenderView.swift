@@ -130,7 +130,7 @@ struct WKWebViewWrapper: NSViewRepresentable {
 
 struct WebRenderView: View {
     var body: some View {
-        WKWebViewWrapper(url: URL(string: "http://127.0.0.1:8000")!, contentController: WKUserContentController())
+        WKWebViewWrapper(url: URL(string: "http://127.0.0.1:3000")!, contentController: WKUserContentController())
     }
 }
 

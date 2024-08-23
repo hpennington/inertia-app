@@ -50,8 +50,8 @@ struct ContentView: View {
                 PanelView()
                     .frame(width: hierarchyViewWidth)
             } content: {
-                WebRenderView()
-//                MacRenderView(size: CGSize(width: renderViewportViewWidth, height: renderViewportViewHeight))
+//                WebRenderView()
+                MacRenderView(size: CGSize(width: renderViewportViewWidth, height: renderViewportViewHeight))
                     .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
                     .cornerRadius(renderViewportCornerRadius)
                     .modifier(WithPanelBackground())

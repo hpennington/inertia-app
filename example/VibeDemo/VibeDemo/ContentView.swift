@@ -18,7 +18,7 @@ struct ContentView: View {
             }
             
             Vibeable {
-                VibeContainer(id: "321123") {
+                VibeContainer(id: "animation2") {
                     VStack {
                         Vibeable {
                             Text("Hello, world!")
