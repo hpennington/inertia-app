@@ -9,12 +9,13 @@ import SwiftUI
 
 @main
 struct Vibe_AnimationApp: App {
-    @State private var isShowingLaunchView = false
+    @State private var isShowingLaunchView = true
     var body: some Scene {
         WindowGroup {
             if isShowingLaunchView {
-                LaunchFlowView()
-                    .frame(width: 775, height: 445)
+                ProjectsContainerView {
+                    LaunchView()
+                }
             } else {
                 ContentView()
             }

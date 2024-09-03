@@ -1,0 +1,27 @@
+graph TD
+    Start[Root - List of Previous Projects]
+    Start -->|User selects a previous project| LoadProject[Load Project]
+    Start -->|User clicks 'New Project'| ChooseFramework{Choose Framework: React or SwiftUI}
+    
+    ChooseFramework -->|React| ProjectInfo[Project Info - Enter Project Title]
+    ChooseFramework -->|SwiftUI| ProjectInfo[Project Info - Enter Project Title]
+
+    ProjectInfo --> IsReactSelected{Is React Selected?}
+
+    IsReactSelected -->|Yes| ReactConfig[React Project Configuration - URLs]
+    IsReactSelected -->|No| SwiftUICompilationMode{Choose Compilation Mode}
+    
+    ReactConfig --> CreateVibeFile[Create Vibe File]
+    
+    SwiftUICompilationMode -->|Local| SwiftUILocalSetup[Local Mode]
+    SwiftUILocalSetup --> XcodeCheck[Xcode Installed?]
+    XcodeCheck --> SwiftUIConfig[SwiftUI Project Configuration - Xcode Project URL]
+    
+    SwiftUIConfig --> SwiftUICopying[SwiftUI Setup - Copying Project]
+    SwiftUICopying --> SwiftUISetupProgress[SwiftUI Setup - Loading/Progress]
+    SwiftUISetupProgress --> CreateVibeFile
+    
+    CreateVibeFile --> LoadProject
+    
+    SwiftUICompilationMode -->|Remote Unavailable| RemoteUnavailable[Remote Mode]
+    SwiftUICompilationMode -->|Self-hosted Unavailable| SelfHostedUnavailable[Self-hosted Mode]

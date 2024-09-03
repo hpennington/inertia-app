@@ -1,0 +1,24 @@
+graph TD;
+    subgraph React
+        LaunchProjectReadyReact[Ready]
+        LaunchProjectReadyReact[Ready] --> CreateVibeFileReact[CreateVibeFile]
+        CreateVibeFileReact --> ReactURL[URL]
+        CreateVibeFileReact --> ReactTitle[Title]
+    end
+
+    subgraph SwiftUI
+        LaunchProjectReady[Ready]
+        InstallXcode[Install Xcode]
+        XCodeProjectURL[XCode Project URL]
+        EntryStructName[Entry Struct Name]
+        SwiftUITitle[Title]
+        LaunchProjectReady --> CreateVibeFile[CreateVibeFile]
+        CreateVibeFile[CreateVibeFile] --> CompilingSwiftCodebase[Compiling Codebase]
+        
+        CompilingSwiftCodebase --> MutateSwiftCodebase[Mutate Codebase]
+        MutateSwiftCodebase --> CopySwiftCodebase[Copy Codebase]
+        CopySwiftCodebase --> InstallXcode
+        CopySwiftCodebase --> XCodeProjectURL
+        CopySwiftCodebase --> EntryStructName
+        CopySwiftCodebase --> SwiftUITitle
+    end
