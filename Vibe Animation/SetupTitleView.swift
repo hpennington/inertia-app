@@ -13,7 +13,7 @@ struct SetupTitleView: View {
     var body: some View {
         Text(title)
             .font(.largeTitle)
-            .foregroundStyle(ColorPalette.white)
+            .foregroundStyle(ColorPalette.gray3)
     }
 }
 
