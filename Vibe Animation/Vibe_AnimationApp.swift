@@ -14,7 +14,10 @@ struct Vibe_AnimationApp: App {
         WindowGroup {
             if isShowingLaunchView {
                 ProjectsContainerView {
-                    LaunchView()
+                    NavigationStack {
+                        LaunchView()
+                    }
+                    
                 }
             } else {
                 ContentView()

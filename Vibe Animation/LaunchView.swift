@@ -14,6 +14,8 @@ struct ProjectSelectionView: View {
     
     private let buttonVPadding = 8.0
     
+    @State private var showNext: Bool = false
+    
     var body: some View {
         GeometryReader { proxy in
             ProjectsContainerSplitView {
@@ -22,10 +24,12 @@ struct ProjectSelectionView: View {
                     LaunchLogo(accentColor: appColors.accent)
                     LaunchLogoTitle()
                     Spacer()
+                    
                     ProjectButton(title: "New Project") {
-                        
+                        showNext = true
                     }
                     .padding(.vertical, buttonVPadding)
+                    
                     ProjectButton(title: "Open Project") {
                         
                     }
@@ -37,16 +41,46 @@ struct ProjectSelectionView: View {
             } contentRight: {
                 ProjectsListView()
             }
+            .navigationDestination(isPresented: $showNext) {
+                SetupFlowChooseFramework()
+            }
+            .navigationBarBackButtonHidden()
         }
     }
 }
 
 struct SetupFlowBase<Content: View>: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    let title: String
+    
     @ViewBuilder let content: () -> Content
     
     var body: some View {
-        VStack {
-            content()
+        VStack(spacing: .zero) {
+
+            HStack(spacing: .zero) {
+                NavigationBackButton {
+                    dismiss()
+                }
+                .padding(.vertical, 8)
+                
+                Spacer()
+                
+                SetupTitleView(title: title)
+                
+                Spacer()
+                NavigationBackButton {
+                    
+                }
+                .padding(.vertical, 8)
+                .hidden()
+                
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(spacing: .zero) {
+                content()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(ColorPalette.gray2)
@@ -58,7 +92,7 @@ struct SetupFlowSetupWeb: View {
     @Binding var serverURL: String
     
     var body: some View {
-        SetupFlowBase {
+        SetupFlowBase(title: "Setup") {
             Text("Setup")
             
             TextField("Title", text: $title)
@@ -73,59 +107,43 @@ struct SetupFlowSetupWeb: View {
     }
 }
 
-struct SetupFlowProjectType: View {
-    @Binding var tag: Tag
+struct SetupFlowChooseFramework: View {
+    @State private var tag: Tag = 0
     
     var body: some View {
-        SetupFlowBase {
-            Text("Project Type")
-            
-            RadioGroup(selectedTag: $tag) {
-                RadioButton(tag: 0) {
-                    RadioButtonContent(title: "Web (React)")
+        SetupFlowBase(title: "Choose a Framework") {
+            VStack(spacing: 16) {
+                Spacer(minLength: 8)
+                    .frame(height: 8)
+
+                RadioGroup(selectedTag: $tag) {
+                    RadioButton(tag: 0) {
+                        RadioButtonContent(title: "Web (React)")
+                    }
+                    RadioButton(tag: 1) {
+                        RadioButtonContent(title: "iOS (SwiftUI)")
+                    }
                 }
-                RadioButton(tag: 1) {
-                    RadioButtonContent(title: "iOS (SwiftUI)")
-                }
-            }
-            
-            Button {
                 
-            } label: {
-                Text("Continue")
+                Spacer()
+                
+                SetupActionButton(title: "Continue") {
+                    
+                }
+                
+                Spacer()
             }
         }
     }
 }
 
 struct LaunchView: View {
-    @State private var tag: Tag = 0
-
     var body: some View {
-        SetupFlowProjectType(tag: $tag)
+        ProjectSelectionView()
+            
     }
 }
 
 #Preview {
-    SetupFlowBase {
-        Text("Project Type")
-        
-        Button {
-            
-        } label: {
-            Text("iOS (SwiftUI)")
-        }
-        
-        Button {
-            
-        } label: {
-            Text("Web (React)")
-        }
-        
-        Button {
-            
-        } label: {
-            Text("Continue")
-        }
-    }
+    LaunchView()
 }

@@ -49,7 +49,7 @@ struct RadioButtonContent: View {
         Text(title)
             .font(.title2)
             .frame(maxWidth: .infinity, alignment: .center)
-            .frame(height: 54)
+            .frame(height: 44)
             .background(background)
             .foregroundStyle(foreground)
     }
@@ -77,19 +77,19 @@ struct RadioGroup<ButtonContent: View, Tag: Hashable>: View {
     }
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 8) {
             buttons()
                 .environment(vm)
         }
-        .frame(maxWidth: 256)
+        .frame(maxWidth: 280)
     }
 }
 
 #Preview {
     typealias Tag = Int
-    @State var selectedTag: Tag = 0
     let reactTag: Tag = 0
     let swiftUITag: Tag = 1
+    @State var selectedTag: Tag = reactTag
     
     return RadioGroup(selectedTag: $selectedTag) {
         RadioButton(tag: reactTag) {
