@@ -51,8 +51,6 @@ struct ProjectSelectionView: View {
     }
 }
 
-
-
 struct LaunchView: View {
     var body: some View {
         ProjectSelectionView()
