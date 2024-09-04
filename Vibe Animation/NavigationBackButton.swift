@@ -16,7 +16,7 @@ struct NavigationBackButton: View {
                 .renderingMode(.template)
                 .resizable()
                 .frame(width: 24, height: 18)
-                .foregroundStyle(ColorPalette.gray5)
+                .foregroundStyle(ColorPalette.gray4)
         }
         .buttonStyle(.plain)
         .frame(width: 44, height: 44)
