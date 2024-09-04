@@ -22,9 +22,9 @@ struct ProjectButton: View {
                 Text(title)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
-                    .foregroundStyle(ColorPalette.gray3)
+                    .foregroundStyle(ColorPalette.gray5)
             }
-            .frame(width: 250, height: 44)
+            .frame(width: 250, height: 40)
             .padding(.horizontal)
         }
         .buttonStyle(.plain)

@@ -17,7 +17,11 @@ struct RadioButton<Tag: Hashable, Content: View>: View {
         self.content = content
     }
     
-    private let cornerRadius = 8.0
+    private let cornerRadius = 4.0
+    
+    var isSelected: Bool {
+        model.selectedTag.wrappedValue == tag
+    }
     
     var body: some View {
         Button {
@@ -26,13 +30,15 @@ struct RadioButton<Tag: Hashable, Content: View>: View {
             content()
                 .cornerRadius(cornerRadius)
                 .overlay {
-                    Group {
-                        if model.selectedTag.wrappedValue == tag {
+                    if isSelected {
+                        ZStack {
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .stroke(ColorPalette.purple0, lineWidth: 2)
+                                .stroke(ColorPalette.accentTheme, lineWidth: 3)
+                                .padding(0.5)
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(ColorPalette.gray3.opacity(0.25))
                         }
                     }
-
                 }
         }
         .buttonStyle(.plain)
@@ -42,16 +48,13 @@ struct RadioButton<Tag: Hashable, Content: View>: View {
 struct RadioButtonContent: View {
     let title: String
     
-    private let background: some ShapeStyle = Color(red: 150 / 255, green: 150 / 255, blue: 150 / 255, opacity: 0.9)
-    private let foreground: some ShapeStyle = Color(red: 241 / 255, green: 241 / 255, blue: 241 / 255)
-    
     var body: some View {
         Text(title)
             .font(.title2)
             .frame(maxWidth: .infinity, alignment: .center)
-            .frame(height: 44)
-            .background(background)
-            .foregroundStyle(foreground)
+            .frame(height: 40)
+            .background(ColorPalette.gray3)
+            .foregroundStyle(ColorPalette.gray5)
     }
 }
 
@@ -81,7 +84,6 @@ struct RadioGroup<ButtonContent: View, Tag: Hashable>: View {
             buttons()
                 .environment(vm)
         }
-        .frame(maxWidth: 280)
     }
 }
 

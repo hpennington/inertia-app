@@ -24,7 +24,7 @@ struct ProjectsListView: View {
                     Text("Project X")
                         .padding(.vertical, 8)
                         .frame(minHeight: minA11yHeight)
-                        .foregroundStyle(ColorPalette.gray3)
+                        .foregroundStyle(ColorPalette.gray5)
                 }
                 .buttonStyle(.plain)
 
@@ -34,7 +34,7 @@ struct ProjectsListView: View {
                     Text("Project Y")
                         .padding(.vertical, 8)
                         .frame(minHeight: minA11yHeight)
-                        .foregroundStyle(ColorPalette.gray3)
+                        .foregroundStyle(ColorPalette.gray5)
                 }
                 .buttonStyle(.plain)
                 
@@ -44,7 +44,7 @@ struct ProjectsListView: View {
                     Text("Project Z")
                         .padding(.vertical, 8)
                         .frame(minHeight: minA11yHeight)
-                        .foregroundStyle(ColorPalette.gray3)
+                        .foregroundStyle(ColorPalette.gray5)
 
                 }
                 .buttonStyle(.plain)
