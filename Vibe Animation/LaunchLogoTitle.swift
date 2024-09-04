@@ -11,7 +11,7 @@ struct LaunchLogoTitle: View {
     var body: some View {
         Text("Vibe")
             .font(.largeTitle)
-            .foregroundStyle(ColorPalette.white)
+            .foregroundStyle(ColorPalette.gray5)
     }
 }
 

@@ -51,7 +51,7 @@ struct ProjectsListView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
-            .foregroundStyle(ColorPalette.white)
+            .foregroundStyle(ColorPalette.gray5)
         }
         .background(ColorPalette.gray2)
     }

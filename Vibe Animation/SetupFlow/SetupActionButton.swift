@@ -26,7 +26,7 @@ struct SetupActionButton: View {
                 .font(.title2)
                 .frame(width: 280, height: 40)
                 .background(accentColor)
-                .foregroundColor(ColorPalette.white)
+                .foregroundColor(ColorPalette.gray5)
                 .cornerRadius(4)
         }
         .buttonStyle(.plain)
