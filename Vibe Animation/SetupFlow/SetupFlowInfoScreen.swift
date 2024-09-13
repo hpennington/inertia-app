@@ -7,31 +7,62 @@
 
 import SwiftUI
 
-struct SetupFlowInfoScreen: View {
-    @State private var title = ""
-    @State private var description = ""
-    @State private var showNext: Bool = false
+struct SetupFlowInfoScreenReact: View {
+    @EnvironmentObject var setupFlowManager: SetupFlowManager
+    @FocusState var focusState: FocusableElement?
+        
+    enum FocusableElement: Hashable {
+        case titleTextField
+        case descriptionTextField
+    }
+    
+    let action: (SetupFlowEvent) -> Void
     
     var body: some View {
         SetupFlowBase(title: "Give your Project a Name") {
             VStack(spacing: 16) {
-                VibeTextField(title: "Title", text: $title)
-                VibeTextContainer(title: "Description", text: $description)
+                VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
+                    .focused($focusState, equals: .titleTextField)
+                VibeTextContainer(title: "Description", text: $setupFlowManager.projectDescription)
+                    .focused($focusState, equals: .descriptionTextField)
                 Spacer()
             
-                SetupActionButton(title: "Continue", disabled: title.isEmpty) {
-                    showNext = true
+                SetupActionButton(title: "Continue", disabled: setupFlowManager.projectTitle.isEmpty) {
+                    action(.continueSetupReact)
                 }
             }
             .padding(.top, 8)
             .padding(.bottom, 48)
         }
-        .navigationDestination(isPresented: $showNext) {
-            SetupFlowWebConfigurationScreen()
+        .onAppear {
+            focusState = .titleTextField
         }
     }
 }
 
-#Preview {
-    SetupFlowInfoScreen()
+struct SetupFlowInfoScreenSwiftUI: View {
+    @EnvironmentObject var setupFlowManager: SetupFlowManager
+    @State private var description = ""
+    
+    let action: (SetupFlowEvent) -> Void
+    
+    var body: some View {
+        SetupFlowBase(title: "Give your Project a Name") {
+            VStack(spacing: 16) {
+                VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
+                VibeTextContainer(title: "Description", text: $description)
+                Spacer()
+            
+                SetupActionButton(title: "Continue", disabled: setupFlowManager.projectTitle.isEmpty) {
+                    action(.continueSetupSwiftUI)
+                }
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 48)
+        }
+    }
 }
+
+//#Preview {
+//    SetupFlowInfoScreen()
+//}

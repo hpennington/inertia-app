@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  EditorView.swift
 //  Vibe Animation
 //
 //  Created by Hayden Pennington on 7/17/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
     
     private let hierarchyViewWidth: CGFloat = 300
@@ -31,6 +31,8 @@ struct ContentView: View {
     
     @State private var appMode: AppMode = .design
     
+    let framework: SetupFlowFramework
+    
     var appColors: Colors {
         colorScheme == .dark ? ColorsDark() : ColorsLight()
     }
@@ -50,12 +52,18 @@ struct ContentView: View {
                 PanelView()
                     .frame(width: hierarchyViewWidth)
             } content: {
-//                WebRenderView()
-                MacRenderView(size: CGSize(width: renderViewportViewWidth, height: renderViewportViewHeight))
-                    .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
-                    .cornerRadius(renderViewportCornerRadius)
-                    .modifier(WithPanelBackground())
-                    .frame(minWidth: renderViewMinimumWidth, minHeight: renderViewMinimumHieght)
+                Group {
+                    switch framework {
+                    case .react:
+                        WebRenderView()
+                    case .swiftUI:
+                        MacRenderView(size: CGSize(width: renderViewportViewWidth, height: renderViewportViewHeight))
+                    }
+                }
+                .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
+                .cornerRadius(renderViewportCornerRadius)
+                .modifier(WithPanelBackground())
+                .frame(minWidth: renderViewMinimumWidth, minHeight: renderViewMinimumHieght)
             } trailing: {
                 VStack {
                     VStack {
@@ -110,5 +118,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    EditorView(framework: .react)
 }

@@ -1,5 +1,5 @@
 //
-//  SetupFlowChooseFramework.swift
+//  SetupFlowChooseFrameworkScreen.swift
 //  Vibe Animation
 //
 //  Created by Hayden Pennington on 9/3/24.
@@ -7,14 +7,15 @@
 
 import SwiftUI
 
-struct SetupFlowChooseFramework: View {
-    @State private var tag: Tag = reactTag
-    @State private var showNext: Bool = false
+struct SetupFlowChooseFrameworkScreen: View {
+    @EnvironmentObject var setupFlowManager: SetupFlowManager
+    
+    let action: (SetupFlowEvent) -> Void
     
     var body: some View {
         SetupFlowBase(title: "Choose a Framework") {
             VStack(spacing: 16) {
-                RadioGroup(selectedTag: $tag) {
+                RadioGroup(selectedTag: $setupFlowManager.framework) {
                     RadioButton(tag: reactTag) {
                         RadioButtonContent(title: "Web (React)")
                     }
@@ -26,18 +27,11 @@ struct SetupFlowChooseFramework: View {
                 Spacer()
                 
                 SetupActionButton(title: "Continue") {
-                    showNext = true
+                    action(setupFlowManager.framework == reactTag ? .continueSetupReact : .continueSetupSwiftUI)
                 }
             }
             .padding(.top, 8)
             .padding(.bottom, 48)
         }
-        .navigationDestination(isPresented: $showNext) {
-            SetupFlowInfoScreen()
-        }
     }
-}
-
-#Preview {
-    SetupFlowChooseFramework()
 }

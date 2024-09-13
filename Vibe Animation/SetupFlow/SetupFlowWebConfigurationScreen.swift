@@ -8,16 +8,18 @@
 import SwiftUI
 
 struct SetupFlowWebConfigurationScreen: View {
-    @State private var url = ""
+    @EnvironmentObject var setupFlowManager: SetupFlowManager
+    
+    let action: (SetupFlowEvent) -> Void
     
     var body: some View {
         SetupFlowBase(title: "Configure the web URL") {
             VStack(spacing: 16) {
-                VibeTextField(title: "Server URL", text: $url)
+                VibeTextField(title: "Server URL", text: $setupFlowManager.reactProjectURL)
                 Spacer()
             
-                SetupActionButton(title: "Continue", disabled: url.isEmpty) {
-                    
+                SetupActionButton(title: "Continue", disabled: setupFlowManager.reactProjectURL.isEmpty) {
+                    action(.continueSetup)
                 }
             }
             .padding(.top, 8)
@@ -26,6 +28,3 @@ struct SetupFlowWebConfigurationScreen: View {
     }
 }
 
-#Preview {
-    SetupFlowWebConfigurationScreen()
-}

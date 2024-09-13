@@ -11,7 +11,7 @@ struct MainLayout<Leading: View, Content: View, Trailing: View, Bottom: View>: V
     let spacing: CGFloat = 3
     let cornerRadius: CGFloat = 4
     let leading: () -> Leading
-    let content: () -> Content
+    @ViewBuilder let content: () -> Content
     let trailing: () -> Trailing
     let bottom: () -> Bottom
     

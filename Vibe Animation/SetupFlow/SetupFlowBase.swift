@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SetupFlowBase<Content: View>: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.popNavigationStack) private var popNavigationStack: (() -> Void)?
     let title: String
     @ViewBuilder let content: () -> Content
     
@@ -16,7 +16,7 @@ struct SetupFlowBase<Content: View>: View {
         VStack(spacing: .zero) {
             HStack(spacing: .zero) {
                 NavigationBackButton {
-                    dismiss()
+                    popNavigationStack?()
                 }
                 .padding(.vertical, 8)
                 

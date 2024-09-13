@@ -14,6 +14,7 @@ struct VibeTextField: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
+                .font(.title3)
                 .foregroundStyle(ColorPalette.gray5)
             TextField("", text: $text)
                 .font(.title3)
