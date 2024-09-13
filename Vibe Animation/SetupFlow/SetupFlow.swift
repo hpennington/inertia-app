@@ -66,7 +66,7 @@ class SetupFlowStateMachine: ObservableObject {
             transition(to: .start)
         case (_, .back):
             if let backState = stateHistory.popLast() {
-                transition(to: backState)
+                currentState = backState
             }
         default:
             print("currentState: \(currentState) newEvent: \(event)")
