@@ -17,6 +17,7 @@ struct ColorPalette {
     static let gray3 = Color(red: 101 / 255.0, green: 99 / 255.0, blue: 109 / 255.0)
     static let gray4 = Color(red: 121 / 255.0, green: 119 / 255.0, blue: 129 / 255.0)
     static let gray5 = Color(red: 221 / 255.0, green: 219 / 255.0, blue: 229 / 255.0)
+    static let red0 = Color(red: 250 / 255.0, green: 82 / 255.0, blue: 82 / 255.0)
 }
 
 protocol Colors {

@@ -21,7 +21,7 @@ struct SetupFlowProjectLoad: View {
                 
                 Spacer()
                 
-                SetupActionButton(title: "Cancel") {
+                SetupActionButton(title: "Cancel", accentColor: ColorPalette.red0) {
                     action(.cancelSetup)
                 }
             }

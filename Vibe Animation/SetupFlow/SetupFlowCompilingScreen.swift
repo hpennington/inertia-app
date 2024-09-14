@@ -18,7 +18,7 @@ struct SetupFlowCompilingScreen: View {
                 ProgressView(value: progress)
                 
                 Spacer()
-                SetupActionButton(title: "Cancel") {
+                SetupActionButton(title: "Cancel", accentColor: ColorPalette.red0) {
                     action(.cancelSetup)
                 }
             }
