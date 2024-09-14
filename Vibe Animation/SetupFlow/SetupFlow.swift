@@ -25,7 +25,7 @@ enum SetupFlowState: Hashable {
 
 enum SetupFlowEvent {
     case newProject
-    case openProject
+    case openProject(url: URL)
     case continueSetup
     case continueSetupReact
     case continueSetupSwiftUI

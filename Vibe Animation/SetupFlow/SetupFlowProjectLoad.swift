@@ -27,11 +27,6 @@ struct SetupFlowProjectLoad: View {
             }
             .padding(.top, 8)
             .padding(.bottom, 48)
-            .onAppear {
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
-                    action(.asyncJobFinished)
-                }
-            }
         }
     }
 }

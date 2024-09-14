@@ -8,89 +8,89 @@
 import SwiftUI
 
 public typealias VibeID = String
-
-private struct VibeDataModelKey: EnvironmentKey {
-    static let defaultValue = VibeDataModel(containerId: "", vibeSchema: VibeSchema(id: "", objects: []))
-}
-
-extension EnvironmentValues {
-    var vibeDataModel: VibeDataModel {
-        get { self[VibeDataModelKey.self] }
-        set { self[VibeDataModelKey.self] = newValue }
-    }
-}
-
-public final class VibeDataModel {
-    public let containerId: VibeID
-    public let vibeSchema: VibeSchema
-    
-    public init(containerId: VibeID, vibeSchema: VibeSchema) {
-        self.containerId = containerId
-        self.vibeSchema = vibeSchema
-    }
-}
-
-public struct VibeContainer<Content: View>: View {
-    let bundle: Bundle
-    let id: VibeID
-    
-    @State private var vibeDataModel: VibeDataModel
-    @ViewBuilder let content: () -> Content
-    
-    public init(
-        bundle: Bundle = Bundle.main,
-        id: VibeID,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.bundle = bundle
-        self.id = id
-        self.content = content
-        
-        // TODO: - Solve error handling when file is missing or schema is wrong
-        if let url = bundle.url(forResource: id, withExtension: "json") {
-            let schemaText = try! String(contentsOf: url, encoding: .utf8)
-            if let data = schemaText.data(using: .utf8),
-               let schema = decodeVibeSchema(json: data) {
-                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id, vibeSchema: schema))
-            } else {
-                fatalError()
-            }
-//            else {
-//                print("Failed to parse the schema")
+//
+//private struct VibeDataModelKey: EnvironmentKey {
+//    static let defaultValue = VibeDataModel(containerId: "", vibeSchema: VibeSchema(id: "", objects: []))
+//}
+//
+//extension EnvironmentValues {
+//    var vibeDataModel: VibeDataModel {
+//        get { self[VibeDataModelKey.self] }
+//        set { self[VibeDataModelKey.self] = newValue }
+//    }
+//}
+//
+//public final class VibeDataModel {
+//    public let containerId: VibeID
+//    public let vibeSchema: VibeSchema
+//    
+//    public init(containerId: VibeID, vibeSchema: VibeSchema) {
+//        self.containerId = containerId
+//        self.vibeSchema = vibeSchema
+//    }
+//}
+//
+//public struct VibeContainer<Content: View>: View {
+//    let bundle: Bundle
+//    let id: VibeID
+//    
+//    @State private var vibeDataModel: VibeDataModel
+//    @ViewBuilder let content: () -> Content
+//    
+//    public init(
+//        bundle: Bundle = Bundle.main,
+//        id: VibeID,
+//        @ViewBuilder content: @escaping () -> Content
+//    ) {
+//        self.bundle = bundle
+//        self.id = id
+//        self.content = content
+//        
+//        // TODO: - Solve error handling when file is missing or schema is wrong
+//        if let url = bundle.url(forResource: id, withExtension: "json") {
+//            let schemaText = try! String(contentsOf: url, encoding: .utf8)
+//            if let data = schemaText.data(using: .utf8),
+//               let schema = decodeVibeSchema(json: data) {
+//                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id, vibeSchema: schema))
+//            } else {
 //                fatalError()
-////                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
 //            }
-        } else {
-            print("Failed to parse the vibe file")
-            fatalError()
-//            self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
-        }
-    }
-    
-    public var body: some View {
-        content()
-            .environment(\.vibeDataModel, self.vibeDataModel)
-    }
-}
-
-public struct Vibeable<Content: View>: View {
-    @Environment(\.vibeDataModel) var vibeDataModel: VibeDataModel
-    
-    @ViewBuilder let content: () -> Content
-    
-    public init(
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.content = content
-    }
-    
-    public var body: some View {
-        content()
-            .onAppear {
-                print(vibeDataModel.containerId)
-            }
-    }
-}
+////            else {
+////                print("Failed to parse the schema")
+////                fatalError()
+//////                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
+////            }
+//        } else {
+//            print("Failed to parse the vibe file")
+//            fatalError()
+////            self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
+//        }
+//    }
+//    
+//    public var body: some View {
+//        content()
+//            .environment(\.vibeDataModel, self.vibeDataModel)
+//    }
+//}
+//
+//public struct Vibeable<Content: View>: View {
+//    @Environment(\.vibeDataModel) var vibeDataModel: VibeDataModel
+//    
+//    @ViewBuilder let content: () -> Content
+//    
+//    public init(
+//        @ViewBuilder content: @escaping () -> Content
+//    ) {
+//        self.content = content
+//    }
+//    
+//    public var body: some View {
+//        content()
+//            .onAppear {
+//                print(vibeDataModel.containerId)
+//            }
+//    }
+//}
 
 public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equatable {
     public static var zero = VibeAnimationValues(scale: .zero, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: .zero)

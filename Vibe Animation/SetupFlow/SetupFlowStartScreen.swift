@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUI
+import Vibe
 
 typealias Tag = SetupFlowFramework
 let reactTag = SetupFlowFramework.react
@@ -54,8 +55,9 @@ struct SetupFlowStartScreen: View {
                     
                     ProjectButton(title: "Open Project") {
                         openFileBrowser { url in
-                            print(url)
-                            action(.openProject)
+                            if let url {
+                                action(.openProject(url: url))
+                            }
                         }
                     }
                     .padding(.vertical, buttonVPadding)
@@ -108,9 +110,72 @@ final class SetupFlowVM: ObservableObject {
         }
         .store(in: &anyCancellable)
     }
+
+    func loadAnimationFiles(url: URL) -> Result<Array<VibeSchema>, ProjectFileError> {
+        let fileManager = FileManager.default
+        
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            let jsonFiles = fileURLs.filter { $0.pathExtension == "json" }
+            
+            do {
+                return .success(try jsonFiles.map({ url in
+                    let animationData = try Data(contentsOf: url)
+                    let animationJSON = try JSONDecoder().decode(VibeSchema.self, from: animationData)
+                    return animationJSON
+                }))
+            } catch let error {
+                print(error)
+                return .failure(ProjectFileError.animationFileLoad)
+            }
+        } catch let error {
+            print(error)
+            return .failure(ProjectFileError.animationDirectoryLoad)
+        }
+    }
+    
+    enum ProjectFileError: Error {
+        case metaLoad
+        case animationDirectoryLoad
+        case animationFileLoad
+    }
+    
+    func loadMetaFile(url: URL) -> Result<MetaFile, ProjectFileError> {
+        do {
+            let metaData = try Data(contentsOf: url)
+            let metaJSON = try JSONDecoder().decode(MetaFile.self, from: metaData)
+            return .success(metaJSON)
+        } catch let error {
+            print(error)
+            return .failure(ProjectFileError.metaLoad)
+        }
+    }
+    
+    func openProjectFile(url: URL) -> Bool {
+        let metaFilePath = "meta.json"
+        let metaFileURL = url.appending(path: metaFilePath)
+        
+        let animationsDirectoryFilePath = "animations"
+        let animationsDirectoryURL = url.appending(path: animationsDirectoryFilePath)
+        
+        let meta = self.loadMetaFile(url: metaFileURL)
+        print(meta)
+        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
+        print(animations)
+        
+        self.stateMachine.handleEvent(.asyncJobFinished)
+        return true
+    }
     
     func handleEvent(_ event: SetupFlowEvent) {
         self.event = event
         stateMachine.handleEvent(event)
+        
+        switch event {
+        case .openProject(let url):
+            openProjectFile(url: url)
+        default:
+            break
+        }
     }
 }
