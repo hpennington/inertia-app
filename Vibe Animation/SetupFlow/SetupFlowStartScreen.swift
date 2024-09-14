@@ -17,6 +17,26 @@ struct SetupFlowStartScreen: View {
     
     let action: (SetupFlowEvent) -> Void
     private let buttonVPadding = 8.0
+    
+    @State private var dialogOpen = false
+    
+    func openFileBrowser(completion: @escaping (URL?) -> Void) {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.begin { response in
+            switch response {
+            case .OK:
+                completion(panel.url)
+            default:
+                break
+            }
+            
+            dialogOpen = false
+        }
+        dialogOpen = true
+    }
         
     var body: some View {
         GeometryReader { proxy in
@@ -33,7 +53,10 @@ struct SetupFlowStartScreen: View {
                     .padding(.vertical, buttonVPadding)
                     
                     ProjectButton(title: "Open Project") {
-                        
+                        openFileBrowser { url in
+                            print(url)
+                            action(.openProject)
+                        }
                     }
                     .padding(.vertical, buttonVPadding)
                     
@@ -45,6 +68,7 @@ struct SetupFlowStartScreen: View {
             }
             .navigationBarBackButtonHidden()
         }
+        .disabled(dialogOpen)
     }
 }
 

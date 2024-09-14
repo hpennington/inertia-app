@@ -41,6 +41,8 @@ struct SetupFlowContainerScreen: View {
                         SetupFlowCopyingScreen(action: actionHandler)
                     case .swiftUICompile:
                         SetupFlowCompilingScreen(action: actionHandler)
+                    case .projectLoad:
+                        SetupFlowProjectLoad(action: actionHandler)
                     case .completeReact:
                         Text("Complete")
                             .onAppear {

@@ -1,0 +1,43 @@
+//
+//  SetupFlowProjectLoad.swift
+//  Vibe Animation
+//
+//  Created by Hayden Pennington on 9/14/24.
+//
+
+import SwiftUI
+
+struct SetupFlowProjectLoad: View {
+    @Environment(\.appColors) var appColors: Colors
+    
+    let action: (SetupFlowEvent) -> Void
+    
+    var body: some View {
+        SetupFlowBase(title: "Loading and validating") {
+            VStack {
+                Spacer()
+                
+                ProgressView()
+                
+                Spacer()
+                
+                SetupActionButton(title: "Cancel") {
+                    action(.cancelSetup)
+                }
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 48)
+            .onAppear {
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
+                    action(.asyncJobFinished)
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    SetupFlowProjectLoad { event in
+        
+    }
+}
