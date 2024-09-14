@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKit
 
 enum AppFlowState {
     case initialize
@@ -21,7 +22,7 @@ enum AppFlowEvent {
 }
 
 struct AppFlowStateMachine {
-    var currentState: AppFlowState = .launch
+    var currentState: AppFlowState = .initialize
     
     mutating func handleEvent(_ event: AppFlowEvent) {
         switch (currentState, event) {
@@ -55,6 +56,21 @@ final class VibeAppVM: ObservableObject {
 struct Vibe_AnimationApp: App {
     @StateObject private var vm = VibeAppVM()
     
+    func setWindowPositionForSize(x: CGFloat, y: CGFloat) {
+        guard let window = NSApp.mainWindow else {
+            return
+        }
+        
+        guard let screenSize = NSScreen.main?.visibleFrame.size else {
+            return
+        }
+        
+        let originX = (screenSize.width - x) / 2
+        let originY = (screenSize.height - y) / 2 + (y / 2) // - TODO: Investigate this line for correct vertical centering of a window
+        
+        window.setFrameOrigin(NSPoint(x: originX, y: originY))
+    }
+    
     var body: some Scene {
         WindowGroup {
             switch vm.appStateMachine.currentState {
@@ -64,7 +80,9 @@ struct Vibe_AnimationApp: App {
                         vm.handleEvent(.initialized)
                     }
             case .launch, .configure:
-                ProjectsContainerView {
+                let projectsContainerSize = CGSize(width: 775, height: 445)
+                
+                ProjectsContainerView(width: projectsContainerSize.width, height: projectsContainerSize.height) {
                     SetupFlowContainerScreen { framework in
                         vm.framework = framework
                         vm.handleEvent(.configured)
@@ -74,15 +92,24 @@ struct Vibe_AnimationApp: App {
                 .task {
                     vm.handleEvent(.launched)
                 }
+                .onAppear {
+                    setWindowPositionForSize(x: projectsContainerSize.width, y: projectsContainerSize.height)
+                }
             case .main:
+                let editorViewMinimumSize = CGSize(width: 1500, height: 900)
+                
                 EditorView(framework: vm.framework)
-                    .frame(minWidth: 1500, minHeight: 900)
+                    .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
                     .preferredColorScheme(.dark)
+                    .onAppear {
+                        setWindowPositionForSize(x: editorViewMinimumSize.width, y: editorViewMinimumSize.height)
+                    }
             }
         }
         .windowToolbarStyle(.unifiedCompact)
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
+        
     }
 }
 

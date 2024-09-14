@@ -69,10 +69,8 @@ class SetupFlowStateMachine: ObservableObject {
                 currentState = backState
             }
         default:
-            print("currentState: \(currentState) newEvent: \(event)")
             // - TODO: Remove fatal error before release
-            fatalError("default case hit!")
-            break
+            fatalError("default case hit! currentState: \(currentState) newEvent: \(event)")
         }
     }
     

@@ -8,19 +8,12 @@
 import SwiftUI
 
 struct ProjectsContainerView<Content: View>: View {
+    let width: CGFloat
+    let height: CGFloat
     @ViewBuilder let content: () -> Content
-    
-    private let containerWidth = 775.0
-    private let containerHeight = 445.0
     
     var body: some View {
         content()
-            .frame(width: containerWidth, height: containerHeight)
-    }
-}
-
-#Preview {
-    ProjectsContainerView {
-        Text("ProjectsContainerView")
+            .frame(width: width, height: height)
     }
 }
