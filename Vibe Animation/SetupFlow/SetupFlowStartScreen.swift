@@ -151,7 +151,7 @@ final class SetupFlowVM: ObservableObject {
         }
     }
     
-    func openProjectFile(url: URL) -> Bool {
+    func openProjectFiles(url: URL) -> Bool {
         let metaFilePath = "meta.json"
         let metaFileURL = url.appending(path: metaFilePath)
         
@@ -173,7 +173,7 @@ final class SetupFlowVM: ObservableObject {
         
         switch event {
         case .openProject(let url):
-            openProjectFile(url: url)
+            openProjectFiles(url: url)
         default:
             break
         }
