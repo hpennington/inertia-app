@@ -85,29 +85,9 @@ struct Vibe_AnimationApp: App {
                 let projectsContainerSize = CGSize(width: 775, height: 445)
                 
                 ProjectsContainerView(width: projectsContainerSize.width, height: projectsContainerSize.height) {
-                    if vm.newProject {
-                        SetupFlowChooseFrameworkScreen { event in
-                            print(event)
-                        }
-                    } else if vm.openProject {
-                        SetupFlowProjectLoad { event in
-                            print(event)
-                        }
-                    } else {
-                        SetupFlowContainerScreen {
-                            ProjectStartScreen { event in
-                                switch event {
-                                case .newProject:
-                                   vm.openProject = false
-                                   vm.newProject = true
-                                case .openProject(let url):
-                                   vm.newProject = false
-                                   vm.openProject = true
-                                }
-                            }
-                        } completion: { framework in
-                            
-                        }
+                    SetupFlowContainerScreen { framework in
+                        vm.framework = framework
+                        vm.handleEvent(.configured)
                     }
                 }
                 .preferredColorScheme(.dark)
