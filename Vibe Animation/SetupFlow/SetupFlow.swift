@@ -19,17 +19,19 @@ enum SetupFlowState: Hashable {
     case swiftUICopying
     case swiftUICompile
     case projectLoad
+    case browsingProject
     case completeSwiftUI
     case completeReact
 }
 
 enum SetupFlowEvent {
     case newProject
-    case openProject(url: URL)
+    case openProject
     case continueSetup
     case continueSetupReact
     case continueSetupSwiftUI
     case asyncJobFinished
+    case filePicked
     case cancelSetup
     case back
 }
@@ -40,10 +42,14 @@ class SetupFlowStateMachine: ObservableObject {
     
     func handleEvent(_ event: SetupFlowEvent) {
         switch (currentState, event) {
-        case (.start, .openProject):
-            transition(to: .projectLoad)
         case (.start, .newProject):
             transition(to: .chooseFramework)
+        case (.start, .openProject):
+            transition(to: .browsingProject)
+        case (.browsingProject, .cancelSetup):
+            transition(to: .start)
+        case (.browsingProject, .filePicked):
+            transition(to: .projectLoad)
         case (.projectLoad, .cancelSetup):
             transition(to: .start)
         case (.projectLoad, .asyncJobFinished):

@@ -16,6 +16,21 @@ struct SetupFlowContainerScreen: View {
         vm.handleEvent(event)
     }
     
+    func openFileBrowser(completion: @escaping (URL?) -> Void) {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.begin { response in
+            switch response {
+            case .OK:
+                completion(panel.url)
+            default:
+                completion(nil)
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack(path: $vm.navigationPath) {
             SetupFlowStartScreen(action: actionHandler)
@@ -23,6 +38,29 @@ struct SetupFlowContainerScreen: View {
                     switch currentState {
                     case .start:
                         SetupFlowStartScreen(action: actionHandler)
+                    case .browsingProject:
+                        SetupFlowStartScreen(action: actionHandler)
+                            .disabled(true)
+                            .onAppear {
+                                if vm.isFileBrowserAllowedOpen {
+                                    openFileBrowser { url in
+                                        guard let url else {
+                                            vm.isFileBrowserAllowedOpen = false
+                                            actionHandler(event: .cancelSetup)
+                                            return
+                                        }
+                                        
+                                        actionHandler(event: .filePicked)
+                                        print(vm.openProjectFiles(url: url))
+                                        actionHandler(event: .asyncJobFinished)
+                                    }
+                                    
+                                    vm.isFileBrowserAllowedOpen = false
+                                }
+                            }
+                            .onDisappear {
+                                vm.isFileBrowserAllowedOpen = true
+                            }
                     case .chooseFramework:
                         SetupFlowChooseFrameworkScreen(action: actionHandler)
                     case .projectInfoReact:

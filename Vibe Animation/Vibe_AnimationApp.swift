@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AppKit
+import Vibe
 
 enum AppFlowState {
     case initialize
@@ -51,6 +52,60 @@ final class VibeAppVM: ObservableObject {
     
     func handleEvent(_ event: AppFlowEvent) {
         appStateMachine.handleEvent(event)
+    }
+    
+    func loadAnimationFiles(url: URL) -> Result<Array<VibeSchema>, ProjectFileError> {
+        let fileManager = FileManager.default
+        
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            let jsonFiles = fileURLs.filter { $0.pathExtension == "json" }
+            
+            do {
+                return .success(try jsonFiles.map({ url in
+                    let animationData = try Data(contentsOf: url)
+                    let animationJSON = try JSONDecoder().decode(VibeSchema.self, from: animationData)
+                    return animationJSON
+                }))
+            } catch let error {
+                print(error)
+                return .failure(ProjectFileError.animationFileLoad)
+            }
+        } catch let error {
+            print(error)
+            return .failure(ProjectFileError.animationDirectoryLoad)
+        }
+    }
+    
+    enum ProjectFileError: Error {
+        case metaLoad
+        case animationDirectoryLoad
+        case animationFileLoad
+    }
+    
+    func loadMetaFile(url: URL) -> Result<MetaFile, ProjectFileError> {
+        do {
+            let metaData = try Data(contentsOf: url)
+            let metaJSON = try JSONDecoder().decode(MetaFile.self, from: metaData)
+            return .success(metaJSON)
+        } catch let error {
+            print(error)
+            return .failure(ProjectFileError.metaLoad)
+        }
+    }
+    
+    func openProjectFiles(url: URL) -> Bool {
+        let metaFilePath = "meta.json"
+        let metaFileURL = url.appending(path: metaFilePath)
+        
+        let animationsDirectoryFilePath = "animations"
+        let animationsDirectoryURL = url.appending(path: animationsDirectoryFilePath)
+        
+        let meta = self.loadMetaFile(url: metaFileURL)
+        print(meta)
+        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
+        print(animations)
+        return true
     }
 }
 
