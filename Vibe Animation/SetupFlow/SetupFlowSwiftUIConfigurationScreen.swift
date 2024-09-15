@@ -24,7 +24,7 @@ struct SetupFlowSwiftUIConfigurationScreen: View {
                 Spacer(minLength: 0)
             
                 SetupActionButton(title: "Continue") {
-                    action(.continueSetup)
+                    action(.continueSetupSwiftUI)
                 }
                 .disabled(isContinueValid)
             }

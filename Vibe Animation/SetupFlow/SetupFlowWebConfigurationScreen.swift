@@ -19,7 +19,7 @@ struct SetupFlowWebConfigurationScreen: View {
                 Spacer()
             
                 SetupActionButton(title: "Continue", disabled: setupFlowManager.reactProjectURL.isEmpty) {
-                    action(.continueSetup)
+                    action(.continueSetupReact)
                 }
             }
             .padding(.top, 8)

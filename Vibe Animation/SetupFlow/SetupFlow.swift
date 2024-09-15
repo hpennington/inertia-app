@@ -20,14 +20,12 @@ enum SetupFlowState: Hashable {
     case swiftUICompile
     case projectLoad
     case browsingProject
-    case completeSwiftUI
-    case completeReact
+    case complete
 }
 
 enum SetupFlowEvent {
     case newProject
     case openProject
-    case continueSetup
     case continueSetupReact
     case continueSetupSwiftUI
     case asyncJobFinished
@@ -42,8 +40,7 @@ class SetupFlowStateMachine: ObservableObject {
     
     func handleEvent(_ event: SetupFlowEvent) {
         switch (currentState, event) {
-        case (.start, .newProject):
-            transition(to: .chooseFramework)
+        // Open project flow
         case (.start, .openProject):
             transition(to: .browsingProject)
         case (.browsingProject, .cancelSetup):
@@ -53,31 +50,35 @@ class SetupFlowStateMachine: ObservableObject {
         case (.projectLoad, .cancelSetup):
             transition(to: .start)
         case (.projectLoad, .asyncJobFinished):
-            transition(to: .completeSwiftUI)
+            transition(to: .complete)
+        case (.start, .newProject):
+            transition(to: .chooseFramework)
+        // New project flow
         case (.chooseFramework, .continueSetupReact):
             transition(to: .projectInfoReact)
-        case (.chooseFramework, .continueSetupSwiftUI):
-            transition(to: .projectInfoIOS)
         case (.projectInfoReact, .continueSetupReact):
             transition(to: .configurationReact)
+        case (.configurationReact, .continueSetupReact):
+            transition(to: .complete)
+        case (.chooseFramework, .continueSetupSwiftUI):
+            transition(to: .projectInfoIOS)
         case (.projectInfoIOS, .continueSetupSwiftUI):
-            transition(to: .compilationMode)
-        case (.configurationReact, .continueSetup):
-            transition(to: .completeReact)
-        case (.compilationMode, .continueSetup):
-            transition(to: .xcodeCheck)
-        case (.xcodeCheck, .continueSetup):
             transition(to: .configurationSwiftUI)
-        case (.configurationSwiftUI, .continueSetup):
+        case (.configurationSwiftUI, .continueSetupSwiftUI):
+            transition(to: .compilationMode)
+        case (.compilationMode, .continueSetupSwiftUI):
+            transition(to: .xcodeCheck)
+        case (.xcodeCheck, .continueSetupSwiftUI):
             transition(to: .swiftUICopying)
         case (.swiftUICopying, .asyncJobFinished):
             transition(to: .swiftUICompile)
         case (.swiftUICompile, .asyncJobFinished):
-            transition(to: .completeSwiftUI)
+            transition(to: .complete)
         case (.swiftUICopying, .cancelSetup):
             transition(to: .start)
         case (.swiftUICompile, .cancelSetup):
             transition(to: .start)
+        // Shared flow
         case (_, .back):
             if let backState = stateHistory.popLast() {
                 currentState = backState

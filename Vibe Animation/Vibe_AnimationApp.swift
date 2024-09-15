@@ -6,108 +6,6 @@
 //
 
 import SwiftUI
-import AppKit
-import Vibe
-
-enum AppFlowState {
-    case initialize
-    case launch
-    case configure
-    case main
-}
-
-enum AppFlowEvent {
-    case initialized
-    case launched
-    case configured
-}
-
-struct AppFlowStateMachine {
-    var currentState: AppFlowState = .initialize
-    
-    mutating func handleEvent(_ event: AppFlowEvent) {
-        switch (currentState, event) {
-        case (.initialize, .initialized):
-            transition(to: .launch)
-        case (.launch, .launched):
-            transition(to: .configure)
-        case (.configure, .configured):
-            transition(to: .main)
-        default:
-            // - TODO: Remove fatalError before production!
-            fatalError("currentState: \(currentState) event: \(event)")
-        }
-    }
-    
-    private mutating func transition(to newState: AppFlowState) {
-        currentState = newState
-    }
-}
-
-final class VibeAppVM: ObservableObject {
-    @Published var appStateMachine = AppFlowStateMachine()
-    @Published var framework: SetupFlowFramework = .react
-    @Published var newProject = false
-    @Published var openProject = false
-    
-    func handleEvent(_ event: AppFlowEvent) {
-        appStateMachine.handleEvent(event)
-    }
-    
-    func loadAnimationFiles(url: URL) -> Result<Array<VibeSchema>, ProjectFileError> {
-        let fileManager = FileManager.default
-        
-        do {
-            let fileURLs = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
-            let jsonFiles = fileURLs.filter { $0.pathExtension == "json" }
-            
-            do {
-                return .success(try jsonFiles.map({ url in
-                    let animationData = try Data(contentsOf: url)
-                    let animationJSON = try JSONDecoder().decode(VibeSchema.self, from: animationData)
-                    return animationJSON
-                }))
-            } catch let error {
-                print(error)
-                return .failure(ProjectFileError.animationFileLoad)
-            }
-        } catch let error {
-            print(error)
-            return .failure(ProjectFileError.animationDirectoryLoad)
-        }
-    }
-    
-    enum ProjectFileError: Error {
-        case metaLoad
-        case animationDirectoryLoad
-        case animationFileLoad
-    }
-    
-    func loadMetaFile(url: URL) -> Result<MetaFile, ProjectFileError> {
-        do {
-            let metaData = try Data(contentsOf: url)
-            let metaJSON = try JSONDecoder().decode(MetaFile.self, from: metaData)
-            return .success(metaJSON)
-        } catch let error {
-            print(error)
-            return .failure(ProjectFileError.metaLoad)
-        }
-    }
-    
-    func openProjectFiles(url: URL) -> Bool {
-        let metaFilePath = "meta.json"
-        let metaFileURL = url.appending(path: metaFilePath)
-        
-        let animationsDirectoryFilePath = "animations"
-        let animationsDirectoryURL = url.appending(path: animationsDirectoryFilePath)
-        
-        let meta = self.loadMetaFile(url: metaFileURL)
-        print(meta)
-        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
-        print(animations)
-        return true
-    }
-}
 
 @main
 struct Vibe_AnimationApp: App {
@@ -130,37 +28,35 @@ struct Vibe_AnimationApp: App {
     
     var body: some Scene {
         WindowGroup {
-            switch vm.appStateMachine.currentState {
-            case .initialize:
-                Text("Initialize")
-                    .task {
-                        vm.handleEvent(.initialized)
-                    }
-            case .launch, .configure:
-                let projectsContainerSize = CGSize(width: 775, height: 445)
-                
-                ProjectsContainerView(width: projectsContainerSize.width, height: projectsContainerSize.height) {
-                    SetupFlowContainerScreen { framework in
-                        vm.framework = framework
-                        vm.handleEvent(.configured)
-                    }
-                }
-                .preferredColorScheme(.dark)
-                .task {
-                    vm.handleEvent(.launched)
-                }
-                .onAppear {
-                    setWindowPositionForSize(x: projectsContainerSize.width, y: projectsContainerSize.height)
-                }
-            case .main:
+            switch vm.stateMachine.currentState {
+            case .complete:
                 let editorViewMinimumSize = CGSize(width: 1500, height: 900)
-                
-                EditorView(framework: vm.framework)
+                EditorView(framework: vm.framework, animations: vm.animations)
                     .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
                     .preferredColorScheme(.dark)
                     .onAppear {
                         setWindowPositionForSize(x: editorViewMinimumSize.width, y: editorViewMinimumSize.height)
                     }
+            default:
+                let projectsContainerSize = CGSize(width: 775, height: 445)
+                
+                ProjectsContainerView(
+                    width: projectsContainerSize.width,
+                    height: projectsContainerSize.height
+                ) {
+                    SetupFlowContainerScreen(
+                        navigationPath: $vm.navigationPath,
+                        framework: $vm.framework,
+                        setupFlowManager: vm.setupFlowManager,
+                        animations: $vm.animations
+                    ) { event in
+                        vm.handleEvent(event)
+                    }
+                }
+                .preferredColorScheme(.dark)
+                .onAppear {
+                    setWindowPositionForSize(x: projectsContainerSize.width, y: projectsContainerSize.height)
+                }
             }
         }
         .windowToolbarStyle(.unifiedCompact)

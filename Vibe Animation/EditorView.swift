@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Vibe
 
 struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -32,6 +33,7 @@ struct EditorView: View {
     @State private var appMode: AppMode = .design
     
     let framework: SetupFlowFramework
+    let animations: [VibeSchema]
     
     var appColors: Colors {
         colorScheme == .dark ? ColorsDark() : ColorsLight()
@@ -115,8 +117,4 @@ struct EditorView: View {
         .background(appColors.backgroundSecondary)
         .environment(\.appColors, appColors)
     }
-}
-
-#Preview {
-    EditorView(framework: .react)
 }

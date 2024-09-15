@@ -27,7 +27,7 @@ struct SetupFlowChooseFrameworkScreen: View {
                 Spacer()
                 
                 SetupActionButton(title: "Continue") {
-                    action(setupFlowManager.framework == reactTag ? .continueSetupReact : .continueSetupSwiftUI)
+                    action(setupFlowManager.framework == .react ? .continueSetupReact : .continueSetupSwiftUI)
                 }
             }
             .padding(.top, 8)

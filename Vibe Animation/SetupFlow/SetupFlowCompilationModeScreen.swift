@@ -30,7 +30,7 @@ struct SetupFlowCompilationModeScreen: View {
                 Spacer()
                 
                 SetupActionButton(title: "Continue") {
-                    action(.continueSetup)
+                    action(.continueSetupSwiftUI)
                 }
             }
             .padding(.top, 8)

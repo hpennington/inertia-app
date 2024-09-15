@@ -6,14 +6,20 @@
 //
 
 import SwiftUI
+import Vibe
 
 struct SetupFlowContainerScreen: View {
-    @StateObject private var vm = SetupFlowVM()
+    let navigationPath: Binding<NavigationPath>
+    let framework: Binding<SetupFlowFramework>
+    let setupFlowManager: SetupFlowManager
+    let animations: Binding<[VibeSchema]>
+    let handleEvent: (SetupFlowEvent) -> Void
     
-    let completion: (_ framework: SetupFlowFramework) -> Void
+    @State private var allowFileBrowserOpen = true
+    @State private var success = false
     
     func actionHandler(event: SetupFlowEvent) {
-        vm.handleEvent(event)
+        handleEvent(event)
     }
     
     func openFileBrowser(completion: @escaping (URL?) -> Void) {
@@ -31,8 +37,60 @@ struct SetupFlowContainerScreen: View {
         }
     }
     
+    func openProjectFiles(url: URL) -> (Result<[VibeSchema], ProjectFileError>, Result<MetaFile, ProjectFileError>)  {
+        let metaFilePath = "meta.json"
+        let metaFileURL = url.appending(path: metaFilePath)
+        
+        let animationsDirectoryFilePath = "animations"
+        let animationsDirectoryURL = url.appending(path: animationsDirectoryFilePath)
+        
+        let meta = self.loadMetaFile(url: metaFileURL)
+        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
+        return (animations, meta)
+    }
+    
+    func loadAnimationFiles(url: URL) -> Result<Array<VibeSchema>, ProjectFileError> {
+        let fileManager = FileManager.default
+        
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            let jsonFiles = fileURLs.filter { $0.pathExtension == "json" }
+            
+            do {
+                return .success(try jsonFiles.map({ url in
+                    let animationData = try Data(contentsOf: url)
+                    let animationJSON = try JSONDecoder().decode(VibeSchema.self, from: animationData)
+                    return animationJSON
+                }))
+            } catch let error {
+                print(error)
+                return .failure(ProjectFileError.animationFileLoad)
+            }
+        } catch let error {
+            print(error)
+            return .failure(ProjectFileError.animationDirectoryLoad)
+        }
+    }
+    
+    enum ProjectFileError: Error {
+        case metaLoad
+        case animationDirectoryLoad
+        case animationFileLoad
+    }
+    
+    func loadMetaFile(url: URL) -> Result<MetaFile, ProjectFileError> {
+        do {
+            let metaData = try Data(contentsOf: url)
+            let metaJSON = try JSONDecoder().decode(MetaFile.self, from: metaData)
+            return .success(metaJSON)
+        } catch let error {
+            print(error)
+            return .failure(ProjectFileError.metaLoad)
+        }
+    }
+    
     var body: some View {
-        NavigationStack(path: $vm.navigationPath) {
+        NavigationStack(path: navigationPath) {
             SetupFlowStartScreen(action: actionHandler)
                 .navigationDestination(for: SetupFlowState.self) { currentState in
                     switch currentState {
@@ -42,27 +100,55 @@ struct SetupFlowContainerScreen: View {
                         SetupFlowStartScreen(action: actionHandler)
                             .disabled(true)
                             .onAppear {
-                                if vm.isFileBrowserAllowedOpen {
+                                if allowFileBrowserOpen {
                                     openFileBrowser { url in
-                                        guard let url else {
-                                            vm.isFileBrowserAllowedOpen = false
-                                            actionHandler(event: .cancelSetup)
-                                            return
-                                        }
+                                        allowFileBrowserOpen = false
                                         
-                                        actionHandler(event: .filePicked)
-                                        print(vm.openProjectFiles(url: url))
-                                        actionHandler(event: .asyncJobFinished)
+                                        if let url {
+                                            handleEvent(.filePicked)
+                                            
+                                            let result = openProjectFiles(url: url)
+                                            switch result.1 {
+                                            case .success(let meta):
+                                                self.framework.wrappedValue = meta.framework == reactTag.rawValue ? .react : .swiftUI
+                                                
+                                                switch result.0 {
+                                                case .success(let animations):
+                                                    self.animations.wrappedValue = animations
+                                                    handleEvent(.asyncJobFinished)
+                                                    self.success = true
+                                                case .failure(let error):
+                                                    print(error)
+                                                    handleEvent(.cancelSetup)
+                                                    // - TODO: Show error screen
+                                                }
+                                                
+                                            case .failure(let error):
+                                                print(error)
+                                                handleEvent(.cancelSetup)
+                                                // - TODO: Show error screen
+                                            }
+                                        } else {
+                                            handleEvent(.cancelSetup)
+                                        }
                                     }
-                                    
-                                    vm.isFileBrowserAllowedOpen = false
                                 }
                             }
                             .onDisappear {
-                                vm.isFileBrowserAllowedOpen = true
+                                if !success {
+                                    allowFileBrowserOpen = true
+                                }
                             }
                     case .chooseFramework:
-                        SetupFlowChooseFrameworkScreen(action: actionHandler)
+                        SetupFlowChooseFrameworkScreen { event in
+                            if event == .continueSetupReact {
+                                self.framework.wrappedValue = .react
+                            } else if event == .continueSetupSwiftUI {
+                                self.framework.wrappedValue = .swiftUI
+                            }
+                            
+                            actionHandler(event: event)
+                        }
                     case .projectInfoReact:
                         SetupFlowInfoScreenReact(action: actionHandler)
                     case .projectInfoIOS:
@@ -81,26 +167,15 @@ struct SetupFlowContainerScreen: View {
                         SetupFlowCompilingScreen(action: actionHandler)
                     case .projectLoad:
                         SetupFlowProjectLoad(action: actionHandler)
-                    case .completeReact:
+                    case .complete:
                         Text("Complete")
                             .onAppear {
-                                completion(.react)
-                            }
-                    case .completeSwiftUI:
-                        Text("Complete")
-                            .onAppear {
-                                completion(.swiftUI)
+                                navigationPath.wrappedValue.removeLast(navigationPath.wrappedValue.count)
                             }
                     }
             }
         }
         .environment(\.popNavigationStack, {actionHandler(event: .back)})
-        .environmentObject(vm.setupFlowManager)
-    }
-}
-
-#Preview {
-    SetupFlowContainerScreen { isReact in
-        
+        .environmentObject(setupFlowManager)
     }
 }
