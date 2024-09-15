@@ -46,6 +46,8 @@ struct AppFlowStateMachine {
 final class VibeAppVM: ObservableObject {
     @Published var appStateMachine = AppFlowStateMachine()
     @Published var framework: SetupFlowFramework = .react
+    @Published var newProject = false
+    @Published var openProject = false
     
     func handleEvent(_ event: AppFlowEvent) {
         appStateMachine.handleEvent(event)
@@ -83,9 +85,29 @@ struct Vibe_AnimationApp: App {
                 let projectsContainerSize = CGSize(width: 775, height: 445)
                 
                 ProjectsContainerView(width: projectsContainerSize.width, height: projectsContainerSize.height) {
-                    SetupFlowContainerScreen { framework in
-                        vm.framework = framework
-                        vm.handleEvent(.configured)
+                    if vm.newProject {
+                        SetupFlowChooseFrameworkScreen { event in
+                            print(event)
+                        }
+                    } else if vm.openProject {
+                        SetupFlowProjectLoad { event in
+                            print(event)
+                        }
+                    } else {
+                        SetupFlowContainerScreen {
+                            ProjectStartScreen { event in
+                                switch event {
+                                case .newProject:
+                                   vm.openProject = false
+                                   vm.newProject = true
+                                case .openProject(let url):
+                                   vm.newProject = false
+                                   vm.openProject = true
+                                }
+                            }
+                        } completion: { framework in
+                            
+                        }
                     }
                 }
                 .preferredColorScheme(.dark)
