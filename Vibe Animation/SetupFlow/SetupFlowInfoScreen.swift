@@ -23,6 +23,10 @@ struct SetupFlowInfoScreenReact: View {
             VStack(spacing: 16) {
                 VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
                     .focused($focusState, equals: .titleTextField)
+                    .onSubmit {
+                        focusState = .descriptionTextField
+                    }
+                
                 VibeTextContainer(title: "Description", text: $setupFlowManager.projectDescription)
                     .focused($focusState, equals: .descriptionTextField)
                 Spacer()
@@ -43,6 +47,12 @@ struct SetupFlowInfoScreenReact: View {
 struct SetupFlowInfoScreenSwiftUI: View {
     @EnvironmentObject var setupFlowManager: SetupFlowManager
     @State private var description = ""
+    @FocusState var focusState: FocusableElement?
+        
+    enum FocusableElement: Hashable {
+        case titleTextField
+        case descriptionTextField
+    }
     
     let action: (SetupFlowEvent) -> Void
     
@@ -50,7 +60,12 @@ struct SetupFlowInfoScreenSwiftUI: View {
         SetupFlowBase(title: "Give your Project a Name") {
             VStack(spacing: 16) {
                 VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
+                    .focused($focusState, equals: .titleTextField)
+                    .onSubmit {
+                        focusState = .descriptionTextField
+                    }
                 VibeTextContainer(title: "Description", text: $description)
+                    .focused($focusState, equals: .descriptionTextField)
                 Spacer()
             
                 SetupActionButton(title: "Continue", disabled: setupFlowManager.projectTitle.isEmpty) {
@@ -59,6 +74,9 @@ struct SetupFlowInfoScreenSwiftUI: View {
             }
             .padding(.top, 8)
             .padding(.bottom, 48)
+        }
+        .task {
+            focusState = .titleTextField
         }
     }
 }

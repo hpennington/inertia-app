@@ -10,6 +10,13 @@ import SwiftUI
 struct VibeTextField: View {
     let title: String
     @Binding var text: String
+    let error: Bool
+    
+    init(title: String, text: Binding<String>, error: Bool = false) {
+        self.title = title
+        self._text = text
+        self.error = error
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -25,6 +32,12 @@ struct VibeTextField: View {
                 .background(ColorPalette.gray4.opacity(0.5))
                 .foregroundStyle(ColorPalette.gray5)
                 .cornerRadius(4)
+                .overlay {
+                    if error {
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(ColorPalette.red0, lineWidth: 2)
+                    }
+                }
         }
     }
 }

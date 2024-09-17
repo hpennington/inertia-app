@@ -18,8 +18,16 @@ final class SetupFlowManager: ObservableObject {
     @Published var projectTitle: String = ""
     @Published var projectDescription: String = ""
     @Published var xcodeProjectURL: String = ""
-    @Published var entryStructTitle: String = ""
-    @Published var reactProjectURL: String = ""
+    @Published var entryStructTitle: String = "App"
+    @Published var reactProjectPath: String = "http://127.0.0.1:3000"
+    
+    var reactProjectURL: URL? {
+        if reactProjectPath.hasPrefix("http://") || reactProjectPath.hasPrefix("https://") {
+            return URL(string: reactProjectPath)
+        }
+        
+        return nil
+    }
 }
 
 typealias Tag = SetupFlowFramework

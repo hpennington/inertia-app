@@ -32,6 +32,7 @@ struct EditorView: View {
     
     @State private var appMode: AppMode = .design
     
+    let url: URL
     let framework: SetupFlowFramework
     let animations: [VibeSchema]
     
@@ -57,7 +58,7 @@ struct EditorView: View {
                 Group {
                     switch framework {
                     case .react:
-                        WebRenderView()
+                        WebRenderView(url: url)
                     case .swiftUI:
                         MacRenderView(size: CGSize(width: renderViewportViewWidth, height: renderViewportViewHeight))
                     }
