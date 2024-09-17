@@ -10,6 +10,11 @@ import Vibe
 
 struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
+    @FocusState var focusState: FocusableElement?
+        
+    enum FocusableElement: Hashable {
+        case viewport
+    }
     
     private let hierarchyViewWidth: CGFloat = 300
     private let renderViewportViewWidth: CGFloat = 750
@@ -67,6 +72,10 @@ struct EditorView: View {
                 .cornerRadius(renderViewportCornerRadius)
                 .modifier(WithPanelBackground())
                 .frame(minWidth: renderViewMinimumWidth, minHeight: renderViewMinimumHieght)
+                .focused($focusState, equals: .viewport)
+                .onAppear {
+                    focusState = .viewport
+                }
             } trailing: {
                 VStack {
                     VStack {
