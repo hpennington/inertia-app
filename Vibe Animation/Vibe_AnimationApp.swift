@@ -21,7 +21,7 @@ struct Vibe_AnimationApp: App {
         }
         
         let originX = (screenSize.width - x) / 2
-        let originY = (screenSize.height - y) / 2 + (y / 2) // - TODO: Investigate this line for correct vertical centering of a window
+        let originY = (screenSize.height - y) / 2
         
         window.setFrameOrigin(NSPoint(x: originX, y: originY))
     }
@@ -35,7 +35,7 @@ struct Vibe_AnimationApp: App {
                     EditorView(url: url, framework: vm.framework, animations: vm.animations)
                         .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
                         .preferredColorScheme(.dark)
-                        .onAppear {
+                        .task {
                             setWindowPositionForSize(x: editorViewMinimumSize.width, y: editorViewMinimumSize.height)
                         }
                 }
@@ -56,7 +56,7 @@ struct Vibe_AnimationApp: App {
                     }
                 }
                 .preferredColorScheme(.dark)
-                .onAppear {
+                .task {
                     setWindowPositionForSize(x: projectsContainerSize.width, y: projectsContainerSize.height)
                 }
             }
