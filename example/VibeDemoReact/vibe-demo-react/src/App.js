@@ -5,20 +5,13 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <VibeContainer id={'123'}>
-        <header className="App-header">
-          <Vibeable>
-            <div>
-              <VibeContainer id={'321123'}>
-                <Vibeable>
-                  <img src={logo} className="App-logo" alt="logo" />
-                </Vibeable>
-              </VibeContainer>
-            </div>
-          </Vibeable>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
+      <header className="App-header">
+        <div>
+          <img src={logo} className="App-logo" alt="logo" />
+        </div>
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
           <a
             className="App-link"
             href="https://reactjs.org"
@@ -27,8 +20,7 @@ function App() {
           >
             Learn React
           </a>
-        </header>
-      </VibeContainer>
+      </header>
     </div>
   );
 }

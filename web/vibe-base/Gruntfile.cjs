@@ -19,6 +19,15 @@ module.exports = function(grunt) {
           'dist/index.min.js': ['dist/index.js']
         }
       }
+    },
+    watch: {
+      scripts: {
+        files: ['src/**/*.ts'], // Watch for changes in these files
+        tasks: ['ts', 'uglify'], // Run these tasks when changes are detected
+        options: {
+          spawn: false,
+        },
+      },
     }
   });
 

@@ -97,23 +97,6 @@ struct WKWebViewWrapper: NSViewRepresentable {
                     if let value {
                         print(value)
                     }
-                    
-//                    let vibeableScript = """
-//                    (function() {
-//                        
-//                    })()
-//                    """
-//                    
-//                    webView.evaluateJavaScript(vibeableScript) { value, error in
-//                        if let error {
-//                            print(error)
-//                            return
-//                        }
-//                        
-//                        if let value {
-//                            print(value)
-//                        }
-//                    }
                 }
             }
         }

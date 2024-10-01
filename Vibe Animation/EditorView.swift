@@ -23,7 +23,7 @@ struct EditorView: View {
     private let renderViewMinimumHieght: CGFloat = 650
     private let propertiesViewWidth: CGFloat = 300
     private let timelineViewHeight: CGFloat = 300
-    private let renderViewportCornerRadius: CGFloat = 8
+    private let renderViewportCornerRadius: CGFloat = 4
     private let segmentedPickerWidth: CGFloat = 250
     private let spacing: CGFloat = 3
     private let cornerRadius: CGFloat = 4
@@ -90,21 +90,16 @@ struct EditorView: View {
                         .pickerStyle(.segmented)
                         .frame(width: segmentedPickerWidth)
                         .padding()
+
+                        AnimationsAvailableColumn(animations: animations.map {
+                            $0.id
+                        })
+                        .frame(width: segmentedPickerWidth)
                         
-                        Spacer(minLength: .zero)
+                        Spacer(minLength: spacing * 8)
                     }
                     .modifier(WithPanelBackground())
                     .cornerRadius(bottomLeft: cornerRadius)
-                    
-                    Spacer(minLength: spacing)
-                    
-                    VStack {
-                        Text("Testing")
-                    }
-                    .frame(width: segmentedPickerWidth)
-                    .frame(maxHeight: .infinity)
-                    .modifier(WithPanelBackground())
-                    .cornerRadius(topLeft: cornerRadius, bottomLeft: cornerRadius)
                     
                     Spacer(minLength: spacing)
                     
