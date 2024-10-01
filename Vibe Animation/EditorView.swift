@@ -17,12 +17,12 @@ struct EditorView: View {
     }
     
     private let hierarchyViewWidth: CGFloat = 300
-    private let renderViewportViewWidth: CGFloat = 750
-    private let renderViewportViewHeight: CGFloat = 550
-    private let renderViewMinimumWidth: CGFloat = 850
-    private let renderViewMinimumHieght: CGFloat = 650
+    private let renderViewportViewWidth: CGFloat = 450
+    private let renderViewportViewHeight: CGFloat = 250
+    private let renderViewMinimumWidth: CGFloat = 550
+    private let renderViewMinimumHieght: CGFloat = 350
     private let propertiesViewWidth: CGFloat = 300
-    private let timelineViewHeight: CGFloat = 300
+    private let timelineViewHeight: CGFloat = 200
     private let renderViewportCornerRadius: CGFloat = 4
     private let segmentedPickerWidth: CGFloat = 250
     private let spacing: CGFloat = 3
@@ -65,11 +65,13 @@ struct EditorView: View {
                     case .react:
                         WebRenderView(url: url)
                     case .swiftUI:
-                        MacRenderView(size: CGSize(width: renderViewportViewWidth, height: renderViewportViewHeight))
+                        GeometryReader { proxy in
+                            MacRenderView(size: proxy.size)
+                        }
                     }
                 }
-                .frame(width: renderViewportViewWidth, height: renderViewportViewHeight)
                 .cornerRadius(renderViewportCornerRadius)
+                .padding()
                 .modifier(WithPanelBackground())
                 .frame(minWidth: renderViewMinimumWidth, minHeight: renderViewMinimumHieght)
                 .focused($focusState, equals: .viewport)
@@ -88,31 +90,32 @@ struct EditorView: View {
                             EmptyView()
                         }
                         .pickerStyle(.segmented)
-                        .frame(width: segmentedPickerWidth)
                         .padding()
 
                         AnimationsAvailableColumn(animations: animations.map {
                             $0.id
                         })
-                        .frame(width: segmentedPickerWidth)
-                        
-                        Spacer(minLength: spacing * 8)
+                        .padding(.vertical)
                     }
+                    .padding(.horizontal)
                     .modifier(WithPanelBackground())
                     .cornerRadius(bottomLeft: cornerRadius)
                     
                     Spacer(minLength: spacing)
                     
                     VStack {
-                        Text("Testing")
+                        AnimationsAttachedList(animations: animations.map {
+                            $0.id
+                        })
+                        .padding(.vertical)
                     }
-                    .frame(width: segmentedPickerWidth)
                     .frame(maxHeight: .infinity)
+                    .padding(.horizontal)
                     .modifier(WithPanelBackground())
                     .cornerRadius(topLeft: cornerRadius)
                 }
-                .frame(width: propertiesViewWidth)
-                .frame(maxHeight: .infinity)
+                
+                .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
             } bottom: {
                 PanelView()
                     .frame(height: timelineViewHeight)

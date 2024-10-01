@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct SearchField: View {
-    @State private var text = ""
+    let text: Binding<String>
     
     private let cornerRadius = 4.0
     private let padding = 8.0
     
     var body: some View {
-        TextField("", text: $text)
+        TextField("", text: text)
             .textFieldStyle(.plain)
             .padding(padding)
             .frame(minHeight: cornerRadius * 2)
@@ -27,5 +27,5 @@ struct SearchField: View {
 }
 
 #Preview {
-    SearchField()
+    SearchField(text: .constant("Demo Text"))
 }

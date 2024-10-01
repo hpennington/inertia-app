@@ -30,7 +30,7 @@
             overlayElement.style.width = `${targetElement.getBoundingClientRect().width - borderWidth * 2}px`
             overlayElement.style.height = `${targetElement.getBoundingClientRect().height - borderWidth * 2}px`
             overlayElement.style.border = `${borderWidth}px solid`
-            overlayElement.style.borderColor = `rgb(78, 55, 108)`
+            overlayElement.style.borderColor = `rgb(85, 89, 220)`
             overlayElement.style.borderRadius = '4px'
             overlayElement.style['box-sizing'] = 'content-box'
             overlayElement.style['pointer-events'] = 'none'

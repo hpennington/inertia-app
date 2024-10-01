@@ -31,7 +31,7 @@ struct Vibe_AnimationApp: App {
             switch vm.stateMachine.currentState {
             case .complete:
                 if let url = vm.setupFlowManager.reactProjectURL {
-                    let editorViewMinimumSize = CGSize(width: 1500, height: 900)
+                    let editorViewMinimumSize = CGSize(width: 1200, height: 600)
                     EditorView(url: url, framework: vm.framework, animations: vm.animations)
                         .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
                         .preferredColorScheme(.dark)
@@ -40,7 +40,7 @@ struct Vibe_AnimationApp: App {
                         }
                 }
             default:
-                let projectsContainerSize = CGSize(width: 775, height: 445)
+                let projectsContainerSize = CGSize(width: 675, height: 345)
                 
                 ProjectsContainerView(
                     width: projectsContainerSize.width,

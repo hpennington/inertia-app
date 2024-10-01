@@ -19,7 +19,9 @@ struct AnimationsList: View {
             Section {
                 ForEach(animations, id: \.self) { animation in
                     Text(animation)
+                        .id(animation)
                         .tag(animation)
+                    
                 }
             }
             .listRowSeparator(.hidden)

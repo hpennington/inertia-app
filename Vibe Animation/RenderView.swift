@@ -209,10 +209,11 @@ struct MacOSVirtualMachineConfigurationHelper {
         return VZMacOSBootLoader()
     }
 
-    static func createGraphicsDeviceConfiguration(diskImageURL: URL) -> VZMacGraphicsDeviceConfiguration {
+    static func createGraphicsDeviceConfiguration(diskImageURL: URL, width: Int, height: Int) -> VZMacGraphicsDeviceConfiguration {
         let graphicsConfiguration = VZMacGraphicsDeviceConfiguration()
         graphicsConfiguration.displays = [
-            VZMacGraphicsDisplayConfiguration(widthInPixels: 1350, heightInPixels: 990, pixelsPerInch: 284)
+            VZMacGraphicsDisplayConfiguration(widthInPixels: width, heightInPixels: height, pixelsPerInch: 284)
+//            VZMacGraphicsDisplayConfiguration(widthInPixels: 1350, heightInPixels: 990, pixelsPerInch: 284)
         ]
 
         return graphicsConfiguration

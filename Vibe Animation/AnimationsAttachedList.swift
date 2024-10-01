@@ -8,11 +8,34 @@
 import SwiftUI
 
 struct AnimationsAttachedList: View {
+    let animations: [String]
+    
+    @State private var selected = "anim1"
+    
+    private let cornerRadius = 4.0
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List(selection: $selected) {
+            Section {
+                ForEach(animations, id: \.self) { animation in
+                    Text(animation)
+                        .tag(animation)
+                }
+            }
+            .listRowSeparator(.hidden)
+        }
+        .pickerStyle(.inline)
+        .scrollContentBackground(.hidden)
+        .frame(minHeight: cornerRadius * 2)
+        .cornerRadius(cornerRadius)
+        .overlay {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(ColorPalette.gray1)
+        }
     }
 }
 
 #Preview {
-    AnimationsAttachedList()
+    AnimationsAttachedList(animations: [
+    ])
 }
