@@ -74,8 +74,6 @@ public typealias VibeID = String
 //}
 //
 //public struct Vibeable<Content: View>: View {
-//    @Environment(\.vibeDataModel) var vibeDataModel: VibeDataModel
-//    
 //    @ViewBuilder let content: () -> Content
 //    
 //    public init(
@@ -86,11 +84,14 @@ public typealias VibeID = String
 //    
 //    public var body: some View {
 //        content()
-//            .onAppear {
-//                print(vibeDataModel.containerId)
-//            }
 //    }
 //}
+
+extension View {
+    public func vibeHello() -> some View {
+        self
+    }
+}
 
 public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equatable {
     public static var zero = VibeAnimationValues(scale: .zero, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: .zero)

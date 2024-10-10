@@ -17,10 +17,7 @@ struct EditorView: View {
     }
     
     private let hierarchyViewWidth: CGFloat = 300
-    private let renderViewportViewWidth: CGFloat = 450
-    private let renderViewportViewHeight: CGFloat = 250
-    private let renderViewMinimumWidth: CGFloat = 550
-    private let renderViewMinimumHieght: CGFloat = 350
+    private let viewportMinimumSize = CGSize(width: 650, height: 350)
     private let propertiesViewWidth: CGFloat = 300
     private let timelineViewHeight: CGFloat = 200
     private let renderViewportCornerRadius: CGFloat = 4
@@ -36,6 +33,7 @@ struct EditorView: View {
     }
     
     @State private var appMode: AppMode = .design
+    @State private var frameSize: CGSize? = nil
     
     let url: URL
     let framework: SetupFlowFramework
@@ -54,6 +52,10 @@ struct EditorView: View {
         }
     }
     
+    func maxCGSize(lhs: CGSize, rhs: CGSize) -> CGSize {
+        return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
@@ -66,14 +68,20 @@ struct EditorView: View {
                         WebRenderView(url: url)
                     case .swiftUI:
                         GeometryReader { proxy in
-                            MacRenderView(size: proxy.size)
+                            MacRenderView(size: viewportMinimumSize)
+                                .onAppear {
+                                    frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                                }
+                                .onChange(of: proxy.size) { oldValue, newValue in
+                                    frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                                }
                         }
                     }
                 }
                 .cornerRadius(renderViewportCornerRadius)
                 .padding()
                 .modifier(WithPanelBackground())
-                .frame(minWidth: renderViewMinimumWidth, minHeight: renderViewMinimumHieght)
+                .frame(minWidth: frameSize?.width ?? viewportMinimumSize.width, minHeight: frameSize?.height ?? viewportMinimumSize.height)
                 .focused($focusState, equals: .viewport)
                 .onAppear {
                     focusState = .viewport
@@ -114,7 +122,6 @@ struct EditorView: View {
                     .modifier(WithPanelBackground())
                     .cornerRadius(topLeft: cornerRadius)
                 }
-                
                 .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
             } bottom: {
                 PanelView()

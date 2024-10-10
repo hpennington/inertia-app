@@ -8,16 +8,22 @@
 import SwiftUI
 import Virtualization
 
-fileprivate let pixelsPerInch = 284
+let pixelsPerInch = 284
 
 struct VirtualMachineView: NSViewRepresentable {
     typealias NSViewType = VZVirtualMachineView
     
     let size: CGSize
     
+    init(size: CGSize) {
+        print(size)
+        self.size = size
+    }
+    
     func makeNSView(context: Context) -> NSViewType {
         let virtualMachine = context.coordinator.virtualMachine
         let view = VZVirtualMachineView(frame: .zero)
+        view.automaticallyReconfiguresDisplay = true
         view.virtualMachine = virtualMachine
         context.coordinator.restoreVirtualMachine()
         return view
@@ -29,14 +35,13 @@ struct VirtualMachineView: NSViewRepresentable {
     
     private func refreshDisplaySize(coordinator: Coordinator) {
         if coordinator.previousSize != size {
-            coordinator.updateDisplaySize(width: Int(size.width), height: Int(size.height))
+            coordinator.updateDisplaySize(sizeInPixels: size)
+            coordinator.previousSize = size
         }
-        
-        coordinator.previousSize = size
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(virtualMachine: VZVirtualMachine(configuration: VirtualMachineConfiguration(widthInPixels: Int(size.width), heightInPixels: Int(size.height)).createVirtualMachine()), size: size)
+        Coordinator(virtualMachine: VZVirtualMachine(configuration: VirtualMachineConfiguration(size: size).createVirtualMachine()), size: size)
     }
     
     class Coordinator: NSObject, VZVirtualMachineDelegate {
@@ -49,7 +54,6 @@ struct VirtualMachineView: NSViewRepresentable {
             self.virtualMachine = virtualMachine
             self.size = size
             self.previousSize = size
-            print(size)
             super.init()
                 
             self.virtualMachine.delegate = self
@@ -76,7 +80,7 @@ struct VirtualMachineView: NSViewRepresentable {
         }
         
         func restoreVirtualMachine() {
-            virtualMachine.restoreMachineStateFrom(url: VirtualMachineConfiguration(widthInPixels: Int(size.width), heightInPixels: Int(size.height)).saveFileURL, completionHandler: { (error) in
+            virtualMachine.restoreMachineStateFrom(url: VirtualMachineConfiguration(size: size).saveFileURL, completionHandler: { (error) in
                 let fileManager = FileManager.default
 //                try! fileManager.removeItem(at: VirtualMachineConfiguration().saveFileURL)
 
@@ -89,7 +93,7 @@ struct VirtualMachineView: NSViewRepresentable {
         }
 
         func saveVirtualMachine(completionHandler: @escaping () -> Void) {
-            virtualMachine.saveMachineStateTo(url: VirtualMachineConfiguration(widthInPixels: Int(size.width), heightInPixels: Int(size.height)).saveFileURL, completionHandler: { (error) in
+            virtualMachine.saveMachineStateTo(url: VirtualMachineConfiguration(size: size).saveFileURL, completionHandler: { (error) in
                 guard error == nil else {
                     fatalError("Virtual machine failed to save with \(error!)")
                 }
@@ -106,11 +110,11 @@ struct VirtualMachineView: NSViewRepresentable {
             })
         }
         
-        func updateDisplaySize(width: Int, height: Int) {
+        func updateDisplaySize(sizeInPixels: CGSize) {
             if let graphicsDevice = virtualMachine.graphicsDevices.first,
             let graphicsDisplay = graphicsDevice.displays.first {
                 do {
-                    try graphicsDisplay.reconfigure(sizeInPixels: CGSize(width: width, height: height))
+                    try graphicsDisplay.reconfigure(sizeInPixels: sizeInPixels)
                 } catch let error {
                     print(error)
                 }
@@ -120,8 +124,7 @@ struct VirtualMachineView: NSViewRepresentable {
 }
 
 struct VirtualMachineConfiguration {
-    let widthInPixels: Int
-    let heightInPixels: Int
+    let size: CGSize
     
     private var vmBundlePath: String {
         return NSHomeDirectory() + "/VM.bundle/"
@@ -197,7 +200,7 @@ struct VirtualMachineConfiguration {
         virtualMachineConfiguration.bootLoader = MacOSVirtualMachineConfigurationHelper.createBootLoader()
         virtualMachineConfiguration.cpuCount = MacOSVirtualMachineConfigurationHelper.computeCPUCount()
         virtualMachineConfiguration.memorySize = MacOSVirtualMachineConfigurationHelper.computeMemorySize()
-        virtualMachineConfiguration.graphicsDevices = [MacOSVirtualMachineConfigurationHelper.createGraphicsDeviceConfiguration(diskImageURL: diskImageURL, width: widthInPixels, height: heightInPixels)]
+        virtualMachineConfiguration.graphicsDevices = [MacOSVirtualMachineConfigurationHelper.createGraphicsDeviceConfiguration(diskImageURL: diskImageURL, size: size)]
         virtualMachineConfiguration.storageDevices = [MacOSVirtualMachineConfigurationHelper.createBlockDeviceConfiguration(diskImageURL: diskImageURL)]
         virtualMachineConfiguration.networkDevices = [MacOSVirtualMachineConfigurationHelper.createNetworkDeviceConfiguration()]
         virtualMachineConfiguration.socketDevices = [MacOSVirtualMachineConfigurationHelper.createSocketDeviceConfiguration()]

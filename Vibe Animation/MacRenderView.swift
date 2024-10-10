@@ -11,7 +11,7 @@ struct MacRenderView: View {
     let size: CGSize
     
     var body: some View {
-        VirtualMachineView(size: CGSize(width: size.width * 3, height: size.height * 3))
+        VirtualMachineView(size: CGSize(width: size.width, height: size.height))
     }
 }
 

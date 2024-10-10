@@ -3,7 +3,8 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 200px;
+  width: 200px;
   pointer-events: none;
 }
 
@@ -24,8 +25,16 @@
   color: white;
 }
 
+.logo-container {
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+
 .App-link {
   color: #61dafb;
+  pointer-events: none;
 }
 
 @keyframes App-logo-spin {
