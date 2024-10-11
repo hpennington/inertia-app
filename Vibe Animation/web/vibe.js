@@ -1,9 +1,5 @@
 (function() {
-//    const getOverlayElement = (id) => {
-//        const overlayElement = document.getElementById(id) ?? document.createElement('div')
-//        return overlayElement
-//    }
-    
+    console.log('Executing vibe.js')
     document.vibeActionableDataModel = {
         isSelected: new Map(),
     }
@@ -12,109 +8,119 @@
     
     let maxZIndex = 0
 
-    const overlayElement = document.createElement('div')
-    overlayElement.style.position = 'absolute'
-    overlayElement.style.top = 0
-    overlayElement.style.left = 0
-    overlayElement.style.height = `100%`
-    overlayElement.style.width = `100%`
-    overlayElement.style['pointer-events'] = 'none'
+    const overlayId = 'overlay-element-id'
+    const pointerOverlay = document.getElementById(overlayId) || document.createElement('div')
+    pointerOverlay.id = overlayId
+    pointerOverlay.style.position = 'fixed'
+    pointerOverlay.style.top = 0
+    pointerOverlay.style.left = 0
+    pointerOverlay.style.height = `100%`
+    pointerOverlay.style.width = `100%`
+    pointerOverlay.style['pointer-events'] = 'auto'
+    pointerOverlay.style['-webkit-user-select'] = 'none'
     
-    allElements.forEach((element) => {
-        const id = crypto.randomUUID()
-        element.dataset.vibeActionableId = id
-        
-        if (window.getComputedStyle(element).pointerEvents != 'auto') {
-            element.style.pointerEvents = 'auto'
-        }
-        
-        if (window.getComputedStyle(element).zIndex > maxZIndex) {
-            maxZIndex = window.getComputedStyle(element).zIndex
-            overlayElement.style.zIndex = maxZIndex + 1
-        }
-        
-        element.addEventListener('click', (e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            
-            const targetElement = e.currentTarget
-            const id = targetElement.dataset.vibeActionableId
-            
-            const selectedOverlay = document.getElementById(id) ?? document.createElement('div')
-            const borderWidth = 3
-            if (window.getComputedStyle(element).zIndex > maxZIndex) {
-                maxZIndex = window.getComputedStyle(element).zIndex
+    for (const [index, element] of Object.entries(allElements)) {
+        const id = `vibe-actionable-id-${index}`
+        if (element instanceof HTMLImageElement) {
+            let parent = element.parentNode
+            parent.dataset.vibeActionableId = id
+            parent.style.pointerEvents = 'auto'
+            parent.style['-webkit-user-select'] = 'none'
+            const zIndexValue = parseInt(window.getComputedStyle(parent).zIndex) || 0
+            if (zIndexValue > maxZIndex) {
+                maxZIndex = zIndexValue
             }
-            overlayElement.style['z-index'] = maxZIndex + 1
-            selectedOverlay.id = id
-            selectedOverlay.style.position = 'absolute'
-            selectedOverlay.style.left = `${targetElement.getBoundingClientRect().left + window.scrollX}px`
-            selectedOverlay.style.top = `${targetElement.getBoundingClientRect().top + window.scrollY}px`
-            selectedOverlay.style.width = `${targetElement.getBoundingClientRect().width - borderWidth * 2}px`
-            selectedOverlay.style.height = `${targetElement.getBoundingClientRect().height - borderWidth * 2}px`
-            selectedOverlay.style.border = `${borderWidth}px solid`
-            selectedOverlay.style.borderColor = `rgb(85, 89, 220)`
-            selectedOverlay.style.borderRadius = '4px'
-            selectedOverlay.style['box-sizing'] = 'content-box'
-            selectedOverlay.style['pointer-events'] = 'none'
+        } else {
+            element.dataset.vibeActionableId = id
+            element.style.pointerEvents = 'auto'
+            element.style['-webkit-user-select'] = 'none'
+            const zIndexValue = parseInt(window.getComputedStyle(element).zIndex) || 0
+            if (zIndexValue > maxZIndex) {
+                maxZIndex = zIndexValue
+            }
+        }
+    }
+    
+    window.onresize = function(e) {
+        // - TODO: Rethink this so that the ordering of the iterations is correct and that we don't miss elements
+        for (const [index, element] of Object.entries(allElements)) {
+            const id = `vibe-actionable-id-${index}`
+            if (element.dataset.vibeActionableId == id) {
+                const selectedBorderId = `selected-border-${id}`
+                const selectedBorder = document.getElementById(selectedBorderId) ?? document.createElement('div')
+                
+                selectedBorder.id = selectedBorderId
+                selectedBorder.style.position = 'absolute'
+                
+                const rect = element.getBoundingClientRect()
+                const x = element.offsetLeft
+                const y = element.offsetTop
+                selectedBorder.style.left = `${x}px`
+                selectedBorder.style.top = `${y}px`
+                selectedBorder.style.width = `${rect.width}px`
+                selectedBorder.style.height = `${rect.height}px`
+            }
+        }
+    }
+    
+    function onClickHandler(e) {
+        console.log({e})
+        e.stopImmediatePropagation()
+        
+        pointerOverlay.style['pointer-events'] = 'none'
+        let targetElement = document.elementFromPoint(e.clientX, e.clientY)
+        
+        if (targetElement instanceof HTMLImageElement) {
+            targetElement = targetElement.parentNode
+        }
+        pointerOverlay.style['pointer-events'] = 'auto'
+        
+        const id = targetElement?.dataset.vibeActionableId
+        if (id) {
+            const borderWidth = 3
+            const zIndexValue = parseInt(window.getComputedStyle(targetElement).zIndex) || 0
+            if (zIndexValue > maxZIndex) {
+                maxZIndex = zIndexValue
+                pointerOverlay.style['z-index']  = maxZIndex + 2
+            }
+            
+            const selectedBorderId = `selected-border-${id}`
+            const selectedBorder = document.getElementById(selectedBorderId) ?? document.createElement('div')
+            
+            selectedBorder.id = selectedBorderId
+            selectedBorder.style.position = 'absolute'
+            
+            const rect = targetElement.getBoundingClientRect()
+            const x = targetElement.offsetLeft
+            const y = targetElement.offsetTop
+            selectedBorder.style.left = `${x}px`
+            selectedBorder.style.top = `${y}px`
+            selectedBorder.style.width = `${rect.width}px`
+            selectedBorder.style.height = `${rect.height}px`
+            selectedBorder.style.border = `${borderWidth}px solid`
+            selectedBorder.style.borderColor = `rgb(85, 89, 220)`
+            selectedBorder.style.borderRadius = '4px'
+            selectedBorder.style['box-sizing'] = 'border-box'
+            selectedBorder.style['pointer-events'] = 'none'
+            selectedBorder.style['-webkit-user-select'] = 'none'
+            selectedBorder.style.zIndex = targetElement.style.zIndex + 1
             
             const isSelected = document.vibeActionableDataModel.isSelected.get(id)
             
             if (isSelected) {
-                selectedOverlay.remove()
+                selectedBorder.remove()
             } else {
-                overlayElement.append(selectedOverlay)
+                targetElement.appendChild(selectedBorder)
             }
 
             document.vibeActionableDataModel.isSelected.set(id, !isSelected)
-        })
-    })
+        }
+        
+    }
     
-    overlayElement.style['z-index'] = maxZIndex + 1
-    document.body.append(overlayElement)
-
-//
-//    
-//    const elements = document.body.querySelectorAll('*')
-//    
-//    elements.forEach((element) => {
-//        const id = crypto.randomUUID()
-//        const borderWidth = 3
-//        element.dataset.vibeActionableId = id
-//        console.log(element.className, id)
-//
-//        element.addEventListener('click', (e) => {
-//            const targetElement = e.currentTarget
-//            const id = targetElement.dataset.vibeActionableId
-//            
-//            e.stopPropagation()
-//            e.preventDefault()
-//            
-//            const overlayElement = getOverlayElement(id)
-//            overlayElement.id = id
-//            overlayElement.style.position = 'absolute'
-//            overlayElement.style.left = `${targetElement.getBoundingClientRect().left}px`
-//            overlayElement.style.top = `${targetElement.getBoundingClientRect().top}px`
-//            overlayElement.style.width = `${targetElement.getBoundingClientRect().width - borderWidth * 2}px`
-//            overlayElement.style.height = `${targetElement.getBoundingClientRect().height - borderWidth * 2}px`
-//            overlayElement.style.border = `${borderWidth}px solid`
-//            overlayElement.style.borderColor = `rgb(85, 89, 220)`
-//            overlayElement.style.borderRadius = '4px'
-//            overlayElement.style['box-sizing'] = 'content-box'
-//            overlayElement.style['pointer-events'] = 'none'
-//            
-//            const isSelected = document.vibeActionableDataModel.isSelected.get(id)
-//            
-//            if (isSelected) {
-//                overlayElement.remove()
-//            } else {
-//                document.body.append(overlayElement)
-//            }
-//
-//            document.vibeActionableDataModel.isSelected.set(id, !isSelected)
-//            
-//        })
-//    })
+    pointerOverlay.addEventListener('click', onClickHandler, true)
+    pointerOverlay.style.zIndex = maxZIndex + 2
+    document.body.appendChild(pointerOverlay)
     
     return true
 })()

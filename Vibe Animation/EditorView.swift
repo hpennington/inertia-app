@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WebKit
 import Vibe
 
 struct EditorView: View {
@@ -26,18 +27,38 @@ struct EditorView: View {
     private let cornerRadius: CGFloat = 4
     
     enum AppMode: Identifiable  {
+        case navigate
         case design
         case animate
         
         var id: Self { self }
     }
     
-    @State private var appMode: AppMode = .design
+    init(
+        url: URL,
+        framework: SetupFlowFramework,
+        animations: [VibeSchema],
+        webView: WKWebView,
+        contentController: WKUserContentController,
+        configuration: WKWebViewConfiguration
+    ) {
+        self.url = url
+        self.framework = framework
+        self.animations = animations
+        self.webView = webView
+        self.contentController = contentController
+        self.configuration = configuration
+    }
+    
+    @State private var appMode: AppMode = .navigate
     @State private var frameSize: CGSize? = nil
     
     let url: URL
     let framework: SetupFlowFramework
     let animations: [VibeSchema]
+    let webView: WKWebView
+    let contentController: WKUserContentController
+    let configuration: WKWebViewConfiguration
     
     var appColors: Colors {
         colorScheme == .dark ? ColorsDark() : ColorsLight()
@@ -56,6 +77,40 @@ struct EditorView: View {
         return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
     }
     
+    func attachVibeActionable() {
+        guard let vibeScriptURL = Bundle.main.url(forResource: "vibe", withExtension: "js") else {
+            print("failed to load vibe.js from Bundle.main")
+            return
+        }
+        
+        guard let vibeScriptContents = try? String(contentsOf: vibeScriptURL, encoding: .utf8) else {
+            print("Failed to parse file contents of URL: \(vibeScriptURL)")
+            return
+        }
+
+        webView.evaluateJavaScript(vibeScriptContents) { value, error in
+            if let error {
+                print(error)
+                return
+            }
+            
+            if let value {
+                print(value)
+            }
+        }
+    }
+    
+    private func switchAppMode(newValue: AppMode) {
+        switch (newValue) {
+        case .animate:
+            attachVibeActionable()
+        case .design:
+            break
+        case .navigate:
+            break
+        }
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
@@ -65,7 +120,11 @@ struct EditorView: View {
                 Group {
                     switch framework {
                     case .react:
-                        WebRenderView(url: url)
+                        WebRenderView(
+                            url: url,
+                            contentController: contentController,
+                            webView: webView
+                        )
                     case .swiftUI:
                         GeometryReader { proxy in
                             MacRenderView(size: viewportMinimumSize)
@@ -86,14 +145,19 @@ struct EditorView: View {
                 .onAppear {
                     focusState = .viewport
                 }
+                .onChange(of: appMode) { _, newValue in
+                    switchAppMode(newValue: newValue)
+                }
             } trailing: {
                 VStack {
                     VStack {
                         Picker(selection: $appMode) {
-                            Text("Design")
-                                .tag(AppMode.design)
+                            Text("Navigate")
+                                .tag(AppMode.navigate)
                             Text("Animate")
                                 .tag(AppMode.animate)
+                            Text("Design")
+                                .tag(AppMode.design)
                         } label: {
                             EmptyView()
                         }

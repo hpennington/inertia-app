@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUI
+import WebKit
 import Vibe
 
 final class VibeAppVM: ObservableObject {
@@ -19,7 +20,17 @@ final class VibeAppVM: ObservableObject {
     private var anyCancellable: Set<AnyCancellable> = Set()
     private var event: SetupFlowEvent? = nil
     
+    let configuration = WKWebViewConfiguration()
+    let contentController = WKUserContentController()
+    
+    lazy var webView: WKWebView = {
+        WKWebView(frame: .zero, configuration: configuration)
+    }()
+    
     init() {
+        configuration.userContentController = contentController
+        webView.underPageBackgroundColor = .black
+        
         self.stateMachine.$currentState.sink { newState in
             if let event = self.event {
                 switch event {

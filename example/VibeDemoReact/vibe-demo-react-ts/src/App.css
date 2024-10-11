@@ -5,7 +5,7 @@
 .App-logo {
   height: 200px;
   width: 200px;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -34,7 +34,6 @@
 
 .App-link {
   color: #61dafb;
-  pointer-events: none;
 }
 
 @keyframes App-logo-spin {
@@ -44,4 +43,8 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+svg * {
+  pointer-events: auto;
 }

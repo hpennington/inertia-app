@@ -1,5 +1,5 @@
-import React from 'react';
-import logo from './logo.svg';
+import React from 'react'
+import logo from './logo.svg'
 import {VibeContainer, Vibeable} from 'vibe-react'
 import './App.css';
 
@@ -8,8 +8,12 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="logo-container">
-          <img src={logo} className="App-logo" alt="logo" />
-          <img src={logo} className="App-logo" alt="logo" />
+          <div>
+            <img src={logo} className="App-logo" alt="logo" />
+          </div>
+          <div>
+            <img src={logo} className="App-logo" alt="logo" />
+          </div>
         </div>
         <p>
           Edit <code>src/App.js</code> and save to reload.
