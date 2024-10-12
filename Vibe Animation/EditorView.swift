@@ -9,6 +9,20 @@ import SwiftUI
 import WebKit
 import Vibe
 
+enum VibeWebScript: String, RawRepresentable {
+    case initialize = "init"
+    case actionablesAdd = "actionablesAdd"
+    case actionablesRemove = "actionablesRemove"
+}
+
+enum VibeWebScriptError: Error {
+    case didFailToFind
+    case didFailToParse
+    case didFailToEval(Error)
+    case didFailToParseReturnValue
+}
+
+@MainActor
 struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
     @FocusState var focusState: FocusableElement?
@@ -77,37 +91,67 @@ struct EditorView: View {
         return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
     }
     
-    func attachVibeActionable() {
-        guard let vibeScriptURL = Bundle.main.url(forResource: "vibe", withExtension: "js") else {
-            print("failed to load vibe.js from Bundle.main")
-            return
+    func executeVibeWebScript(script: VibeWebScript) async -> Result<Int, VibeWebScriptError> {
+        guard let vibeScriptURL = Bundle.main.url(forResource: script.rawValue, withExtension: "js") else {
+            print("failed to load \(script.rawValue).js from Bundle.main")
+            return .failure(.didFailToFind)
         }
         
         guard let vibeScriptContents = try? String(contentsOf: vibeScriptURL, encoding: .utf8) else {
             print("Failed to parse file contents of URL: \(vibeScriptURL)")
-            return
+            return .failure(.didFailToParse)
         }
-
-        webView.evaluateJavaScript(vibeScriptContents) { value, error in
-            if let error {
-                print(error)
-                return
+        
+        do {
+            guard let returnValue = (try await webView.evaluateJavaScript(vibeScriptContents)) as? Int else {
+                return .failure(.didFailToParseReturnValue)
             }
             
-            if let value {
-                print(value)
-            }
+            return .success(returnValue)
+        } catch let error {
+            return .failure(.didFailToEval(error))
         }
     }
     
-    private func switchAppMode(newValue: AppMode) {
+    private func attachVibeActionables() async {
+        let actionablesResult = await executeVibeWebScript(script: .actionablesAdd)
+        switch actionablesResult {
+        case .success(let success):
+            print(success)
+        case .failure(let failure):
+            print(failure)
+        }
+    }
+    
+    private func initializeAndActionablesAdd() async {
+        let result = await executeVibeWebScript(script: .initialize)
+        switch result {
+        case .success(let returnCode):
+            print("code: \(returnCode)")
+            await attachVibeActionables()
+        case .failure(let error):
+            print(error)
+        }
+    }
+    
+    private func actionablesRemove() async {
+        let result = await executeVibeWebScript(script: .actionablesRemove)
+        switch result {
+        case .success(let returnCode):
+            print("code: \(returnCode)")
+        case .failure(let error):
+            print(error)
+        }
+    }
+    
+    private func switchAppMode(newValue: AppMode) async {
         switch (newValue) {
         case .animate:
-            attachVibeActionable()
+            await initializeAndActionablesAdd()
         case .design:
             break
         case .navigate:
-            break
+            await actionablesRemove()
         }
     }
     
@@ -146,7 +190,10 @@ struct EditorView: View {
                     focusState = .viewport
                 }
                 .onChange(of: appMode) { _, newValue in
-                    switchAppMode(newValue: newValue)
+                    Task {
+                        await switchAppMode(newValue: newValue)
+                    }
+                    
                 }
             } trailing: {
                 VStack {

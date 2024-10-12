@@ -22,13 +22,13 @@ struct WKWebViewWrapper: NSViewRepresentable {
     func updateNSView(_ nsView: WKWebView, context: Context) {
         let request = URLRequest(url: url)
         WKWebsiteDataStore.default().removeData(ofTypes: [WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache], modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: {
-            nsView.load(request)
             nsView.navigationDelegate = context.coordinator
+            nsView.load(request)
         })
     }
     
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation) {
 
         }
         
