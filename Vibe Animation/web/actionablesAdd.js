@@ -8,8 +8,8 @@
         console.log({id})
         let element = value instanceof HTMLImageElement ? value.parentNode : value
         console.log({element})
-        document.vibeDataModel.pointerEvents.set(id, element.style.pointerEvents)
-        document.vibeDataModel.webKitUserSelect.set(id, element.style['-webkit-user-select'])
+        document.vibeDataModel.pointerEvents.set(id, window.getComputedStyle(element).pointerEvents)
+        document.vibeDataModel.webKitUserSelect.set(id, window.getComputedStyle(element)['-webkit-user-select'])
         document.vibeDataModel.actionableIds.push(id)
         
         element.dataset.vibeActionableId = id
@@ -71,6 +71,7 @@
         
         const id = targetElement?.dataset.vibeActionableId
         if (id) {
+            console.log(`on click vibeActionableId: ${id}`)
             const borderWidth = 3
             const zIndexValue = parseInt(window.getComputedStyle(targetElement).zIndex) || 0
             if (zIndexValue > maxZIndex) {
@@ -80,14 +81,14 @@
             
             const selectedBorderId = `selected-border-${id}`
             console.log({selectedBorderId})
-            const selectedBorder = document.getElementById(selectedBorderId) ?? document.createElement('div')
+            const selectedBorder = document.getElementById(selectedBorderId) || document.createElement('div')
             
             selectedBorder.id = selectedBorderId
             selectedBorder.style.position = 'absolute'
             
             const rect = targetElement.getBoundingClientRect()
-            const x = targetElement.offsetLeft
-            const y = targetElement.offsetTop
+            const x = rect.left + window.scrollX
+            const y = rect.top + window.scrollY
             selectedBorder.style.left = `${x}px`
             selectedBorder.style.top = `${y}px`
             selectedBorder.style.width = `${rect.width}px`
@@ -98,14 +99,14 @@
             selectedBorder.style['box-sizing'] = 'border-box'
             selectedBorder.style['pointer-events'] = 'none'
             selectedBorder.style['-webkit-user-select'] = 'none'
-            selectedBorder.style.zIndex = targetElement.style.zIndex + 1
+            selectedBorder.style.zIndex = maxZIndex + 2
             
             const isSelected = document.vibeDataModel.isSelected.get(id)
             
             if (isSelected) {
                 selectedBorder.remove()
             } else {
-                targetElement.appendChild(selectedBorder)
+                document.body.appendChild(selectedBorder)
             }
 
             document.vibeDataModel.isSelected.set(id, !isSelected)

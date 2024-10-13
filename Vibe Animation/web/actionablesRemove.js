@@ -7,9 +7,11 @@
         console.log({targetElement})
         const selectedBorderElement = document.getElementById(selectedBorderId)
         selectedBorderElement?.remove()
-//        targetElement?.dataset.vibeActionableId = null
-//        targetElement?.style.pointerEvents = vibeDataModel.pointerEvents.get(vibeActionableId)
-//        targetElement?.style['-webkit-user-select'] = vibeDataModel.webKitUserSelect.get(vibeActionableId)
+        if (targetElement) {
+            targetElement.dataset.vibeActionableId = null
+            targetElement.style.pointerEvents = 'auto'
+            targetElement.style['-webkit-user-select'] = 'none'
+        }
     }
     
     vibeDataModel.webKitUserSelect = new Set()
