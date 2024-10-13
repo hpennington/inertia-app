@@ -36,25 +36,21 @@
     document.vibeDataModel.onWindowResize = window.onresize
     
     window.onresize = function(e) {
-//        // - TODO: Rethink this so that the ordering of the iterations is correct and that we don't miss elements
-//        for (const [index, element] of Object.entries(allElements)) {
-//            const id = `vibe-actionable-id-${index}`
-//            if (element.dataset.vibeActionableId == id) {
-//                const selectedBorderId = `selected-border-vibe-actionable-id-${index}`
-//                const selectedBorder = document.getElementById(selectedBorderId) ?? document.createElement('div')
-//                
-//                selectedBorder.id = selectedBorderId
-//                selectedBorder.style.position = 'absolute'
-//                
-//                const rect = element.getBoundingClientRect()
-//                const x = element.offsetLeft
-//                const y = element.offsetTop
-//                selectedBorder.style.left = `${x}px`
-//                selectedBorder.style.top = `${y}px`
-//                selectedBorder.style.width = `${rect.width}px`
-//                selectedBorder.style.height = `${rect.height}px`
-//            }
-//        }
+        for (const id of document.vibeDataModel.actionableIds) {
+            const targetElement = document.querySelector(`[data-vibe-actionable-id=${id}]`)
+            const selectedBorderId = `selected-border-${id}`
+            const selectedBorder = document.getElementById(selectedBorderId)
+            
+            if (selectedBorder) {
+                const rect = targetElement.getBoundingClientRect()
+                const x = rect.left + window.scrollX
+                const y = rect.top + window.scrollY
+                selectedBorder.style.left = `${x}px`
+                selectedBorder.style.top = `${y}px`
+                selectedBorder.style.width = `${rect.width}px`
+                selectedBorder.style.height = `${rect.height}px`
+            }
+        }
     }
     
     function onClickHandler(e) {
