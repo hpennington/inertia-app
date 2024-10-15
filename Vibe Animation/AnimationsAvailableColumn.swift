@@ -9,6 +9,10 @@ import SwiftUI
 
 struct AnimationsAvailableColumn: View {
     let animations: [String]
+    let selected: Binding<String>
+    let actionableIds: Set<String>
+    let disabled: Bool
+    let attachAnimation: (_ animationId: String, _ actionableIds: Set<String>) -> Void
     
     @State private var textQuery = ""
     
@@ -31,10 +35,18 @@ struct AnimationsAvailableColumn: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             SearchField(text: $textQuery)
             
-            AnimationsList(animations: filteredAnimations)
+            AnimationsList(animations: filteredAnimations, selected: selected)
+            
+            AttachAnimationButton {
+                if !selected.wrappedValue.isEmpty {
+                    attachAnimation(selected.wrappedValue, actionableIds)
+                }
+            }
+            .padding(.vertical)
+            .disabled(selected.wrappedValue.isEmpty || disabled)
         }
     }
 }
@@ -43,5 +55,7 @@ struct AnimationsAvailableColumn: View {
     AnimationsAvailableColumn(animations: [
         "Animation0",
         "Animation1",
-    ])
+    ], selected: .constant(""), actionableIds: Set(), disabled: false) { animationId, actionableIds in
+        
+    }
 }

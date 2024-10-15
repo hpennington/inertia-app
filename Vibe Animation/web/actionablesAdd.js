@@ -106,6 +106,7 @@
             }
 
             document.vibeDataModel.isSelected.set(id, !isSelected)
+            window.webkit.messageHandlers.vibeMessageBusHandler.postMessage({id: id, isSelected: !isSelected    })
         }
     }
     

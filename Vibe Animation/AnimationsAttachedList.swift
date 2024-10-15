@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AnimationsAttachedList: View {
-    let animations: [String]
+    let animations: Set<String>
     
     @State private var selected = "anim1"
     
@@ -17,7 +17,7 @@ struct AnimationsAttachedList: View {
     var body: some View {
         List(selection: $selected) {
             Section {
-                ForEach(animations, id: \.self) { animation in
+                ForEach(Array(animations), id: \.self) { animation in
                     Text(animation)
                         .tag(animation)
                 }

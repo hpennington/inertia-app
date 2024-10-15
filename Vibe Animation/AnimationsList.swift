@@ -9,13 +9,12 @@ import SwiftUI
 
 struct AnimationsList: View {
     let animations: [String]
-    
-    @State private var selected = "anim1"
+    let selected: Binding<String>
     
     private let cornerRadius = 4.0
     
     var body: some View {
-        List(selection: $selected) {
+        List(selection: selected) {
             Section {
                 ForEach(animations, id: \.self) { animation in
                     Text(animation)
@@ -44,5 +43,5 @@ struct AnimationsList: View {
         "anim3",
         "anim4",
         "anim5"
-    ])
+    ], selected: .constant("anim1"))
 }

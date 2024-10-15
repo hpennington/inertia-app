@@ -7,5 +7,6 @@
         webKitUserSelect: new Map(),
         onWindowResize: null,
     }
+    
     return true
 })()

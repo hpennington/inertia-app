@@ -22,6 +22,16 @@ enum VibeWebScriptError: Error {
     case didFailToParseReturnValue
 }
 
+@Observable
+final class SelectedActionableIDTracker {
+    var selectedActionableIds: Set<String> = []
+}
+
+@Observable
+final class EditorModel {
+    var animations: [String: Set<String>] = [:]
+}
+
 @MainActor
 struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -41,7 +51,6 @@ struct EditorView: View {
     private let cornerRadius: CGFloat = 4
     
     enum AppMode: Identifiable  {
-        case navigate
         case design
         case animate
         
@@ -64,8 +73,12 @@ struct EditorView: View {
         self.configuration = configuration
     }
     
-    @State private var appMode: AppMode = .navigate
+    @State private var appMode: AppMode = .animate
+    @State private var editorModel = EditorModel()
+    @State private var isFocused = false
     @State private var frameSize: CGSize? = nil
+    @State private var selectedActionabeIDTracker = SelectedActionableIDTracker()
+    @State private var selectedAnimation: String = ""
     
     let url: URL
     let framework: SetupFlowFramework
@@ -144,13 +157,10 @@ struct EditorView: View {
         }
     }
     
-    private func switchAppMode(newValue: AppMode) async {
-        switch (newValue) {
-        case .animate:
+    private func determineFocused(newValue: Bool) async {
+        if newValue && appMode == .animate {
             await initializeAndActionablesAdd()
-        case .design:
-            break
-        case .navigate:
+        } else {
             await actionablesRemove()
         }
     }
@@ -167,8 +177,12 @@ struct EditorView: View {
                         WebRenderView(
                             url: url,
                             contentController: contentController,
+                            selectedActionabeIDTracker: selectedActionabeIDTracker,
                             webView: webView
                         )
+                        .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
+                            print(newValue)
+                        }
                     case .swiftUI:
                         GeometryReader { proxy in
                             MacRenderView(size: viewportMinimumSize)
@@ -189,51 +203,60 @@ struct EditorView: View {
                 .onAppear {
                     focusState = .viewport
                 }
-                .onChange(of: appMode) { _, newValue in
+                .onChange(of: isFocused) { _, newValue in
                     Task {
-                        await switchAppMode(newValue: newValue)
+                        await determineFocused(newValue: newValue)
                     }
-                    
                 }
             } trailing: {
-                VStack {
+                ScrollView {
                     VStack {
-                        Picker(selection: $appMode) {
-                            Text("Navigate")
-                                .tag(AppMode.navigate)
-                            Text("Animate")
-                                .tag(AppMode.animate)
-                            Text("Design")
-                                .tag(AppMode.design)
-                        } label: {
-                            EmptyView()
-                        }
-                        .pickerStyle(.segmented)
-                        .padding()
+                        VStack(alignment: .leading) {
+                            Picker(selection: $appMode) {
+                                Text("Animate")
+                                    .tag(AppMode.animate)
+                                Text("Design")
+                                    .tag(AppMode.design)
+                            } label: {
+                                EmptyView()
+                            }
+                            .pickerStyle(.segmented)
+                            .padding(.vertical)
+                            
+                            FocusIndicator(isOn: $isFocused)
+                                .disabled(appMode != .animate)
 
-                        AnimationsAvailableColumn(animations: animations.map {
-                            $0.id
-                        })
-                        .padding(.vertical)
+                            AnimationsAvailableColumn(
+                                animations: animations.map(\.id),
+                                selected: $selectedAnimation,
+                                actionableIds: $selectedActionabeIDTracker.wrappedValue.selectedActionableIds,
+                                disabled: false) { animationId, actionableIds in
+                                    editorModel.animations[animationId] = actionableIds
+                                    print(editorModel.animations)
+                                }
+                                .padding(.vertical)
+                        }
+                        .frame(maxHeight: .infinity)
+                        .padding(.horizontal)
+                        .modifier(WithPanelBackground())
+                        .frame(minHeight: 375)
+                        .cornerRadius(bottomLeft: cornerRadius)
+                        
+                        Spacer(minLength: spacing)
+                        
+                        VStack {
+                            AnimationsAttachedList(animations: editorModel.animations[selectedAnimation] ?? Set())
+                                .padding(.vertical)
+                        }
+                        .padding(.horizontal)
+                        .modifier(WithPanelBackground())
+                        .frame(minHeight: 300)
+                        .frame(maxHeight: .infinity)
+                        .cornerRadius(topLeft: cornerRadius)
                     }
-                    .padding(.horizontal)
-                    .modifier(WithPanelBackground())
-                    .cornerRadius(bottomLeft: cornerRadius)
-                    
-                    Spacer(minLength: spacing)
-                    
-                    VStack {
-                        AnimationsAttachedList(animations: animations.map {
-                            $0.id
-                        })
-                        .padding(.vertical)
-                    }
-                    .frame(maxHeight: .infinity)
-                    .padding(.horizontal)
-                    .modifier(WithPanelBackground())
-                    .cornerRadius(topLeft: cornerRadius)
+                    .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
                 }
-                .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
+                
             } bottom: {
                 PanelView()
                     .frame(height: timelineViewHeight)
