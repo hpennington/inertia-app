@@ -196,30 +196,44 @@ struct EditorView: View {
         }
     }
     
-    struct Animation: Codable {
+    struct Animation: Codable, Hashable {
         let actionableId: String
         let animationId: String
     }
     
+    struct VibeSchemaWrapper: Codable {
+        let schema: String
+        let actionableId: String
+    }
+    
     private func runInvokePlayback() async -> Bool {
-        let animations = editorModel.animations.map({element in
+        let relavantAnimations = Set(editorModel.animations.map({element in
             let animationId = element.key
             let actionableIds: [String] = element.value.sorted()
             return actionableIds.map {
                 Animation(actionableId: $0, animationId: animationId)
             }
         })
-        .flatMap({$0})
+        .flatMap({$0}))
         
-        let args = animations.compactMap {
-            if let data = try? JSONEncoder().encode($0) {
-                return String(data: data, encoding: .utf8)
-            } else {
+        let args = relavantAnimations.compactMap { (element: EditorView.Animation) -> String? in
+            guard let schema = self.animations.first(where: {element.animationId == $0.id}) else {
                 return nil
             }
+            guard let schemaText = String(data: (try! JSONEncoder().encode(schema)), encoding: .utf8) else {
+                return nil
+            }
+
+            let updateSchema = VibeSchemaWrapper(schema: schemaText, actionableId: element.actionableId)
+            
+            guard let data = try? JSONEncoder().encode(updateSchema) else {
+                return nil
+            }
+            
+            return String(data: data, encoding: .utf8)
         }
         
-        print("args: \(args)")
+        
         let result = await executeVibeWebFunction(function: "invokePlayback", args: args)
         
         switch result {
@@ -253,9 +267,7 @@ struct EditorView: View {
         let removeSuccess = await cleanAnimations()
         
         if removeSuccess {
-            let invokeSuccess = await invokePlayback()
-            
-            print(invokeSuccess)
+            let invokeSuccess = await invokePlayback()            
         }
     }
     
