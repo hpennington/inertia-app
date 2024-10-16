@@ -11,8 +11,11 @@ import Vibe
 
 enum VibeWebScript: String, RawRepresentable {
     case initialize = "init"
+    case initInvokePlayback = "initInvokePlayback"
     case actionablesAdd = "actionablesAdd"
     case actionablesRemove = "actionablesRemove"
+    case animationsAdd = "animationsAdd"
+    case animationsRemove = "animationsRemove"
 }
 
 enum VibeWebScriptError: Error {
@@ -21,6 +24,7 @@ enum VibeWebScriptError: Error {
     case didFailToEval(Error)
     case didFailToParseReturnValue
 }
+
 
 @Observable
 final class SelectedActionableIDTracker {
@@ -126,6 +130,18 @@ struct EditorView: View {
         }
     }
     
+    func executeVibeWebFunction(function: String, args: [String]) async -> Result<Int, VibeWebScriptError> {
+        do {
+            guard let returnValue = (try await webView.evaluateJavaScript("\(function)(\(args))")) as? Int else {
+                return .failure(.didFailToParseReturnValue)
+            }
+            
+            return .success(returnValue)
+        } catch let error {
+            return .failure(.didFailToEval(error))
+        }
+    }
+    
     private func attachVibeActionables() async {
         let actionablesResult = await executeVibeWebScript(script: .actionablesAdd)
         switch actionablesResult {
@@ -154,6 +170,92 @@ struct EditorView: View {
             print("code: \(returnCode)")
         case .failure(let error):
             print(error)
+        }
+    }
+    
+    private func cleanAnimations() async -> Bool {
+        let result = await executeVibeWebScript(script: .animationsRemove)
+        switch result {
+        case .success(let success):
+            return success == 1
+        case .failure(let failure):
+            print(failure)
+            return false
+        }
+    }
+    
+    private func injectAnimations() async -> Bool {
+        let result = await executeVibeWebScript(script: .animationsAdd)
+        
+        switch result {
+        case .success(let success):
+            return success == 1
+        case .failure(let failure):
+            print(failure)
+            return false
+        }
+    }
+    
+    struct Animation: Codable {
+        let actionableId: String
+        let animationId: String
+    }
+    
+    private func runInvokePlayback() async -> Bool {
+        let animations = editorModel.animations.map({element in
+            let animationId = element.key
+            let actionableIds: [String] = element.value.sorted()
+            return actionableIds.map {
+                Animation(actionableId: $0, animationId: animationId)
+            }
+        })
+        .flatMap({$0})
+        
+        let args = animations.compactMap {
+            if let data = try? JSONEncoder().encode($0) {
+                return String(data: data, encoding: .utf8)
+            } else {
+                return nil
+            }
+        }
+        
+        print("args: \(args)")
+        let result = await executeVibeWebFunction(function: "invokePlayback", args: args)
+        
+        switch result {
+        case .success(let success):
+            return success == 1
+        case .failure(let failure):
+            print(failure)
+            return false
+        }
+    }
+    
+    private func invokePlayback() async -> Bool {
+        print(await injectAnimations())
+        let result = await executeVibeWebScript(script: .initInvokePlayback)
+        
+        switch result {
+        case .success(let success):
+            if success == 1 {
+                let playbackSuccess = await runInvokePlayback()
+                return playbackSuccess
+            }
+            
+            return false
+        case .failure(let failure):
+            print(failure)
+            return false
+        }
+    }
+    
+    private func tapPlay() async {
+        let removeSuccess = await cleanAnimations()
+        
+        if removeSuccess {
+            let invokeSuccess = await invokePlayback()
+            
+            print(invokeSuccess)
         }
     }
     
@@ -223,8 +325,18 @@ struct EditorView: View {
                             .pickerStyle(.segmented)
                             .padding(.vertical)
                             
-                            FocusIndicator(isOn: $isFocused)
-                                .disabled(appMode != .animate)
+                            HStack() {
+                                FocusIndicator(isOn: $isFocused)
+                                    .disabled(appMode != .animate)
+                                Spacer(minLength: .zero)
+                                Button {
+                                    Task {
+                                        await tapPlay()
+                                    }
+                                } label: {
+                                    Image(systemName: "play")
+                                }
+                            }
 
                             AnimationsAvailableColumn(
                                 animations: animations.map(\.id),
@@ -256,7 +368,6 @@ struct EditorView: View {
                     }
                     .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
                 }
-                
             } bottom: {
                 PanelView()
                     .frame(height: timelineViewHeight)

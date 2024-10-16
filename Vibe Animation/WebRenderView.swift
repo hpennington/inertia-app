@@ -43,13 +43,14 @@ struct WKWebViewWrapper: NSViewRepresentable {
         let selectedActionabeIDTracker: SelectedActionableIDTracker
         
         @State var currentURL: URL? = nil
+        private weak var webView: WKWebView?
         
         init(selectedActionabeIDTracker: SelectedActionableIDTracker) {
             self.selectedActionabeIDTracker = selectedActionabeIDTracker
         }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation) {
-
+            self.webView = webView
         }
         
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

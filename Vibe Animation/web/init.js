@@ -6,6 +6,8 @@
         pointerEvents: new Map(),
         webKitUserSelect: new Map(),
         onWindowResize: null,
+        animations: new Map(),
+        isPlaying: false,
     }
     
     return true
