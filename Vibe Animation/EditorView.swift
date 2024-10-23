@@ -132,6 +132,7 @@ struct EditorView: View {
     
     func executeVibeWebFunction(function: String, args: [String]) async -> Result<Int, VibeWebScriptError> {
         do {
+            print(args.count)
             guard let returnValue = (try await webView.evaluateJavaScript("\(function)(\(args))")) as? Int else {
                 return .failure(.didFailToParseReturnValue)
             }
@@ -202,7 +203,7 @@ struct EditorView: View {
     }
     
     struct VibeSchemaWrapper: Codable {
-        let schema: String
+        let schema: VibeSchema
         let actionableId: String
     }
     
@@ -220,11 +221,8 @@ struct EditorView: View {
             guard let schema = self.animations.first(where: {element.animationId == $0.id}) else {
                 return nil
             }
-            guard let schemaText = String(data: (try! JSONEncoder().encode(schema)), encoding: .utf8) else {
-                return nil
-            }
 
-            let updateSchema = VibeSchemaWrapper(schema: schemaText, actionableId: element.actionableId)
+            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId)
             
             guard let data = try? JSONEncoder().encode(updateSchema) else {
                 return nil
@@ -232,7 +230,6 @@ struct EditorView: View {
             
             return String(data: data, encoding: .utf8)
         }
-        
         
         let result = await executeVibeWebFunction(function: "invokePlayback", args: args)
         

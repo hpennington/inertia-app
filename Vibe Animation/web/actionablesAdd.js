@@ -5,12 +5,10 @@
     
     for (const [index, value] of Object.entries(allElements)) {
         const id = `vibe-actionable-id-${index}`
-        console.log({id})
         let element = value instanceof HTMLImageElement ? value.parentNode : value
-        console.log({element})
-        document.vibeDataModel.pointerEvents.set(id, window.getComputedStyle(element).pointerEvents)
-        document.vibeDataModel.webKitUserSelect.set(id, window.getComputedStyle(element)['-webkit-user-select'])
-        document.vibeDataModel.actionableIds.push(id)
+        vibeDataModel.pointerEvents.set(id, window.getComputedStyle(element).pointerEvents)
+        vibeDataModel.webKitUserSelect.set(id, window.getComputedStyle(element)['-webkit-user-select'])
+        vibeDataModel.actionableIds.push(id)
         
         element.dataset.vibeActionableId = id
         element.style.pointerEvents = 'auto'
@@ -33,10 +31,10 @@
     pointerOverlay.style['pointer-events'] = 'auto'
     pointerOverlay.style['-webkit-user-select'] = 'none'
     
-    document.vibeDataModel.onWindowResize = window.onresize
+    vibeDataModel.onWindowResize = window.onresize
     
     window.onresize = function(e) {
-        for (const id of document.vibeDataModel.actionableIds) {
+        for (const id of vibeDataModel.actionableIds) {
             const targetElement = document.querySelector(`[data-vibe-actionable-id=${id}]`)
             const selectedBorderId = `selected-border-${id}`
             const selectedBorder = document.getElementById(selectedBorderId)
@@ -97,7 +95,7 @@
             selectedBorder.style['-webkit-user-select'] = 'none'
             selectedBorder.style.zIndex = maxZIndex + 2
             
-            const isSelected = document.vibeDataModel.isSelected.get(id)
+            const isSelected = vibeDataModel.isSelected.get(id)
             
             if (isSelected) {
                 selectedBorder.remove()
@@ -105,8 +103,8 @@
                 document.body.appendChild(selectedBorder)
             }
 
-            document.vibeDataModel.isSelected.set(id, !isSelected)
-            window.webkit.messageHandlers.vibeMessageBusHandler.postMessage({id: id, isSelected: !isSelected    })
+            vibeDataModel.isSelected.set(id, !isSelected)
+            window.webkit.messageHandlers.vibeMessageBusHandler.postMessage({id: id, isSelected: !isSelected })
         }
     }
     

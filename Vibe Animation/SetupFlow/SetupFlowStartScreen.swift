@@ -19,7 +19,7 @@ final class SetupFlowManager: ObservableObject {
     @Published var projectDescription: String = ""
     @Published var xcodeProjectURL: String = ""
     @Published var entryStructTitle: String = "App"
-    @Published var reactProjectPath: String = "https://google.com"
+    @Published var reactProjectPath: String = "http://localhost:3000"
     
     var reactProjectURL: URL? {
         if reactProjectPath.hasPrefix("http://") || reactProjectPath.hasPrefix("https://") {

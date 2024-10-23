@@ -1,5 +1,4 @@
 (function() {
-    const vibeDataModel = document.vibeDataModel
     for (const vibeActionableId of vibeDataModel.actionableIds) {
         const selectedBorderId = `selected-border-${vibeActionableId}`
         console.log({vibeActionableId})
