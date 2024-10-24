@@ -7,9 +7,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <VibeContainer id={"animation1"} baseURL={"http://127.0.0.1:8008"}>
+        <VibeContainer id={"animation1"} baseURL={"http://127.0.0.1:8000"}>
           <div className="logo-container">
-
             <Vibeable id={"bird"}>
               <div>
                 <img src={logo} className="App-logo" alt="logo" />

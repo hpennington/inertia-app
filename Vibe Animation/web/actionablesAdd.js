@@ -4,7 +4,7 @@
     let maxZIndex = 0
     
     for (const [index, value] of Object.entries(allElements)) {
-        const id = `vibe-actionable-id-${index}`
+        const id = `vibeable-id-${index}`
         let element = value instanceof HTMLImageElement ? value.parentNode : value
         vibeDataModel.pointerEvents.set(id, window.getComputedStyle(element).pointerEvents)
         vibeDataModel.webKitUserSelect.set(id, window.getComputedStyle(element)['-webkit-user-select'])
@@ -35,7 +35,7 @@
     
     window.onresize = function(e) {
         for (const id of vibeDataModel.actionableIds) {
-            const targetElement = document.querySelector(`[data-vibe-actionable-id=${id}]`)
+            const targetElement = document.querySelector(`[data-vibeable-id=${id}]`)
             const selectedBorderId = `selected-border-${id}`
             const selectedBorder = document.getElementById(selectedBorderId)
             

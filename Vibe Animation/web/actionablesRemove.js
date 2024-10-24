@@ -2,7 +2,7 @@
     for (const vibeActionableId of vibeDataModel.actionableIds) {
         const selectedBorderId = `selected-border-${vibeActionableId}`
         console.log({vibeActionableId})
-        const targetElement = document.querySelector(`[data-vibe-actionable-id=${vibeActionableId}]`)
+        const targetElement = document.querySelector(`[data-vibeable-id=${vibeActionableId}]`)
         console.log({targetElement})
         const selectedBorderElement = document.getElementById(selectedBorderId)
         selectedBorderElement?.remove()

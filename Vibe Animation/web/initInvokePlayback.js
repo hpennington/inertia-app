@@ -14,7 +14,7 @@ function invokePlayback(animationsFromHost) {
             dataModel.animations.get(actionableId).push(schema)
         }
     }
-    
+        
     return true
 }
 
