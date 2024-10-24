@@ -1,68 +1,86 @@
 function invokePlayback(animationsFromHost) {
     console.log(`invokePlayback called`)
-    
     const dataModel = vibeDataModel
     
     if (dataModel) {
+        const animations = []
+        const containers = []
         for (const animationText of animationsFromHost) {
             const animation = JSON.parse(animationText)
-            console.log({animation})
+            if (animation) {
+                animations.push(animation)
+                containers.push(animation.container)
+            }
+        }
+        //        console.log({containers})
+        //        console.log({animations})
+        
+        var canvasSizes = {}
+        
+        for (const container of containers) {
+            const actionableId = container.actionableId
+            const containerId = container.containerId
+            const containerView = document.querySelector('[data-vibe-actionable-id="' + actionableId + '"]')
+            containerView.dataset.vibeContainerId = containerId
+            const rect = containerView.getBoundingClientRect()
+            console.log({rect})
+            canvasSizes[containerId] = {width: rect.width, height: rect.height}
+        }
+        
+        for (const animationObject of animations) {
+            const animationId = animationObject.animationId
+            const actionableId = animationObject.actionableId
+            const schema = animationObject.schema
+            if (!dataModel.animations.has(animationId)) {
+                dataModel.animations.set(animationId, [])
+            }
             
-////            if (!dataModel.animations.has(animationId)) {
-////                dataModel.animations.set(animationId, [])
-////            }
-////            dataModel.animations.get(animationId).push(schema)
-//            
-//            const view = document.querySelector('[data-vibe-actionable-id="' + actionableId + '"]')
-//            console.log({view})
+            dataModel.animations.get(animationId).push(schema)
 //            console.log({animation})
-////            const objects = dataModel.objects
-////            if (objects) {
-////                console.log("getting object")
-////                console.log({objects})
-////                const object = objects.get(animationId)
-////                console.log({object})
-////                if (object) {
-////                    console.log({object})
-////                    const animation = object.animation
-//                    const keyframes = animation.keyframes
-//                    console.log({keyframes})
-//                    const keyframeValues = keyframes?.map(keyframe => {
-//                        return keyframe.values
-//                    })
-//
-//                    const keyframeInitialValues = animation.initialValues
-//                    if (keyframeValues != null && keyframeInitialValues != null && vibeCanvasSize != null) {
-//                        const keyframeValuesWithInitial = [
-//                            keyframeInitialValues,
-//                            ...keyframeValues
-//                        ]
-//                        
-//                        const keyframesWebAPI = keyframeValuesWithInitial?.map(values => {
-//                            const translate = values.translate
-//                            const translateX = translate[0] * vibeCanvasSize.width / 2
-//                            const translateY = translate[1] * vibeCanvasSize.height / 2
-//                            return {
-//                                transform: 'translateX(' + translateX + 'px) translateY(' + translateY + 'px)' + ' rotate(' + values.rotateCenter + 'deg) scale(' + values.scale + ')',
-//                                transformOrigin: 'center',
-//                                opacity: values.opacity,
-//                            }
-//                        })
-//
-//                        const totalDuration = keyframes?.reduce((accumulator, keyframe) => {
-//                            return accumulator + (keyframe.duration * 1000)
-//                        }, 0)
-//
-//                        const timing = {
-//                            duration: totalDuration,
-//                            iterations: Infinity,
-//                            easing: 'ease-in-out'
-//                        }
-//
-//                        view?.animate(keyframesWebAPI ?? [], timing)
-//                    }
-////                }
-//            }
+            const view = document.querySelector('[data-vibe-actionable-id="' + actionableId + '"]')
+//            console.log({view})
+            
+            const animation = animationObject.schema.objects.filter(obj => obj.id == animationId)[0]
+            const vibeCanvasSize = canvasSizes[animation.containerId]
+            const keyframes = animation.animation.keyframes
+            const keyframeValues = keyframes?.map(keyframe => {
+                return keyframe.values
+            })
+            
+            console.log({keyframes})
+            const keyframeInitialValues = animation.animation.initialValues
+            console.log({keyframeInitialValues})
+            console.log({keyframeValues})
+            console.log({vibeCanvasSize})
+            if (keyframeValues != null && keyframeInitialValues != null && vibeCanvasSize != null) {
+                const keyframeValuesWithInitial = [
+                    keyframeInitialValues,
+                    ...keyframeValues
+                ]
+                
+                const keyframesWebAPI = keyframeValuesWithInitial?.map(values => {
+                    const translate = values.translate
+                    const translateX = translate[0] * vibeCanvasSize.width / 2
+                    const translateY = translate[1] * vibeCanvasSize.height / 2
+                    return {
+                        transform: 'translateX(' + translateX + 'px) translateY(' + translateY + 'px)' + ' rotate(' + values.rotateCenter + 'deg) scale(' + values.scale + ')',
+                        transformOrigin: 'center',
+                        opacity: values.opacity,
+                    }
+                })
+                
+                const totalDuration = keyframes?.reduce((accumulator, keyframe) => {
+                    return accumulator + (keyframe.duration * 1000)
+                }, 0)
+                
+                const timing = {
+                    duration: totalDuration,
+                    iterations: Infinity,
+                    easing: 'ease-in-out'
+                }
+                
+                view?.animate(keyframesWebAPI ?? [], timing)
+            }
         }
     }
     

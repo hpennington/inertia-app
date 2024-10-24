@@ -33,7 +33,19 @@ final class SelectedActionableIDTracker {
 
 @Observable
 final class EditorModel {
-    var animations: [String: Set<String>] = [:]
+    var containers: [ActionableContainerAssociater] = []
+    var animations: [ActionableAnimationAssociater] = []
+}
+
+struct ActionableAnimationAssociater: Hashable {
+    let actionableIds: Set<String>
+    let containerId: String
+    let animationId: String
+}
+
+struct ActionableContainerAssociater: Hashable {
+    let actionableIds: Set<String>
+    let containerId: String
 }
 
 @MainActor
@@ -83,6 +95,7 @@ struct EditorView: View {
     @State private var frameSize: CGSize? = nil
     @State private var selectedActionabeIDTracker = SelectedActionableIDTracker()
     @State private var selectedAnimation: String = ""
+    @State private var attachActionTitle: String = "Attach Container"
     
     let url: URL
     let framework: SetupFlowFramework
@@ -197,6 +210,11 @@ struct EditorView: View {
         }
     }
     
+    struct AnimationContainer: Codable, Hashable {
+        let actionableId: String
+        let containerId: String
+    }
+    
     struct Animation: Codable, Hashable {
         let actionableId: String
         let containerId: String
@@ -206,27 +224,30 @@ struct EditorView: View {
     struct VibeSchemaWrapper: Codable {
         let schema: VibeSchema
         let actionableId: String
-        let containerId: String
+        let container: EditorView.AnimationContainer
         let animationId: String
     }
     
     private func runInvokePlayback() async -> Bool {
         let relavantAnimations = Set(editorModel.animations.map({element in
-            let containerId = element.key
-            print(containerId)
-            let actionableIds: [String] = element.value.sorted()
+            let containerId = element.containerId
+            let actionableIds = element.actionableIds
             return actionableIds.map {
-                Animation(actionableId: $0, containerId: containerId, animationId: containerId)
+                Animation(actionableId: $0, containerId: containerId, animationId: element.animationId)
             }
         })
         .flatMap({$0}))
         
-        let args = relavantAnimations.compactMap { (element: EditorView.Animation) -> String? in
+        let animationArgs = relavantAnimations.compactMap { (element: EditorView.Animation) -> String? in
             guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
                 return nil
             }
 
-            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, containerId: element.containerId, animationId: element.animationId)
+            guard let container = self.animations.first(where: {$0.id == schema.id}) else {
+                return nil
+            }
+            
+            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.actionableId, containerId: container.id), animationId: element.animationId)
             
             guard let data = try? JSONEncoder().encode(updateSchema) else {
                 return nil
@@ -235,7 +256,7 @@ struct EditorView: View {
             return String(data: data, encoding: .utf8)
         }
         
-        let result = await executeVibeWebFunction(function: "invokePlayback", args: args)
+        let result = await executeVibeWebFunction(function: "invokePlayback", args: animationArgs)
         
         switch result {
         case .success(let success):
@@ -278,6 +299,17 @@ struct EditorView: View {
         } else {
             await actionablesRemove()
         }
+    }
+    
+    var animationsAvailableContents: [String: [String]] {
+        var map: [String: [String]] = [:]
+        for animation in animations {
+            map[animation.id] = animation.objects.map {
+                $0.id
+            }.sorted()
+        }
+        
+        return map
     }
     
     var body: some View {
@@ -352,12 +384,18 @@ struct EditorView: View {
                             }
 
                             AnimationsAvailableColumn(
-                                animations: animations.map(\.id),
+                                animations: animationsAvailableContents,
                                 selected: $selectedAnimation,
                                 actionableIds: $selectedActionabeIDTracker.wrappedValue.selectedActionableIds,
-                                disabled: false) { animationId, actionableIds in
-                                    editorModel.animations[animationId] = actionableIds
-                                    print(editorModel.animations)
+                                disabled: false,
+                                actionTitle: attachActionTitle) { id, actionableIds in
+                                    let containers = self.animations
+                                    let animations = self.animations.flatMap({$0.objects})
+                                    if let container = containers.first(where: { container in container.id == id }) {
+                                        editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
+                                    } else if let animation = animations.first(where: { animation in animation.id == id }) {
+                                        editorModel.animations.append(ActionableAnimationAssociater(actionableIds: actionableIds, containerId: animation.containerId, animationId: animation.id))
+                                    }
                                 }
                                 .padding(.vertical)
                         }
@@ -366,12 +404,21 @@ struct EditorView: View {
                         .modifier(WithPanelBackground())
                         .frame(minHeight: 375)
                         .cornerRadius(bottomLeft: cornerRadius)
+                        .onChange(of: selectedAnimation) { _, newValue in
+                            let containers = self.animations
+                            let animations = self.animations.flatMap({$0.objects})
+                            if let container = containers.first(where: { container in container.id == newValue }) {
+                                attachActionTitle = "Attach Container"
+                            } else if let animation = animations.first(where: { animation in animation.id == newValue }) {
+                                attachActionTitle = "Attach Animation"
+                            }
+                        }
                         
                         Spacer(minLength: spacing)
                         
                         VStack {
-                            AnimationsAttachedList(animations: editorModel.animations[selectedAnimation] ?? Set())
-                                .padding(.vertical)
+//                            AnimationsAttachedList(animations: editorModel.animations)
+//                                .padding(.vertical)
                         }
                         .padding(.horizontal)
                         .modifier(WithPanelBackground())

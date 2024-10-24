@@ -81,10 +81,9 @@ export const Vibeable = ({children, id}: VibeableProps): React.ReactElement => {
         await init()
         
         const view = document.querySelector('[data-vibe-id="' + id + '"]')
-        console.log({view})
         if (vibeDataModel != null && vibeDataModel != undefined) {
             
-            const objects = vibeDataModel.objects
+            const objects = vibeDataModel?.objects
             if (objects) {
                 const object = objects.get(id)
                 

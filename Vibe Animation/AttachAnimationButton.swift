@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct AttachAnimationButton: View {
+    let title: String
     let action: () -> Void
     
     var body: some View {
-        Button("Attach", action: action)
+        Button(title, action: action)
             .background(ColorsDark().accent)
             .foregroundStyle(.white)
     }
 }
 
 #Preview {
-    AttachAnimationButton {
+    AttachAnimationButton(title: "Attach") {
         
     }
 }

@@ -177,6 +177,7 @@ public enum VibeObjectType: String, Codable, Equatable {
 
 public struct VibeShape: Codable, Identifiable, Equatable {
     public let id: VibeID
+    public let containerId: VibeID
     public let width: CGFloat
     public let height: CGFloat
     public let position: CGPoint

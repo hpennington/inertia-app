@@ -3,6 +3,7 @@
     "objects": [
         {
             "id": "triangle0",
+            "containerId": "animation3",
             "width": 400,
             "height": 400,
             "position": [-0.15, 0.1],

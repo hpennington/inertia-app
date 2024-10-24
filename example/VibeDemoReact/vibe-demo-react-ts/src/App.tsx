@@ -7,14 +7,18 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <VibeContainer id={"animation1"} baseURL={"http://localhost:8000"}>
         <div className="logo-container">
-          <div>
-            <img src={logo} className="App-logo" alt="logo" />
-          </div>
+          <Vibeable id={"bird"}>
+            <div>
+              <img src={logo} className="App-logo" alt="logo" />
+            </div>
+          </Vibeable>
           <div>
             <img src={logo} className="App-logo" alt="logo" />
           </div>
         </div>
+        </VibeContainer>
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>

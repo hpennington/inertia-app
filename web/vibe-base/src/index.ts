@@ -65,8 +65,15 @@ type VibeAnimationKeyframe = {
     duration: number
 }
 
+
+type AnimationContainer = {
+    actionableId: string,
+    containerId: String
+}
+
 type VibeObjectSchema = {
     id: string,
+    container: AnimationContainer,
     width: number,
     height: number,
     position: number,
@@ -124,6 +131,7 @@ export class VibeDataModel {
                 for (const object of Object.values(vibeDataModel?.objects)) {
                 tmpObjects.set(object.id, { 
                     id: object.id,
+                    container: object.container,
                     width: object.width,
                     height: object.height,
                     position: object.position,
@@ -154,6 +162,7 @@ export class VibeDataModel {
                     for (const object of schema?.objects) {
                         tmpObjects.set(object.id, { 
                             id: object.id,
+                            container: object.container,
                             width: object.width,
                             height: object.height,
                             position: object.position,
