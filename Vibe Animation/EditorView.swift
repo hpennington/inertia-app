@@ -199,30 +199,34 @@ struct EditorView: View {
     
     struct Animation: Codable, Hashable {
         let actionableId: String
+        let containerId: String
         let animationId: String
     }
     
     struct VibeSchemaWrapper: Codable {
         let schema: VibeSchema
         let actionableId: String
+        let containerId: String
+        let animationId: String
     }
     
     private func runInvokePlayback() async -> Bool {
         let relavantAnimations = Set(editorModel.animations.map({element in
-            let animationId = element.key
+            let containerId = element.key
+            print(containerId)
             let actionableIds: [String] = element.value.sorted()
             return actionableIds.map {
-                Animation(actionableId: $0, animationId: animationId)
+                Animation(actionableId: $0, containerId: containerId, animationId: containerId)
             }
         })
         .flatMap({$0}))
         
         let args = relavantAnimations.compactMap { (element: EditorView.Animation) -> String? in
-            guard let schema = self.animations.first(where: {element.animationId == $0.id}) else {
+            guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
                 return nil
             }
 
-            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId)
+            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, containerId: element.containerId, animationId: element.animationId)
             
             guard let data = try? JSONEncoder().encode(updateSchema) else {
                 return nil

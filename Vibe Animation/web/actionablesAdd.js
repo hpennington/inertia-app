@@ -35,7 +35,7 @@
     
     window.onresize = function(e) {
         for (const id of vibeDataModel.actionableIds) {
-            const targetElement = document.querySelector(`[data-vibeable-id=${id}]`)
+            const targetElement = document.querySelector(`[data-vibe-actionable-id=${id}]`)
             const selectedBorderId = `selected-border-${id}`
             const selectedBorder = document.getElementById(selectedBorderId)
             

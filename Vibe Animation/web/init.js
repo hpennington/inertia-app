@@ -8,6 +8,7 @@
         onWindowResize: null,
         animations: new Map(),
         isPlaying: false,
+        objects: new Map(),
     }
     
     return true

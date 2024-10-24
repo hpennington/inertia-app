@@ -58,7 +58,7 @@ export const VibeContainer = ({children, id, baseURL}: VibeContainerProps): Reac
 
     return (
         <VibeCanvasSizeContext.Provider value={bounds}>
-            <div data-container-id={id} ref={ref}>
+            <div data-vibe-container-id={id} ref={ref}>
                 <VibeContext.Provider value={vibeDataModel}>
                     {children}
                 </VibeContext.Provider> 
@@ -72,6 +72,7 @@ const VibeCanvasSizeContext = React.createContext<VibeCanvasSize | null>(null)
 export const Vibeable = ({children, id}: VibeableProps): React.ReactElement => {
     const vibeDataModel = useVibeDataModel()
     const vibeCanvasSize = React.useContext<VibeCanvasSize | null>(VibeCanvasSizeContext)
+
     async function init() {
         await vibeDataModel?.init()
     }
@@ -80,14 +81,15 @@ export const Vibeable = ({children, id}: VibeableProps): React.ReactElement => {
         await init()
         
         const view = document.querySelector('[data-vibe-id="' + id + '"]')
-
+        console.log({view})
         if (vibeDataModel != null && vibeDataModel != undefined) {
             
-            const objects = vibeDataModel.getObjects()
+            const objects = vibeDataModel.objects
             if (objects) {
                 const object = objects.get(id)
                 
                 if (object) {
+                    console.log({object})
                     const animation = object.animation
                     const keyframes = animation.keyframes
 
@@ -131,8 +133,8 @@ export const Vibeable = ({children, id}: VibeableProps): React.ReactElement => {
     }
 
     React.useEffect(() => {
-        if (vibeCanvasSize != null) {
-            attachAnimations()    
+        if (vibeCanvasSize != null && vibeDataModel != null) {
+            attachAnimations()
         }
     }, [vibeDataModel, vibeCanvasSize])
 

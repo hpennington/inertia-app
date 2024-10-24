@@ -180,7 +180,7 @@ export class VibeDataModel {
 
     private baseURL: string
     private containerId: string
-    private objects: Map<string, VibeObjectSchema>|null
+    public objects: Map<string, VibeObjectSchema>|null
     private states: Map<string, VibeAnimationState>|null
     private canvasSizes: Map<string, VibeCanvasSize>|null
 
@@ -194,10 +194,6 @@ export class VibeDataModel {
     
     public getId(): string {
         return this.containerId
-    }
-
-    public getObjects(): Map<string, VibeObjectSchema>|null {
-        return this.objects
     }
 
     public getCanvasSizes(): Map<string, VibeCanvasSize>|null {

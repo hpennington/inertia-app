@@ -187,7 +187,7 @@ public struct VibeShape: Codable, Identifiable, Equatable {
     public let animation: VibeAnimationSchema
 }
 
-public struct VibeSchema: Codable, Identifiable, Equatable {
+public struct VibeSchema: Codable, Equatable {
     public let id: VibeID
     public let objects: [VibeShape]
 }
