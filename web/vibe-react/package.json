@@ -22,8 +22,8 @@
     "vibe-base": "file:../vibe-base"
   },
   "peerDependencies": {
-    "react": "^16",
-    "react-dom": "^16"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "dependencies": {}
 }

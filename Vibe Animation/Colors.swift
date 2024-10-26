@@ -10,6 +10,7 @@ import SwiftUI
 struct ColorPalette {
     static let black = Color.black
     static let white = Color.white
+    static let offWhite = Color(red: 230 / 255.0, green: 230 / 255.0, blue: 230 / 255.0)
     static let accentTheme = Color(red: 85 / 255.0, green: 89 / 255.0, blue: 220 / 255.0)
     static let gray0 = Color(red: 24 / 255.0, green: 24 / 255.0, blue: 24 / 255.0)
     static let gray1 = Color(red: 51 / 255.0, green: 49 / 255.0, blue: 59 / 255.0)
@@ -34,6 +35,6 @@ struct ColorsDark: Colors {
 
 struct ColorsLight: Colors {
     let accent = ColorPalette.accentTheme
-    let backgroundPrimary = ColorPalette.white
+    let backgroundPrimary = ColorPalette.offWhite
     let backgroundSecondary = ColorPalette.gray3
 }

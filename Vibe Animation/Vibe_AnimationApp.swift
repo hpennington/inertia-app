@@ -34,7 +34,7 @@ struct Vibe_AnimationApp: App {
                     let editorViewMinimumSize = CGSize(width: 1250, height: 650)
                     EditorView(url: url, framework: vm.framework, animations: vm.animations, webView: vm.webView, contentController: vm.contentController, configuration: vm.configuration)
                         .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
-                        .preferredColorScheme(.dark)
+//                        .preferredColorScheme(.dark)
                         .task {
                             setWindowPositionForSize(x: editorViewMinimumSize.width, y: editorViewMinimumSize.height)
                         }
@@ -55,7 +55,7 @@ struct Vibe_AnimationApp: App {
                         vm.handleEvent(event)
                     }
                 }
-                .preferredColorScheme(.dark)
+//                .preferredColorScheme(.dark)
                 .task {
                     setWindowPositionForSize(x: projectsContainerSize.width, y: projectsContainerSize.height)
                 }
