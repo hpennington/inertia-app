@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import Virtualization
 
 struct MacRenderView: View {
+    let virtualMachine: VZVirtualMachine
     let size: CGSize
     
     var body: some View {
-        VirtualMachineView(size: CGSize(width: size.width, height: size.height))
+        VirtualMachineView(virtualMachine: virtualMachine, size: CGSize(width: size.width, height: size.height))
     }
 }
 

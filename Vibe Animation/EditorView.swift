@@ -8,6 +8,7 @@
 import SwiftUI
 import WebKit
 import Vibe
+import Virtualization
 
 enum VibeWebScript: String, RawRepresentable {
     case initialize = "init"
@@ -52,7 +53,7 @@ struct ActionableContainerAssociater: Hashable {
 struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
     @FocusState var focusState: FocusableElement?
-        
+    
     enum FocusableElement: Hashable {
         case viewport
     }
@@ -79,7 +80,8 @@ struct EditorView: View {
         animations: [VibeSchema],
         webView: WKWebView,
         contentController: WKUserContentController,
-        configuration: WKWebViewConfiguration
+        configuration: WKWebViewConfiguration,
+        delegate: AppDelegate
     ) {
         self.url = url
         self.framework = framework
@@ -87,6 +89,7 @@ struct EditorView: View {
         self.webView = webView
         self.contentController = contentController
         self.configuration = configuration
+        self.delegate = delegate
     }
     
     @State private var appMode: AppMode = .animate
@@ -96,13 +99,20 @@ struct EditorView: View {
     @State private var selectedActionabeIDTracker = SelectedActionableIDTracker()
     @State private var selectedAnimation: String = ""
     @State private var attachActionTitle: String = "Attach Container"
-    
+    @State private var downloadingMacOS: Bool = true
+//    @State private var restoreImage: MacOSRestoreImage
+    @State private var restoreImageDownloadProgress: Int = .zero
+    @State private var virtualMachine: VZVirtualMachine? = nil
+    @State private var installationProgress: Int = .zero
+    @State private var installerFatory: MacOSVMInstalledFactory? = nil
+    let paths = VirtualMachinePaths()
     let url: URL
     let framework: SetupFlowFramework
     let animations: [VibeSchema]
     let webView: WKWebView
     let contentController: WKUserContentController
     let configuration: WKWebViewConfiguration
+    let delegate: AppDelegate
     
     var appColors: Colors {
         colorScheme == .dark ? ColorsDark() : ColorsLight()
@@ -331,14 +341,38 @@ struct EditorView: View {
                             print(newValue)
                         }
                     case .swiftUI:
-                        GeometryReader { proxy in
-                            MacRenderView(size: viewportMinimumSize)
-                                .onAppear {
-                                    frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                        if downloadingMacOS {
+                            Text("Setting up the macOS VM...\ndownload progress: \(restoreImageDownloadProgress)%\ninstallation progress: \(installationProgress)%")
+                                .onAppear() {
+                                    Task {
+                                        print("TASK")
+                                        let downloader = MacOSVMDownloader(paths: paths) { value in
+                                            self.restoreImageDownloadProgress = value
+                                        }
+                                        
+                                        self.installerFatory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
+                                            self.installationProgress = progress
+                                        }
+                                        self.installerFatory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
+                                            self.virtualMachine = vm
+                                            self.delegate.paths = paths
+                                            self.delegate.virtualMachine = vm
+                                            downloadingMacOS = false
+                                        })
+                                    }
                                 }
-                                .onChange(of: proxy.size) { oldValue, newValue in
-                                    frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                        } else {
+                            if let virtualMachine {
+                                GeometryReader { proxy in
+                                    MacRenderView(virtualMachine: virtualMachine, size: viewportMinimumSize)
+                                        .onAppear {
+                                            frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                                        }
+                                        .onChange(of: proxy.size) { oldValue, newValue in
+                                            frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                                        }
                                 }
+                            }
                         }
                     }
                 }
@@ -402,7 +436,7 @@ struct EditorView: View {
                         .frame(maxHeight: .infinity)
                         .padding(.horizontal)
                         .modifier(WithPanelBackground())
-                        .frame(minHeight: 375)
+                        .frame(minHeight: 675)
                         .cornerRadius(bottomLeft: cornerRadius)
                         .onChange(of: selectedAnimation) { _, newValue in
                             let containers = self.animations

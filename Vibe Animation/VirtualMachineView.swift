@@ -12,11 +12,13 @@ let pixelsPerInch = 284
 
 struct VirtualMachineView: NSViewRepresentable {
     typealias NSViewType = VZVirtualMachineView
-    
+    let paths = VirtualMachinePaths()
+    let virtualMachine: VZVirtualMachine
+
     let size: CGSize
     
-    init(size: CGSize) {
-        print(size)
+    init(virtualMachine: VZVirtualMachine, size: CGSize) {
+        self.virtualMachine = virtualMachine
         self.size = size
     }
     
@@ -25,7 +27,7 @@ struct VirtualMachineView: NSViewRepresentable {
         let view = VZVirtualMachineView(frame: .zero)
         view.automaticallyReconfiguresDisplay = true
         view.virtualMachine = virtualMachine
-        context.coordinator.restoreVirtualMachine()
+        context.coordinator.startVirtualMachine()
         return view
     }
 
@@ -41,19 +43,20 @@ struct VirtualMachineView: NSViewRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(virtualMachine: VZVirtualMachine(configuration: VirtualMachineConfiguration(size: size).createVirtualMachine()), size: size)
+        Coordinator(virtualMachine: virtualMachine, size: size, paths: paths)
     }
     
     class Coordinator: NSObject, VZVirtualMachineDelegate {
         let virtualMachine: VZVirtualMachine
-        
         let size: CGSize
         var previousSize: CGSize? = nil
-        
-        init(virtualMachine: VZVirtualMachine, size: CGSize) {
+        let paths: VirtualMachinePaths
+
+        init(virtualMachine: VZVirtualMachine, size: CGSize, paths: VirtualMachinePaths) {
             self.virtualMachine = virtualMachine
             self.size = size
             self.previousSize = size
+            self.paths = paths
             super.init()
                 
             self.virtualMachine.delegate = self
@@ -61,9 +64,20 @@ struct VirtualMachineView: NSViewRepresentable {
         
         func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
             print(error)
+            pauseAndSaveVirtualMachine {
+                
+            }
         }
         
         func startVirtualMachine() {
+            if FileManager.default.fileExists(atPath: paths.saveFileURL.path) {
+                self.restoreVirtualMachine()
+            } else {
+                self._startVirtualMachine()
+            }
+        }
+        
+        func _startVirtualMachine() {
             virtualMachine.start(completionHandler: { (result) in
                 if case let .failure(error) = result {
                     fatalError("Virtual machine failed to start with \(error)")
@@ -80,20 +94,21 @@ struct VirtualMachineView: NSViewRepresentable {
         }
         
         func restoreVirtualMachine() {
-            virtualMachine.restoreMachineStateFrom(url: VirtualMachineConfiguration(size: size).saveFileURL, completionHandler: { (error) in
+            virtualMachine.restoreMachineStateFrom(url: paths.saveFileURL, completionHandler: { [self] (error) in
+                // Remove the saved file. Whether success or failure, the state no longer matches the VM's disk.
                 let fileManager = FileManager.default
-//                try! fileManager.removeItem(at: VirtualMachineConfiguration().saveFileURL)
-
+                try? fileManager.removeItem(at: paths.saveFileURL)
+                print(error)
                 if error == nil {
                     self.resumeVirtualMachine()
                 } else {
-                    self.startVirtualMachine()
+                    self._startVirtualMachine()
                 }
             })
         }
 
         func saveVirtualMachine(completionHandler: @escaping () -> Void) {
-            virtualMachine.saveMachineStateTo(url: VirtualMachineConfiguration(size: size).saveFileURL, completionHandler: { (error) in
+            virtualMachine.saveMachineStateTo(url: paths.saveFileURL, completionHandler: { (error) in
                 guard error == nil else {
                     fatalError("Virtual machine failed to save with \(error!)")
                 }
@@ -123,96 +138,36 @@ struct VirtualMachineView: NSViewRepresentable {
     }
 }
 
-struct VirtualMachineConfiguration {
-    let size: CGSize
-    
-    private var vmBundlePath: String {
+struct VirtualMachinePaths {
+    var vmBundlePath: String {
         return NSHomeDirectory() + "/VM.bundle/"
     }
 
-    private var vmBundleURL: URL {
+    var vmBundleURL: URL {
         return URL(fileURLWithPath: vmBundlePath)
     }
 
-    private var auxiliaryStorageURL: URL {
+    var auxiliaryStorageURL: URL {
         return vmBundleURL.appendingPathComponent("AuxiliaryStorage")
     }
 
-    private var diskImageURL: URL {
+    var diskImageURL: URL {
         return vmBundleURL.appendingPathComponent("Disk.img")
     }
 
-    private var hardwareModelURL: URL {
+    var hardwareModelURL: URL {
         return vmBundleURL.appendingPathComponent("HardwareModel")
     }
 
-    private var machineIdentifierURL: URL {
+    var machineIdentifierURL: URL {
         return vmBundleURL.appendingPathComponent("MachineIdentifier")
     }
 
-    private var restoreImageURL: URL {
+    var restoreImageURL: URL {
         return vmBundleURL.appendingPathComponent("RestoreImage.ipsw")
     }
 
-    public var saveFileURL: URL {
+    var saveFileURL: URL {
         return vmBundleURL.appendingPathComponent("SaveFile.vzvmsave")
-    }
-
-    func createMacPlatform() -> VZMacPlatformConfiguration {
-        let macPlatform = VZMacPlatformConfiguration()
-
-        let auxiliaryStorage = VZMacAuxiliaryStorage(contentsOf: auxiliaryStorageURL)
-        macPlatform.auxiliaryStorage = auxiliaryStorage
-
-        if !FileManager.default.fileExists(atPath: vmBundlePath) {
-            fatalError("Missing Virtual Machine Bundle at \(vmBundlePath). Run InstallationTool first to create it.")
-        }
-
-        guard let hardwareModelData = try? Data(contentsOf: hardwareModelURL) else {
-            fatalError("Failed to retrieve hardware model data.")
-        }
-
-        guard let hardwareModel = VZMacHardwareModel(dataRepresentation: hardwareModelData) else {
-            fatalError("Failed to create hardware model.")
-        }
-
-        if !hardwareModel.isSupported {
-            fatalError("The hardware model isn't supported on the current host")
-        }
-        macPlatform.hardwareModel = hardwareModel
-
-        guard let machineIdentifierData = try? Data(contentsOf: machineIdentifierURL) else {
-            fatalError("Failed to retrieve machine identifier data.")
-        }
-
-        guard let machineIdentifier = VZMacMachineIdentifier(dataRepresentation: machineIdentifierData) else {
-            fatalError("Failed to create machine identifier.")
-        }
-        macPlatform.machineIdentifier = machineIdentifier
-
-        return macPlatform
-    }
-
-    func createVirtualMachine() -> VZVirtualMachineConfiguration {
-        let virtualMachineConfiguration = VZVirtualMachineConfiguration()
-
-        virtualMachineConfiguration.platform = createMacPlatform()
-        virtualMachineConfiguration.bootLoader = MacOSVirtualMachineConfigurationHelper.createBootLoader()
-        virtualMachineConfiguration.cpuCount = MacOSVirtualMachineConfigurationHelper.computeCPUCount()
-        virtualMachineConfiguration.memorySize = MacOSVirtualMachineConfigurationHelper.computeMemorySize()
-        virtualMachineConfiguration.graphicsDevices = [MacOSVirtualMachineConfigurationHelper.createGraphicsDeviceConfiguration(diskImageURL: diskImageURL, size: size)]
-        virtualMachineConfiguration.storageDevices = [MacOSVirtualMachineConfigurationHelper.createBlockDeviceConfiguration(diskImageURL: diskImageURL)]
-        virtualMachineConfiguration.networkDevices = [MacOSVirtualMachineConfigurationHelper.createNetworkDeviceConfiguration()]
-        virtualMachineConfiguration.socketDevices = [MacOSVirtualMachineConfigurationHelper.createSocketDeviceConfiguration()]
-        virtualMachineConfiguration.pointingDevices = [MacOSVirtualMachineConfigurationHelper.createPointingDeviceConfiguration()]
-        virtualMachineConfiguration.keyboards = [MacOSVirtualMachineConfigurationHelper.createKeyboardConfiguration()]
-
-        try! virtualMachineConfiguration.validate()
-
-        if #available(macOS 14.0, *) {
-            try! virtualMachineConfiguration.validateSaveRestoreSupport()
-        }
-        
-        return virtualMachineConfiguration
     }
 }

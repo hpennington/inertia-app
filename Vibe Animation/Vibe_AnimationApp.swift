@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct Vibe_AnimationApp: App {
+    @NSApplicationDelegateAdaptor var delegate: AppDelegate
     @StateObject private var vm = VibeAppVM()
     
     func setWindowPositionForSize(x: CGFloat, y: CGFloat) {
@@ -32,7 +33,7 @@ struct Vibe_AnimationApp: App {
             case .complete:
                 if let url = vm.setupFlowManager.reactProjectURL {
                     let editorViewMinimumSize = CGSize(width: 1250, height: 650)
-                    EditorView(url: url, framework: vm.framework, animations: vm.animations, webView: vm.webView, contentController: vm.contentController, configuration: vm.configuration)
+                    EditorView(url: url, framework: vm.framework, animations: vm.animations, webView: vm.webView, contentController: vm.contentController, configuration: vm.configuration, delegate: delegate)
                         .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
 //                        .preferredColorScheme(.dark)
                         .task {
@@ -85,5 +86,60 @@ extension EnvironmentValues {
     var popNavigationStack: (() -> Void)? {
         get { self[PopNavigationStackKey.self] }
         set { self[PopNavigationStackKey.self] = newValue }
+    }
+}
+import Virtualization
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    var paths: VirtualMachinePaths? = nil
+    var virtualMachine: VZVirtualMachine? = nil
+
+    // MARK: Save the virtual machine when the app exits.
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+    
+#if arch(arm64)
+    @available(macOS 14.0, *)
+    func saveVirtualMachine(completionHandler: @escaping () -> Void) {
+        if let paths {
+            virtualMachine?.saveMachineStateTo(url: paths.saveFileURL, completionHandler: { (error) in
+                guard error == nil else {
+                    fatalError("Virtual machine failed to save with \(error!)")
+                }
+
+                completionHandler()
+            })
+        }
+        
+    }
+
+    @available(macOS 14.0, *)
+    func pauseAndSaveVirtualMachine(completionHandler: @escaping () -> Void) {
+        virtualMachine?.pause(completionHandler: { (result) in
+            if case let .failure(error) = result {
+                fatalError("Virtual machine failed to pause with \(error)")
+            }
+
+            self.saveVirtualMachine(completionHandler: completionHandler)
+        })
+    }
+#endif
+
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+#if arch(arm64)
+        if #available(macOS 14.0, *) {
+            if virtualMachine?.state == .running {
+                pauseAndSaveVirtualMachine(completionHandler: {
+                    sender.reply(toApplicationShouldTerminate: true)
+                })
+                
+                return .terminateLater
+            }
+        }
+#endif
+
+        return .terminateNow
     }
 }
