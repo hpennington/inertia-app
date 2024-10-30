@@ -9,59 +9,62 @@ import Foundation
 import SwiftUI
 import Virtualization
 
-class MacOSVMDownloader {
-    init(paths: VirtualMachinePaths, progressCallback: @escaping (_: Int) -> Void) {
+final class MacOSVMDownloader: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
+    init(paths: VirtualMachinePaths, progressCallback: @escaping (Double) -> Void) {
         self.paths = paths
         self.progressCallback = progressCallback
     }
-    
+
     let paths: VirtualMachinePaths
-    let progressCallback: (_ value: Int) -> Void
-    private var downloadObserver: NSKeyValueObservation? = nil
-    private var downloadTask: URLSessionDownloadTask? = nil
-    // MARK: Observe the download progress.
+    let progressCallback: (Double) -> Void
+    private var downloadObserver: NSKeyValueObservation?
+    private var downloadTask: URLSessionDownloadTask?
+    private var restoreImage: VZMacOSRestoreImage?
+    private var completionHandler: ((VZMacOSRestoreImage, VZMacOSConfigurationRequirements) -> Void)? // Store completion handler here
 
     public func download(completionHandler: @escaping (VZMacOSRestoreImage, VZMacOSConfigurationRequirements) -> Void) {
         NSLog("Attempting to download latest available restore image.")
+        self.completionHandler = completionHandler // Assign the completion handler to the property
         VZMacOSRestoreImage.fetchLatestSupported { (result: Result<VZMacOSRestoreImage, Error>) in
             switch result {
                 case let .failure(error):
                     fatalError(error.localizedDescription)
-
+                
                 case let .success(restoreImage):
-                    self.downloadRestoreImage(restoreImage: restoreImage, completionHandler: completionHandler)
+                    self.restoreImage = restoreImage
+                    self.startDownload(for: restoreImage)
             }
         }
     }
 
-    // MARK: Download the restore image from the network.
-    private func downloadRestoreImage(restoreImage: VZMacOSRestoreImage, completionHandler: @escaping (VZMacOSRestoreImage, VZMacOSConfigurationRequirements) -> Void) {
-        let downloadTask = URLSession.shared.downloadTask(with: restoreImage.url) { localURL, response, error in
-            if let error = error {
-                fatalError("Download failed. \(error.localizedDescription).")
+    private func startDownload(for restoreImage: VZMacOSRestoreImage) {
+        let session = URLSession(configuration: .background(withIdentifier: "com.vectorstudio.Vibe-Animation"), delegate: self, delegateQueue: nil)
+        downloadTask = session.downloadTask(with: restoreImage.url)
+        self.downloadObserver = downloadTask?.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, _ in
+            DispatchQueue.main.async {
+                self.progressCallback(progress.fractionCompleted)
             }
-
-            if !FileManager.default.fileExists(atPath: self.paths.vmBundleURL.path()) {
-                self.createVMBundle()
+        }
+        downloadTask?.resume()
+    }
+    
+    // MARK: - URLSessionDownloadDelegate
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        guard let restoreImage = restoreImage, let completionHandler = completionHandler else { return } // Ensure both are available
+        do {
+            if !FileManager.default.fileExists(atPath: self.paths.vmBundleURL.path) {
+                createVMBundle()
+            }
+            if !FileManager.default.fileExists(atPath: self.paths.diskImageURL.path) {
+                createDiskImage()
             }
             
-            if !FileManager.default.fileExists(atPath: self.paths.diskImageURL.path()) {
-                self.createDiskImage()
-            }
-            
-            try! FileManager.default.moveItem(at: localURL!, to: self.paths.restoreImageURL)
+            try FileManager.default.moveItem(at: location, to: self.paths.restoreImageURL)
             let conf = restoreImage.mostFeaturefulSupportedConfiguration!
-//            installer.installMacOS(ipswURL: self.paths.diskImageURL, conf: conf)
-
-            completionHandler(restoreImage, conf)
+            completionHandler(restoreImage, conf) // Call the completion handler here
+        } catch {
+            fatalError("Failed to move downloaded file: \(error.localizedDescription)")
         }
-
-        self.downloadObserver = downloadTask.progress.observe(\.fractionCompleted, options: [.initial, .new]) { (progress, change) in
-            self.progressCallback(Int(progress.fractionCompleted * 100.0))
-        }
-        
-        downloadTask.resume()
-        self.downloadTask = downloadTask
     }
     
     private func createVMBundle() {
@@ -100,7 +103,7 @@ class MacOSVMDownloader {
 }
 
 class MacOSVMInstaller {
-    init(virtualMachine: VZVirtualMachine, paths: VirtualMachinePaths, progressCallback: @escaping (Int) -> Void) {
+    init(virtualMachine: VZVirtualMachine, paths: VirtualMachinePaths, progressCallback: @escaping (Double) -> Void) {
         self.virtualMachine = virtualMachine
         self.paths = paths
         self.progressCallback = progressCallback
@@ -108,7 +111,7 @@ class MacOSVMInstaller {
     
     let virtualMachine: VZVirtualMachine
     let paths: VirtualMachinePaths
-    let progressCallback: (_ value: Int) -> Void
+    let progressCallback: (_ value: Double) -> Void
     
     private var installationObserver: NSKeyValueObservation?
     public func installMacOS(ipswURL: URL, completion: @escaping () -> Void) {
@@ -156,8 +159,9 @@ class MacOSVMInstaller {
 
         // Observe installation progress.
         installationObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { (progress, change) in
-            NSLog("Installation progress: \(change.newValue! * 100).")
-            self.progressCallback(Int(progress.fractionCompleted * 100))
+            DispatchQueue.main.async {
+                self.progressCallback(progress.fractionCompleted)
+            }
         }
     }
     
@@ -290,7 +294,7 @@ class MacOSVMFactory {
 
 @Observable
 class MacOSVMInstalledFactory {
-    init(downloader: MacOSVMDownloader, installer: MacOSVMInstaller? = nil, vm: VZVirtualMachine? = nil, paths: VirtualMachinePaths, progressCallback: @escaping (Int) -> Void) {
+    init(downloader: MacOSVMDownloader, installer: MacOSVMInstaller? = nil, vm: VZVirtualMachine? = nil, paths: VirtualMachinePaths, progressCallback: @escaping (Double) -> Void) {
         self.downloader = downloader
         self.installer = installer
         self.vm = vm
@@ -300,7 +304,7 @@ class MacOSVMInstalledFactory {
     
     let downloader: MacOSVMDownloader
     let paths: VirtualMachinePaths
-    let progressCallback: (_ value: Int) -> Void
+    let progressCallback: (_ value: Double) -> Void
     private var installer: MacOSVMInstaller?
     private var vm: VZVirtualMachine? = nil
     

@@ -100,10 +100,9 @@ struct EditorView: View {
     @State private var selectedAnimation: String = ""
     @State private var attachActionTitle: String = "Attach Container"
     @State private var downloadingMacOS: Bool = true
-//    @State private var restoreImage: MacOSRestoreImage
-    @State private var restoreImageDownloadProgress: Int = .zero
+    @State private var restoreImageDownloadProgress: Double = .zero
+    @State private var installationProgress: Double = .zero
     @State private var virtualMachine: VZVirtualMachine? = nil
-    @State private var installationProgress: Int = .zero
     @State private var installerFatory: MacOSVMInstalledFactory? = nil
     let paths = VirtualMachinePaths()
     let url: URL
@@ -322,6 +321,16 @@ struct EditorView: View {
         return map
     }
     
+    private enum SwiftUIState {
+        case initializing
+        case downloading
+        case installing
+        case ready
+    }
+    
+    @State private var swiftUIState: SwiftUIState = .initializing
+    @State private var installOpacity = CGFloat.zero
+    
     var body: some View {
         VStack {
             MainLayout {
@@ -341,27 +350,56 @@ struct EditorView: View {
                             print(newValue)
                         }
                     case .swiftUI:
-                        if downloadingMacOS {
-                            Text("Setting up the macOS VM...\ndownload progress: \(restoreImageDownloadProgress)%\ninstallation progress: \(installationProgress)%")
-                                .onAppear() {
+                        
+                        switch swiftUIState {
+                        case .initializing:
+                            Text("Initializing...")
+                                .onAppear {
                                     Task {
-                                        print("TASK")
                                         let downloader = MacOSVMDownloader(paths: paths) { value in
+                                            self.swiftUIState = .downloading
                                             self.restoreImageDownloadProgress = value
                                         }
                                         
                                         self.installerFatory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
+                                            self.swiftUIState = .installing
                                             self.installationProgress = progress
                                         }
+                                        
                                         self.installerFatory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
                                             self.virtualMachine = vm
                                             self.delegate.paths = paths
                                             self.delegate.virtualMachine = vm
-                                            downloadingMacOS = false
+                                            swiftUIState = .ready
                                         })
                                     }
                                 }
-                        } else {
+                        case .downloading, .installing:
+                            VStack { 
+                                Spacer()
+                                Text("\(swiftUIState == .downloading ? "Downloading" : "Installing") the macOS Virtual Machine")
+                                    .font(.title)
+                                Spacer()
+                                ProgressView(value: restoreImageDownloadProgress)
+                                    .frame(maxWidth: 100)
+                                    .onChange(of: restoreImageDownloadProgress) { _, newValue in
+                                        if Int(floor(newValue)) == 1 {
+                                            self.swiftUIState = .initializing
+                                            withAnimation {
+                                                installOpacity = 1.0
+                                            }
+                                        }
+                                    }
+                                Text("\(Int(restoreImageDownloadProgress * 100))%")
+                                Group {
+                                    ProgressView(value: installationProgress)
+                                        .frame(maxWidth: 100)
+                                    Text("\(Int(installationProgress * 100))%")
+                                }
+                                .opacity(installOpacity)
+                            }
+                            .frame(maxWidth: 500)
+                        case .ready:
                             if let virtualMachine {
                                 GeometryReader { proxy in
                                     MacRenderView(virtualMachine: virtualMachine, size: viewportMinimumSize)
@@ -373,6 +411,7 @@ struct EditorView: View {
                                         }
                                 }
                             }
+                            
                         }
                     }
                 }
