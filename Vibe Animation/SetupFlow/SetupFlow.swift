@@ -21,6 +21,7 @@ enum SetupFlowState: Hashable {
     case projectLoad
     case browsingProject
     case complete
+    case swiftUIInstallImage
 }
 
 enum SetupFlowEvent {
@@ -31,6 +32,7 @@ enum SetupFlowEvent {
     case asyncJobFinished
     case filePicked
     case cancelSetup
+    case cancelImageInstall
     case back
 }
 
@@ -73,7 +75,11 @@ class SetupFlowStateMachine: ObservableObject {
         case (.swiftUICopying, .asyncJobFinished):
             transition(to: .swiftUICompile)
         case (.swiftUICompile, .asyncJobFinished):
+            transition(to: .swiftUIInstallImage)
+        case (.swiftUIInstallImage, .asyncJobFinished):
             transition(to: .complete)
+        case (.swiftUIInstallImage, .cancelSetup):
+            transition(to: .start)
         case (.swiftUICopying, .cancelSetup):
             transition(to: .start)
         case (.swiftUICompile, .cancelSetup):

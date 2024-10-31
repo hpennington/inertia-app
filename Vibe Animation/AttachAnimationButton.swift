@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct AttachAnimationButton: View {
+    @Environment(\.appColors) var appColors: Colors
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
     let title: String
     let action: () -> Void
     
     var body: some View {
         Button(title, action: action)
-            .background(ColorsDark().accent)
-            .foregroundStyle(.white)
+            .background(appColors.accent)
+            .foregroundStyle(colorScheme == .dark ? .white : .black)
     }
 }
 

@@ -324,7 +324,10 @@ class MacOSVMInstalledFactory {
                     self.progressCallback(progress)
                 }
                 self.installer?.install {
-                    initCompletion(vm)
+                    vm.start { _ in
+                        initCompletion(vm)
+                    }
+                    
                 }
             }
         }

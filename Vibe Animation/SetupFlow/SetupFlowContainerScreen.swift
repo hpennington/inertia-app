@@ -165,6 +165,8 @@ struct SetupFlowContainerScreen: View {
                         SetupFlowCopyingScreen(action: actionHandler)
                     case .swiftUICompile:
                         SetupFlowCompilingScreen(action: actionHandler)
+                    case .swiftUIInstallImage:
+                        SetupFlowInstallImageScreen(action: actionHandler)
                     case .projectLoad:
                         SetupFlowProjectLoad(action: actionHandler)
                     case .complete:

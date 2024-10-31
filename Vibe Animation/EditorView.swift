@@ -321,15 +321,9 @@ struct EditorView: View {
         return map
     }
     
-    private enum SwiftUIState {
-        case initializing
-        case downloading
-        case installing
-        case ready
-    }
-    
-    @State private var swiftUIState: SwiftUIState = .initializing
     @State private var installOpacity = CGFloat.zero
+    @State private var isVmLoaded = false
+    @State private var installerFactory: MacOSVMInstalledFactory? = nil
     
     var body: some View {
         VStack {
@@ -350,56 +344,7 @@ struct EditorView: View {
                             print(newValue)
                         }
                     case .swiftUI:
-                        
-                        switch swiftUIState {
-                        case .initializing:
-                            Text("Initializing...")
-                                .onAppear {
-                                    Task {
-                                        let downloader = MacOSVMDownloader(paths: paths) { value in
-                                            self.swiftUIState = .downloading
-                                            self.restoreImageDownloadProgress = value
-                                        }
-                                        
-                                        self.installerFatory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
-                                            self.swiftUIState = .installing
-                                            self.installationProgress = progress
-                                        }
-                                        
-                                        self.installerFatory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
-                                            self.virtualMachine = vm
-                                            self.delegate.paths = paths
-                                            self.delegate.virtualMachine = vm
-                                            swiftUIState = .ready
-                                        })
-                                    }
-                                }
-                        case .downloading, .installing:
-                            VStack { 
-                                Spacer()
-                                Text("\(swiftUIState == .downloading ? "Downloading" : "Installing") the macOS Virtual Machine")
-                                    .font(.title)
-                                Spacer()
-                                ProgressView(value: restoreImageDownloadProgress)
-                                    .frame(maxWidth: 100)
-                                    .onChange(of: restoreImageDownloadProgress) { _, newValue in
-                                        if Int(floor(newValue)) == 1 {
-                                            self.swiftUIState = .initializing
-                                            withAnimation {
-                                                installOpacity = 1.0
-                                            }
-                                        }
-                                    }
-                                Text("\(Int(restoreImageDownloadProgress * 100))%")
-                                Group {
-                                    ProgressView(value: installationProgress)
-                                        .frame(maxWidth: 100)
-                                    Text("\(Int(installationProgress * 100))%")
-                                }
-                                .opacity(installOpacity)
-                            }
-                            .frame(maxWidth: 500)
-                        case .ready:
+                        if isVmLoaded {
                             if let virtualMachine {
                                 GeometryReader { proxy in
                                     MacRenderView(virtualMachine: virtualMachine, size: viewportMinimumSize)
@@ -409,9 +354,26 @@ struct EditorView: View {
                                         .onChange(of: proxy.size) { oldValue, newValue in
                                             frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
                                         }
-                                }
+                                    }
                             }
-                            
+                        } else {
+                            ProgressView()
+                                .onAppear {
+                                    let paths = VirtualMachinePaths()
+                                    let downloader = MacOSVMDownloader(paths: paths) { value in
+    //                                    progress = value
+                                    }
+                                    
+                                    self.installerFactory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
+    //                                    self.progress = progress
+                                    }
+                                    self.installerFactory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
+                                        self.virtualMachine = vm
+                                        self.delegate.paths = paths
+                                        self.delegate.virtualMachine = vm
+                                        self.isVmLoaded = true
+                                    })
+                                }
                         }
                     }
                 }
@@ -475,7 +437,7 @@ struct EditorView: View {
                         .frame(maxHeight: .infinity)
                         .padding(.horizontal)
                         .modifier(WithPanelBackground())
-                        .frame(minHeight: 675)
+                        .frame(minHeight: 500)
                         .cornerRadius(bottomLeft: cornerRadius)
                         .onChange(of: selectedAnimation) { _, newValue in
                             let containers = self.animations
