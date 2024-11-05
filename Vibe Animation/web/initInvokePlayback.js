@@ -7,12 +7,13 @@ function invokePlayback(animationsFromHost) {
         const containers = []
         for (const animationText of animationsFromHost) {
             const animation = JSON.parse(animationText)
+            console.log({animation})
             if (animation) {
                 animations.push(animation)
                 containers.push(animation.container)
             }
         }
-        //        console.log({containers})
+        console.log({containers})
         //        console.log({animations})
         
         var canvasSizes = {}
@@ -76,7 +77,8 @@ function invokePlayback(animationsFromHost) {
                 const timing = {
                     duration: totalDuration,
                     iterations: Infinity,
-                    easing: 'ease-in-out'
+//                    easing: 'ease-in-out'
+                    easing: 'linear'
                 }
                 
                 view?.animate(keyframesWebAPI ?? [], timing)

@@ -128,7 +128,7 @@
                         "duration": 1,
                         "values": {
                             "scale": 0.25,
-                            "translate": [-0.2, 0.0],
+                            "translate": [-1.0, 0.0],
                             "rotate": -180.0,
                             "rotateCenter": -360.0,
                             "opacity": 1.0

@@ -139,16 +139,11 @@ class MacOSVMInstaller {
         }
 
         DispatchQueue.main.async { [self] in
-            
-//
-//            setupVirtualMachine(macOSConfiguration: macOSConfiguration)
             startInstallation(restoreImageURL: restoreImage.url)
         }
     }
     private func startInstallation(restoreImageURL: URL) {
         let installer = VZMacOSInstaller(virtualMachine: virtualMachine, restoringFromImageAt: restoreImageURL)
-
-        NSLog("Starting installation.")
         installer.install(completionHandler: { (result: Result<Void, Error>) in
             if case let .failure(error) = result {
                 fatalError(error.localizedDescription)
