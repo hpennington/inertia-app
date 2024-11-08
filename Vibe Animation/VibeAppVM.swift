@@ -8,7 +8,7 @@
 import Combine
 import SwiftUI
 import WebKit
-import Vibe
+import Inertia
 
 final class VibeAppVM: ObservableObject {
     @Published var framework: SetupFlowFramework = .react

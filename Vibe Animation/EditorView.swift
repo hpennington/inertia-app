@@ -7,7 +7,7 @@
 
 import SwiftUI
 import WebKit
-import Vibe
+import Inertia
 import Virtualization
 
 enum VibeWebScript: String, RawRepresentable {
@@ -75,7 +75,7 @@ struct EditorView: View {
     }
     
     init(
-        url: URL,
+        url: Binding<String>,
         framework: SetupFlowFramework,
         animations: [VibeSchema],
         webView: WKWebView,
@@ -83,7 +83,7 @@ struct EditorView: View {
         configuration: WKWebViewConfiguration,
         delegate: AppDelegate
     ) {
-        self.url = url
+        self._url = url
         self.framework = framework
         self.animations = animations
         self.webView = webView
@@ -105,7 +105,7 @@ struct EditorView: View {
     @State private var virtualMachine: VZVirtualMachine? = nil
     @State private var installerFatory: MacOSVMInstalledFactory? = nil
     let paths = VirtualMachinePaths()
-    let url: URL
+    @Binding var url: String
     let framework: SetupFlowFramework
     let animations: [VibeSchema]
     let webView: WKWebView
@@ -118,9 +118,15 @@ struct EditorView: View {
     }
     
     struct WithPanelBackground: ViewModifier {
+        let color: Color?
+        
+        init(color: Color? = nil) {
+            self.color = color
+        }
+        
         func body(content: Content) -> some View {
             ZStack {
-                PanelView()
+                PanelView(color: color)
                 content
             }
         }
@@ -227,6 +233,7 @@ struct EditorView: View {
     struct Animation: Codable, Hashable {
         let actionableId: String
         let containerId: String
+        let containerActionableId: String
         let animationId: String
     }
     
@@ -238,12 +245,24 @@ struct EditorView: View {
     }
     
     private func runInvokePlayback() async -> Bool {
-        let relavantAnimations = Set(editorModel.animations.map({element in
+        let relavantAnimations = Set(editorModel.animations.compactMap({element in
             let containerId = element.containerId
             let actionableIds = element.actionableIds
-            return actionableIds.map {
-                Animation(actionableId: $0, containerId: containerId, animationId: element.animationId)
+            
+            if let container = editorModel.containers.first(where: { container in
+                container.containerId == containerId
+            }) {
+                return actionableIds.map {
+                    Animation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "body-vibe-id", animationId: element.animationId)
+                }
+                .flatMap({$0})
+            } else {
+                return actionableIds.map {
+                    Animation(actionableId: $0, containerId: containerId, containerActionableId: "body-vibe-id", animationId: element.animationId)
+                }
+                .flatMap({$0})
             }
+            
         })
         .flatMap({$0}))
         
@@ -256,7 +275,7 @@ struct EditorView: View {
                 return nil
             }
             
-            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.actionableId, containerId: container.id), animationId: element.animationId)
+            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
             
             guard let data = try? JSONEncoder().encode(updateSchema) else {
                 return nil
@@ -334,15 +353,32 @@ struct EditorView: View {
                 Group {
                     switch framework {
                     case .react:
-                        WebRenderView(
-                            url: url,
-                            contentController: contentController,
-                            selectedActionabeIDTracker: selectedActionabeIDTracker,
-                            webView: webView
-                        )
-                        .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
-                            print(newValue)
+                        VStack {
+                            AddressBar(path: url) { newURL in
+                                self.url = newURL
+                            }
+                            
+                            if let url = URL(string: url) {
+                                WebRenderView(
+                                    url: url,
+                                    contentController: contentController,
+                                    selectedActionabeIDTracker: selectedActionabeIDTracker,
+                                    webView: webView
+                                )
+                                .cornerRadius(renderViewportCornerRadius)
+                                .padding(6 / 2)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
+                                }
+                                .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
+                                    print(newValue)
+                                }
+                            } else {
+                                Color.black
+                            }
                         }
+                        .background(appColors.backgroundPrimary)
                     case .swiftUI:
                         if isVmLoaded {
                             if let virtualMachine {
@@ -354,6 +390,12 @@ struct EditorView: View {
                                         .onChange(of: proxy.size) { oldValue, newValue in
                                             frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
                                         }
+                                    }
+                                    .cornerRadius(renderViewportCornerRadius)
+                                    .padding(6 / 2)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                                     }
                             }
                         } else {
@@ -377,7 +419,6 @@ struct EditorView: View {
                         }
                     }
                 }
-                .cornerRadius(renderViewportCornerRadius)
                 .padding()
                 .modifier(WithPanelBackground())
                 .frame(minWidth: frameSize?.width ?? viewportMinimumSize.width, minHeight: frameSize?.height ?? viewportMinimumSize.height)
@@ -426,9 +467,12 @@ struct EditorView: View {
                                 actionTitle: attachActionTitle) { id, actionableIds in
                                     let containers = self.animations
                                     let animations = self.animations.flatMap({$0.objects})
+                                    
                                     if let container = containers.first(where: { container in container.id == id }) {
+                                        
                                         editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
                                     } else if let animation = animations.first(where: { animation in animation.id == id }) {
+                                        editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["body-vibe-id"]), containerId: animation.containerId))
                                         editorModel.animations.append(ActionableAnimationAssociater(actionableIds: actionableIds, containerId: animation.containerId, animationId: animation.id))
                                     }
                                 }
@@ -464,7 +508,7 @@ struct EditorView: View {
                     .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
                 }
             } bottom: {
-                PanelView()
+                PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
                     .frame(height: timelineViewHeight)
             }
         }

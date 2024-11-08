@@ -5,15 +5,17 @@ function invokePlayback(animationsFromHost) {
     if (dataModel) {
         const animations = []
         const containers = []
+//        console.log({animationsFromHost})
         for (const animationText of animationsFromHost) {
+            
             const animation = JSON.parse(animationText)
-            console.log({animation})
+//            console.log({animation})
             if (animation) {
                 animations.push(animation)
                 containers.push(animation.container)
             }
         }
-        console.log({containers})
+//        console.log({containers})
         //        console.log({animations})
         
         var canvasSizes = {}
@@ -21,10 +23,12 @@ function invokePlayback(animationsFromHost) {
         for (const container of containers) {
             const actionableId = container.actionableId
             const containerId = container.containerId
+//            console.log({actionableId})
+//            console.log({containerId})
             const containerView = document.querySelector('[data-vibe-actionable-id="' + actionableId + '"]')
             containerView.dataset.vibeContainerId = containerId
             const rect = containerView.getBoundingClientRect()
-            console.log({rect})
+//            console.log({rect})
             canvasSizes[containerId] = {width: rect.width, height: rect.height}
         }
         
@@ -48,11 +52,11 @@ function invokePlayback(animationsFromHost) {
                 return keyframe.values
             })
             
-            console.log({keyframes})
+//            console.log({keyframes})
             const keyframeInitialValues = animation.animation.initialValues
-            console.log({keyframeInitialValues})
-            console.log({keyframeValues})
-            console.log({vibeCanvasSize})
+//            console.log({keyframeInitialValues})
+//            console.log({keyframeValues})
+//            console.log({vibeCanvasSize})
             if (keyframeValues != null && keyframeInitialValues != null && vibeCanvasSize != null) {
                 const keyframeValuesWithInitial = [
                     keyframeInitialValues,
@@ -81,6 +85,7 @@ function invokePlayback(animationsFromHost) {
                     easing: 'linear'
                 }
                 
+//                console.log(window.getComputedStyle(view).position)
                 view?.animate(keyframesWebAPI ?? [], timing)
             }
         }

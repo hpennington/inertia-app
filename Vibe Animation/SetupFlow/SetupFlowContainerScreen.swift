@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Vibe
+import Inertia
 
 struct SetupFlowContainerScreen: View {
     let navigationPath: Binding<NavigationPath>

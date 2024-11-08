@@ -9,7 +9,8 @@ import SwiftUI
 
 struct LaunchLogoTitle: View {
     var body: some View {
-        Text("Vibe")
+        Text("Inertia Pro")
+            .fontDesign(.rounded)
             .font(.largeTitle)
             .foregroundStyle(ColorPalette.gray5)
     }

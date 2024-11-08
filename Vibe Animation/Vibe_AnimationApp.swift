@@ -31,15 +31,12 @@ struct Vibe_AnimationApp: App {
         WindowGroup {
             switch vm.stateMachine.currentState {
             case .complete:
-                if let url = vm.setupFlowManager.reactProjectURL {
-                    let editorViewMinimumSize = CGSize(width: 1250, height: 650)
-                    EditorView(url: url, framework: vm.framework, animations: vm.animations, webView: vm.webView, contentController: vm.contentController, configuration: vm.configuration, delegate: delegate)
-                        .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
-//                        .preferredColorScheme(.dark)
-                        .task {
-                            setWindowPositionForSize(x: editorViewMinimumSize.width, y: editorViewMinimumSize.height)
-                        }
-                }
+                let editorViewMinimumSize = CGSize(width: 1700, height: 750)
+                EditorView(url: $vm.setupFlowManager.reactProjectPath, framework: vm.framework, animations: vm.animations, webView: vm.webView, contentController: vm.contentController, configuration: vm.configuration, delegate: delegate)
+                    .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
+                    .task {
+                        setWindowPositionForSize(x: editorViewMinimumSize.width, y: editorViewMinimumSize.height)
+                    }
             default:
                 let projectsContainerSize = CGSize(width: 675, height: 345)
                 
@@ -65,6 +62,7 @@ struct Vibe_AnimationApp: App {
         .windowToolbarStyle(.unifiedCompact)
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
+        .defaultSize(width: 1800, height: 900)
         
     }
 }

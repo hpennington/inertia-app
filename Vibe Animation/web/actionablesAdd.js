@@ -3,6 +3,11 @@
     
     let maxZIndex = 0
     
+    const body = document.body
+    
+    body.dataset.vibeActionableId = "body-vibe-id"
+    console.log({body})
+    
     for (const [index, value] of Object.entries(allElements)) {
         const id = `vibeable-id-${index}`
         let element = value instanceof HTMLImageElement ? value.parentNode : value
