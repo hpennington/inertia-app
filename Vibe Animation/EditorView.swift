@@ -59,7 +59,7 @@ struct EditorView: View {
     }
     
     private let hierarchyViewWidth: CGFloat = 300
-    private let viewportMinimumSize = CGSize(width: 650, height: 350)
+    private let viewportMinimumSize = CGSize(width: 320, height: 180)
     private let propertiesViewWidth: CGFloat = 300
     private let timelineViewHeight: CGFloat = 200
     private let renderViewportCornerRadius: CGFloat = 4
@@ -357,6 +357,7 @@ struct EditorView: View {
                             AddressBar(path: url) { newURL in
                                 self.url = newURL
                             }
+                            .frame(maxWidth: frameSize?.width)
                             
                             if let url = URL(string: url) {
                                 WebRenderView(
@@ -365,57 +366,81 @@ struct EditorView: View {
                                     selectedActionabeIDTracker: selectedActionabeIDTracker,
                                     webView: webView
                                 )
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .aspectRatio(16 / 10, contentMode: .fit)
+                                
+                                
                                 .cornerRadius(renderViewportCornerRadius)
+//                                .frame(maxWidth: (frameSize?.height ?? viewportMinimumSize.height) * (16 / 9))
+//                                .frame(maxHeight: (frameSize?.width ?? viewportMinimumSize.width) / (16 / 9))
                                 .padding(6 / 2)
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 4)
                                         .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                                 }
+                                .background(
+                                    GeometryReader { proxy in
+                                        Color.clear
+                                            .onAppear {
+                                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                                            }
+                                            .onChange(of: proxy.size) { oldValue, newValue in
+                                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                                            }
+                                    }
+                                )
                                 .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
                                     print(newValue)
                                 }
                             } else {
                                 Color.black
                             }
+                            
+                            Spacer()
                         }
                         .background(appColors.backgroundPrimary)
                     case .swiftUI:
-                        if isVmLoaded {
-                            if let virtualMachine {
-                                GeometryReader { proxy in
-                                    MacRenderView(virtualMachine: virtualMachine, size: viewportMinimumSize)
-                                        .onAppear {
-                                            frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                        VStack {
+                            if isVmLoaded {
+                                if let virtualMachine {
+                                    GeometryReader { proxy in
+                                        MacRenderView(virtualMachine: virtualMachine, size: viewportMinimumSize)
+                                            .onAppear {
+                                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                                            }
+                                            .onChange(of: proxy.size) { oldValue, newValue in
+                                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                                            }
                                         }
-                                        .onChange(of: proxy.size) { oldValue, newValue in
-                                            frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                                        .aspectRatio(16 / 10, contentMode: .fit)
+                                        .cornerRadius(renderViewportCornerRadius)
+                                        .padding(6 / 2)
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                                         }
-                                    }
-                                    .cornerRadius(renderViewportCornerRadius)
-                                    .padding(6 / 2)
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
+                                }
+                            } else {
+                                ProgressView()
+                                    .onAppear {
+                                        let paths = VirtualMachinePaths()
+                                        let downloader = MacOSVMDownloader(paths: paths) { value in
+        //                                    progress = value
+                                        }
+                                        
+                                        self.installerFactory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
+        //                                    self.progress = progress
+                                        }
+                                        self.installerFactory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
+                                            self.virtualMachine = vm
+                                            self.delegate.paths = paths
+                                            self.delegate.virtualMachine = vm
+                                            self.isVmLoaded = true
+                                        })
                                     }
                             }
-                        } else {
-                            ProgressView()
-                                .onAppear {
-                                    let paths = VirtualMachinePaths()
-                                    let downloader = MacOSVMDownloader(paths: paths) { value in
-    //                                    progress = value
-                                    }
-                                    
-                                    self.installerFactory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
-    //                                    self.progress = progress
-                                    }
-                                    self.installerFactory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
-                                        self.virtualMachine = vm
-                                        self.delegate.paths = paths
-                                        self.delegate.virtualMachine = vm
-                                        self.isVmLoaded = true
-                                    })
-                                }
+                            
+                            Spacer(minLength: .zero)
                         }
                     }
                 }
@@ -431,6 +456,7 @@ struct EditorView: View {
                         await determineFocused(newValue: newValue)
                     }
                 }
+
             } trailing: {
                 ScrollView {
                     VStack {

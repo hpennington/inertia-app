@@ -14,7 +14,7 @@ struct MacOSVirtualMachineConfigurationHelper {
     static func computeCPUCount() -> Int {
         let totalAvailableCPUs = ProcessInfo.processInfo.processorCount
 
-        var virtualCPUCount = totalAvailableCPUs <= 1 ? 1 : totalAvailableCPUs - 1
+        var virtualCPUCount = totalAvailableCPUs <= 1 ? 1 : totalAvailableCPUs / 2
         virtualCPUCount = max(virtualCPUCount, VZVirtualMachineConfiguration.minimumAllowedCPUCount)
         virtualCPUCount = min(virtualCPUCount, VZVirtualMachineConfiguration.maximumAllowedCPUCount)
 
@@ -22,7 +22,7 @@ struct MacOSVirtualMachineConfigurationHelper {
     }
 
     static func computeMemorySize() -> UInt64 {
-        var memorySize = (4 * 1024 * 1024 * 1024) as UInt64
+        var memorySize = (8 * 1024 * 1024 * 1024) as UInt64
         memorySize = max(memorySize, VZVirtualMachineConfiguration.minimumAllowedMemorySize)
         memorySize = min(memorySize, VZVirtualMachineConfiguration.maximumAllowedMemorySize)
 
