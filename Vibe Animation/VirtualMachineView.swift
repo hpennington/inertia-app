@@ -98,7 +98,6 @@ struct VirtualMachineView: NSViewRepresentable {
                 // Remove the saved file. Whether success or failure, the state no longer matches the VM's disk.
                 let fileManager = FileManager.default
                 try? fileManager.removeItem(at: paths.saveFileURL)
-                print(error)
                 if error == nil {
                     self.resumeVirtualMachine()
                 } else {

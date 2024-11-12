@@ -10,6 +10,76 @@ import WebKit
 import Inertia
 import Virtualization
 
+import Foundation
+import Network
+
+class WebSocketServer {
+    let listener: NWListener
+    var clients: [UUID: NWConnection] = [:]
+
+    init(port: UInt16) throws {
+        let parameters = NWParameters.tcp
+        parameters.allowLocalEndpointReuse = true
+        
+        // Configure WebSocket options
+        let wsOptions = NWProtocolWebSocket.Options()
+        wsOptions.autoReplyPing = true  // Automatically respond to ping messages
+        parameters.defaultProtocolStack.applicationProtocols.append(wsOptions)
+
+        listener = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
+        
+        listener.newConnectionHandler = { [weak self] newConnection in
+            self?.handleNewConnection(newConnection)
+        }
+    }
+
+    func start() {
+        print("WebSocket server starting on port \(listener.port!.rawValue)")
+        listener.start(queue: .main)
+    }
+
+    private func handleNewConnection(_ connection: NWConnection) {
+        let clientId = UUID()
+        clients[clientId] = connection
+
+        connection.start(queue: .main)
+        print("Accepted new client: \(clientId)")
+
+        receiveMessage(on: connection, clientId: clientId)
+    }
+
+    private func receiveMessage(on connection: NWConnection, clientId: UUID) {
+        connection.receiveMessage { [weak self] (data, context, isComplete, error) in
+            if let error = error {
+                print("Error receiving message: \(error)")
+                self?.clients.removeValue(forKey: clientId)
+                return
+            }
+
+            if let data = data, !data.isEmpty, let message = String(data: data, encoding: .utf8) {
+                print("Received message from client \(clientId): \(message)")
+                self?.sendMessage("Echo: \(message)", to: connection)
+            }
+
+            // Continue listening for more messages
+            self?.receiveMessage(on: connection, clientId: clientId)
+        }
+    }
+
+    private func sendMessage(_ message: String, to connection: NWConnection) {
+        let messageData = message.data(using: .utf8) ?? Data()
+        let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .text)])
+        
+        connection.send(content: messageData, contentContext: context, isComplete: true, completion: .contentProcessed { error in
+            if let error = error {
+                print("Error sending message: \(error)")
+            } else {
+                print("Sent message to client: \(message)")
+            }
+        })
+    }
+}
+
 enum VibeWebScript: String, RawRepresentable {
     case initialize = "init"
     case initInvokePlayback = "initInvokePlayback"
@@ -104,6 +174,9 @@ struct EditorView: View {
     @State private var installationProgress: Double = .zero
     @State private var virtualMachine: VZVirtualMachine? = nil
     @State private var installerFatory: MacOSVMInstalledFactory? = nil
+    
+    @State private var server = try! WebSocketServer(port: 8060)
+
     let paths = VirtualMachinePaths()
     @Binding var url: String
     let framework: SetupFlowFramework
@@ -418,6 +491,12 @@ struct EditorView: View {
                                         .overlay {
                                             RoundedRectangle(cornerRadius: 4)
                                                 .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
+                                        }
+                                        .task {
+                                            server.start()
+
+                                            // Keep the server running
+//                                            RunLoop.main.run()
                                         }
                                 }
                             } else {

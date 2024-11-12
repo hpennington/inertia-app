@@ -14,15 +14,33 @@ struct MacOSVirtualMachineConfigurationHelper {
     static func computeCPUCount() -> Int {
         let totalAvailableCPUs = ProcessInfo.processInfo.processorCount
 
-        var virtualCPUCount = totalAvailableCPUs <= 1 ? 1 : totalAvailableCPUs / 2
+        var virtualCPUCount = totalAvailableCPUs <= 4 ? 1 : totalAvailableCPUs - 4
         virtualCPUCount = max(virtualCPUCount, VZVirtualMachineConfiguration.minimumAllowedCPUCount)
         virtualCPUCount = min(virtualCPUCount, VZVirtualMachineConfiguration.maximumAllowedCPUCount)
 
         return virtualCPUCount
     }
+    
+    static func createSharedDirectory() -> VZVirtioFileSystemDeviceConfiguration {
+        let directoryURL = FileManager.default
+            .homeDirectoryForCurrentUser
+            .appending(path: "Inertia", directoryHint: .isDirectory)
+        let sharedDirectory = VZSharedDirectory(url: directoryURL, readOnly: false)
+        let singleDirectoryShare = VZSingleDirectoryShare(directory: sharedDirectory)
+
+        print(directoryURL)
+        print(sharedDirectory)
+        print(singleDirectoryShare)
+        // Assign the automount tag to this share. macOS shares automounted directories automatically under /Volumes in the guest.
+        let sharingConfiguration = VZVirtioFileSystemDeviceConfiguration(tag: VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag)
+        sharingConfiguration.share = singleDirectoryShare
+
+
+        return sharingConfiguration
+    }
 
     static func computeMemorySize() -> UInt64 {
-        var memorySize = (8 * 1024 * 1024 * 1024) as UInt64
+        var memorySize = (4 * 1024 * 1024 * 1024) as UInt64
         memorySize = max(memorySize, VZVirtualMachineConfiguration.minimumAllowedMemorySize)
         memorySize = min(memorySize, VZVirtualMachineConfiguration.maximumAllowedMemorySize)
 
