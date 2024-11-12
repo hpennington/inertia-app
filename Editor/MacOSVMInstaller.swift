@@ -38,7 +38,7 @@ final class MacOSVMDownloader: NSObject, URLSessionDelegate, URLSessionDownloadD
     }
 
     private func startDownload(for restoreImage: VZMacOSRestoreImage) {
-        let session = URLSession(configuration: .background(withIdentifier: "com.vectorstudio.Vibe-Animation"), delegate: self, delegateQueue: nil)
+        let session = URLSession(configuration: .background(withIdentifier: "com.vectorstudio.Inertia-Pro"), delegate: self, delegateQueue: nil)
         downloadTask = session.downloadTask(with: restoreImage.url)
         self.downloadObserver = downloadTask?.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, _ in
             DispatchQueue.main.async {
