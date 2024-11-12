@@ -1,0 +1,27 @@
+# Inertia Pro
+
+## Overview
+An editor application and library for creating in-app, native, keyframe animations with a WYSIWYG editor.
+
+## Problem statement
+As a mobile engineer, I want a workflow for creating in-app animations, 
+from the ease of an animation WYSIWYG editor. This editor should export a file format suitable for describing a keyframe animation system, 
+that applies to both: Components written in code, and components drawn from the editor. The file format also describes the component shape, 
+and color, etc of the latter component types (those drawn from within the editor and not from within the codebase). 
+There should also be a runtime for both iOS (SwiftUI) and Web (React), it should load the drawings and animation descriptions, 
+and handle interactions from the codebase as well.
+
+#### Goals
+- Platforms: SwiftUI, React
+- Support the subset of animations provided by both SwiftUI’s keyframe animations system (iOS 17+), and the WebAnimations API (unknown version but currently is supported)
+- Supports trigger options: trigger, reverse, cancel
+- Supports config options: loop, return
+- Supports Keyframe animations
+- Local compilation / serving
+
+#### Non Goals
+- Platforms: Compose (coming later)
+- Building custom animations to gain platform parity (e.g don’t build both forms of rotate for the time being)
+- Supporting spring animations
+- Remote compilation / serving
+- Specification export
