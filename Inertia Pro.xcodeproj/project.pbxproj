@@ -1,0 +1,616 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */; };
+		F810733F2C962A2F0061B761 /* MetaFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F810733E2C962A2F0061B761 /* MetaFile.swift */; };
+		F81148212CBEBF7E00326B61 /* animationsRemove.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148202CBEBF7E00326B61 /* animationsRemove.js */; };
+		F81148232CBEC17E00326B61 /* animationsAdd.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148222CBEC17E00326B61 /* animationsAdd.js */; };
+		F81148252CBEC1D900326B61 /* initInvokePlayback.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148242CBEC1D900326B61 /* initInvokePlayback.js */; };
+		F81316DF2CBCE36300266728 /* AttachAnimationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */; };
+		F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */; };
+		F84A605B2CE3D3D900070036 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F84A605A2CE3D3D900070036 /* Inertia */; };
+		F84ABB542CBAB56400CA1933 /* init.js in Resources */ = {isa = PBXBuildFile; fileRef = F84ABB532CBAB56400CA1933 /* init.js */; };
+		F84ABB562CBAD77500CA1933 /* actionablesRemove.js in Resources */ = {isa = PBXBuildFile; fileRef = F84ABB552CBAD77500CA1933 /* actionablesRemove.js */; };
+		F84E8F1D2C65314C00DC20D6 /* actionablesAdd.js in Resources */ = {isa = PBXBuildFile; fileRef = F84E8F1C2C65314B00DC20D6 /* actionablesAdd.js */; };
+		F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */; };
+		F8641C442C978AA500E43338 /* VibeAppVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8641C432C978AA500E43338 /* VibeAppVM.swift */; };
+		F86E02AC2C96DF1B005F6254 /* SetupFlowContainerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */; };
+		F86E02AE2C96DF39005F6254 /* SetupFlowStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86E02AD2C96DF39005F6254 /* SetupFlowStartScreen.swift */; };
+		F8744E342CDB06D300921BF9 /* AddressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8744E332CDB06D300921BF9 /* AddressBar.swift */; };
+		F87582412CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87582402CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift */; };
+		F87681252CA22AD90065CB6C /* SearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87681242CA22AD90065CB6C /* SearchField.swift */; };
+		F87838F62C5886E4009401EF /* WebRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87838F52C5886E4009401EF /* WebRenderView.swift */; };
+		F8808EE72C86168D00713AAD /* RadioGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8808EE62C86168D00713AAD /* RadioGroup.swift */; };
+		F89023E22CBC70F1000C9282 /* FocusIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89023E12CBC70F1000C9282 /* FocusIndicator.swift */; };
+		F8932C8B2C51D6AF00546975 /* MacRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8932C8A2C51D6AF00546975 /* MacRenderView.swift */; };
+		F8932C8D2C51D6F800546975 /* VirtualMachineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8932C8C2C51D6F800546975 /* VirtualMachineView.swift */; };
+		F899B9CA2C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899B9C92C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift */; };
+		F899B9CC2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899B9CB2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift */; };
+		F899B9CE2C88E21700633B83 /* SetupFlowCopyingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */; };
+		F89BA0AC2C48C85A0006603C /* Vibe_AnimationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AB2C48C85A0006603C /* Vibe_AnimationApp.swift */; };
+		F89BA0AE2C48C85A0006603C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AD2C48C85A0006603C /* EditorView.swift */; };
+		F89BA0B02C48C85B0006603C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F89BA0AF2C48C85B0006603C /* Assets.xcassets */; };
+		F89BA0B32C48C85B0006603C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F89BA0B22C48C85B0006603C /* Preview Assets.xcassets */; };
+		F89BA0BB2C48CA280006603C /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0BA2C48CA280006603C /* Colors.swift */; };
+		F89BA0BD2C48CBE10006603C /* MainLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0BC2C48CBE10006603C /* MainLayout.swift */; };
+		F89BA0BF2C48CD370006603C /* PanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0BE2C48CD370006603C /* PanelView.swift */; };
+		F89BA0C12C48D0C80006603C /* CornerRadiusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0C02C48D0C80006603C /* CornerRadiusView.swift */; };
+		F89BA0C32C48D3880006603C /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0C22C48D3880006603C /* RenderView.swift */; };
+		F89C085C2C87317300F58F9A /* SetupActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C085B2C87317300F58F9A /* SetupActionButton.swift */; };
+		F89C085E2C8734DB00F58F9A /* SetupTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C085D2C8734DB00F58F9A /* SetupTitleView.swift */; };
+		F89C08602C8742AA00F58F9A /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C085F2C8742AA00F58F9A /* NavigationBackButton.swift */; };
+		F89C08652C875ABB00F58F9A /* SetupFlowInfoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C08642C875ABB00F58F9A /* SetupFlowInfoScreen.swift */; };
+		F89C08672C875AD700F58F9A /* SetupFlowBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C08662C875AD700F58F9A /* SetupFlowBase.swift */; };
+		F89C08692C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C08682C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift */; };
+		F8B495682C87BBB90076A42C /* VibeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495672C87BBB90076A42C /* VibeTextField.swift */; };
+		F8B4956A2C87BC010076A42C /* VibeTextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495692C87BC010076A42C /* VibeTextContainer.swift */; };
+		F8B4956C2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B4956B2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift */; };
+		F8C2A8792CAB75D50054B165 /* AnimationsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C2A8782CAB75D50054B165 /* AnimationsList.swift */; };
+		F8C2A87B2CAB75DF0054B165 /* AnimationsAttachedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C2A87A2CAB75DF0054B165 /* AnimationsAttachedList.swift */; };
+		F8C2A87D2CAB7C290054B165 /* AnimationsAvailableColumn.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C2A87C2CAB7C290054B165 /* AnimationsAvailableColumn.swift */; };
+		F8C4A0262C95E619004386D4 /* SetupFlowProjectLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C4A0252C95E619004386D4 /* SetupFlowProjectLoad.swift */; };
+		F8C639A22C89509900B060CA /* SetupFlowCompilingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C639A12C89509900B060CA /* SetupFlowCompilingScreen.swift */; };
+		F8DD5AAF2C7D40B4003A3330 /* ProjectsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DD5AAE2C7D40B4003A3330 /* ProjectsContainerView.swift */; };
+		F8DD5AB12C7D421F003A3330 /* ProjectsContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DD5AB02C7D421F003A3330 /* ProjectsContainerSplitView.swift */; };
+		F8DD5AB32C7D5AD0003A3330 /* ProjectsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DD5AB22C7D5AD0003A3330 /* ProjectsListView.swift */; };
+		F8DD5AB52C7D5B38003A3330 /* LaunchLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DD5AB42C7D5B38003A3330 /* LaunchLogo.swift */; };
+		F8DD5AB72C7D5BD7003A3330 /* LaunchLogoTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DD5AB62C7D5BD7003A3330 /* LaunchLogoTitle.swift */; };
+		F8DD5AB92C7D5E89003A3330 /* ProjectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DD5AB82C7D5E88003A3330 /* ProjectButton.swift */; };
+		F8EB6FCD2CD9D7CB001D978C /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8EB6FCC2CD9D7CB001D978C /* Inertia */; };
+		F8EB6FD02CD9D7F3001D978C /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8EB6FCF2CD9D7F3001D978C /* Inertia */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSVMInstaller.swift; sourceTree = "<group>"; };
+		F810733E2C962A2F0061B761 /* MetaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaFile.swift; sourceTree = "<group>"; };
+		F81148202CBEBF7E00326B61 /* animationsRemove.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsRemove.js; sourceTree = "<group>"; };
+		F81148222CBEC17E00326B61 /* animationsAdd.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsAdd.js; sourceTree = "<group>"; };
+		F81148242CBEC1D900326B61 /* initInvokePlayback.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = initInvokePlayback.js; sourceTree = "<group>"; };
+		F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachAnimationButton.swift; sourceTree = "<group>"; };
+		F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlow.swift; sourceTree = "<group>"; };
+		F84ABB532CBAB56400CA1933 /* init.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = init.js; sourceTree = "<group>"; };
+		F84ABB552CBAD77500CA1933 /* actionablesRemove.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = actionablesRemove.js; sourceTree = "<group>"; };
+		F84E8F1C2C65314B00DC20D6 /* actionablesAdd.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = actionablesAdd.js; sourceTree = "<group>"; };
+		F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCompilationModeScreen.swift; sourceTree = "<group>"; };
+		F8641C432C978AA500E43338 /* VibeAppVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeAppVM.swift; sourceTree = "<group>"; };
+		F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupFlowContainerScreen.swift; sourceTree = "<group>"; };
+		F86E02AD2C96DF39005F6254 /* SetupFlowStartScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupFlowStartScreen.swift; sourceTree = "<group>"; };
+		F8744E332CDB06D300921BF9 /* AddressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBar.swift; sourceTree = "<group>"; };
+		F87582402CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowInstallImageScreen.swift; sourceTree = "<group>"; };
+		F87681242CA22AD90065CB6C /* SearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchField.swift; sourceTree = "<group>"; };
+		F87838F52C5886E4009401EF /* WebRenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRenderView.swift; sourceTree = "<group>"; };
+		F8808EE62C86168D00713AAD /* RadioGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioGroup.swift; sourceTree = "<group>"; };
+		F89023E12CBC70F1000C9282 /* FocusIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusIndicator.swift; sourceTree = "<group>"; };
+		F8932C8A2C51D6AF00546975 /* MacRenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRenderView.swift; sourceTree = "<group>"; };
+		F8932C8C2C51D6F800546975 /* VirtualMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualMachineView.swift; sourceTree = "<group>"; };
+		F899B9C92C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowInstallXcodeScreen.swift; sourceTree = "<group>"; };
+		F899B9CB2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowSwiftUIConfigurationScreen.swift; sourceTree = "<group>"; };
+		F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCopyingScreen.swift; sourceTree = "<group>"; };
+		F89BA0A82C48C85A0006603C /* Inertia Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Inertia Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F89BA0AB2C48C85A0006603C /* Vibe_AnimationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vibe_AnimationApp.swift; sourceTree = "<group>"; };
+		F89BA0AD2C48C85A0006603C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		F89BA0AF2C48C85B0006603C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F89BA0B22C48C85B0006603C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F89BA0B42C48C85B0006603C /* Inertia_Pro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Inertia_Pro.entitlements; sourceTree = "<group>"; };
+		F89BA0BA2C48CA280006603C /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		F89BA0BC2C48CBE10006603C /* MainLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainLayout.swift; sourceTree = "<group>"; };
+		F89BA0BE2C48CD370006603C /* PanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelView.swift; sourceTree = "<group>"; };
+		F89BA0C02C48D0C80006603C /* CornerRadiusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CornerRadiusView.swift; sourceTree = "<group>"; };
+		F89BA0C22C48D3880006603C /* RenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderView.swift; sourceTree = "<group>"; };
+		F89C085B2C87317300F58F9A /* SetupActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupActionButton.swift; sourceTree = "<group>"; };
+		F89C085D2C8734DB00F58F9A /* SetupTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupTitleView.swift; sourceTree = "<group>"; };
+		F89C085F2C8742AA00F58F9A /* NavigationBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
+		F89C08642C875ABB00F58F9A /* SetupFlowInfoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowInfoScreen.swift; sourceTree = "<group>"; };
+		F89C08662C875AD700F58F9A /* SetupFlowBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowBase.swift; sourceTree = "<group>"; };
+		F89C08682C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowChooseFrameworkScreen.swift; sourceTree = "<group>"; };
+		F8B495672C87BBB90076A42C /* VibeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeTextField.swift; sourceTree = "<group>"; };
+		F8B495692C87BC010076A42C /* VibeTextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeTextContainer.swift; sourceTree = "<group>"; };
+		F8B4956B2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowWebConfigurationScreen.swift; sourceTree = "<group>"; };
+		F8C2A8782CAB75D50054B165 /* AnimationsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationsList.swift; sourceTree = "<group>"; };
+		F8C2A87A2CAB75DF0054B165 /* AnimationsAttachedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationsAttachedList.swift; sourceTree = "<group>"; };
+		F8C2A87C2CAB7C290054B165 /* AnimationsAvailableColumn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationsAvailableColumn.swift; sourceTree = "<group>"; };
+		F8C4A0252C95E619004386D4 /* SetupFlowProjectLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowProjectLoad.swift; sourceTree = "<group>"; };
+		F8C639A12C89509900B060CA /* SetupFlowCompilingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCompilingScreen.swift; sourceTree = "<group>"; };
+		F8DD5AAE2C7D40B4003A3330 /* ProjectsContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsContainerView.swift; sourceTree = "<group>"; };
+		F8DD5AB02C7D421F003A3330 /* ProjectsContainerSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsContainerSplitView.swift; sourceTree = "<group>"; };
+		F8DD5AB22C7D5AD0003A3330 /* ProjectsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsListView.swift; sourceTree = "<group>"; };
+		F8DD5AB42C7D5B38003A3330 /* LaunchLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchLogo.swift; sourceTree = "<group>"; };
+		F8DD5AB62C7D5BD7003A3330 /* LaunchLogoTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchLogoTitle.swift; sourceTree = "<group>"; };
+		F8DD5AB82C7D5E88003A3330 /* ProjectButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectButton.swift; sourceTree = "<group>"; };
+		F8F4035B2C588910001BE9FB /* Inertia-Pro-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Inertia-Pro-Info.plist"; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F89BA0A52C48C85A0006603C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F84A605B2CE3D3D900070036 /* Inertia in Frameworks */,
+				F8EB6FD02CD9D7F3001D978C /* Inertia in Frameworks */,
+				F8EB6FCD2CD9D7CB001D978C /* Inertia in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F81073402C962A3B0061B761 /* Project File Format */ = {
+			isa = PBXGroup;
+			children = (
+				F810733E2C962A2F0061B761 /* MetaFile.swift */,
+			);
+			path = "Project File Format";
+			sourceTree = "<group>";
+		};
+		F84E8F1B2C65312C00DC20D6 /* web */ = {
+			isa = PBXGroup;
+			children = (
+				F84E8F1C2C65314B00DC20D6 /* actionablesAdd.js */,
+				F84ABB552CBAD77500CA1933 /* actionablesRemove.js */,
+				F84ABB532CBAB56400CA1933 /* init.js */,
+				F81148242CBEC1D900326B61 /* initInvokePlayback.js */,
+				F81148222CBEC17E00326B61 /* animationsAdd.js */,
+				F81148202CBEBF7E00326B61 /* animationsRemove.js */,
+			);
+			path = web;
+			sourceTree = "<group>";
+		};
+		F89BA09F2C48C85A0006603C = {
+			isa = PBXGroup;
+			children = (
+				F89BA0AA2C48C85A0006603C /* editor */,
+				F89BA0A92C48C85A0006603C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F89BA0A92C48C85A0006603C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F89BA0A82C48C85A0006603C /* Inertia Pro.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F89BA0AA2C48C85A0006603C /* editor */ = {
+			isa = PBXGroup;
+			children = (
+				F81073402C962A3B0061B761 /* Project File Format */,
+				F84E8F1B2C65312C00DC20D6 /* web */,
+				F8F4035B2C588910001BE9FB /* Inertia-Pro-Info.plist */,
+				F89BA0AB2C48C85A0006603C /* Vibe_AnimationApp.swift */,
+				F8641C432C978AA500E43338 /* VibeAppVM.swift */,
+				F8DD5AB82C7D5E88003A3330 /* ProjectButton.swift */,
+				F8808EE62C86168D00713AAD /* RadioGroup.swift */,
+				F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */,
+				F89023E12CBC70F1000C9282 /* FocusIndicator.swift */,
+				F89C085D2C8734DB00F58F9A /* SetupTitleView.swift */,
+				F8DD5AB42C7D5B38003A3330 /* LaunchLogo.swift */,
+				F89C08632C875AAE00F58F9A /* SetupFlow */,
+				F89BA0AD2C48C85A0006603C /* EditorView.swift */,
+				F87681242CA22AD90065CB6C /* SearchField.swift */,
+				F8C2A8782CAB75D50054B165 /* AnimationsList.swift */,
+				F8C2A87C2CAB7C290054B165 /* AnimationsAvailableColumn.swift */,
+				F8C2A87A2CAB75DF0054B165 /* AnimationsAttachedList.swift */,
+				F8744E332CDB06D300921BF9 /* AddressBar.swift */,
+				F8DD5AB62C7D5BD7003A3330 /* LaunchLogoTitle.swift */,
+				F89C085F2C8742AA00F58F9A /* NavigationBackButton.swift */,
+				F87838F52C5886E4009401EF /* WebRenderView.swift */,
+				F8932C8A2C51D6AF00546975 /* MacRenderView.swift */,
+				F8932C8C2C51D6F800546975 /* VirtualMachineView.swift */,
+				F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */,
+				F89BA0C22C48D3880006603C /* RenderView.swift */,
+				F89BA0BC2C48CBE10006603C /* MainLayout.swift */,
+				F8DD5AAE2C7D40B4003A3330 /* ProjectsContainerView.swift */,
+				F8DD5AB02C7D421F003A3330 /* ProjectsContainerSplitView.swift */,
+				F8DD5AB22C7D5AD0003A3330 /* ProjectsListView.swift */,
+				F89BA0BE2C48CD370006603C /* PanelView.swift */,
+				F89BA0C02C48D0C80006603C /* CornerRadiusView.swift */,
+				F89BA0BA2C48CA280006603C /* Colors.swift */,
+				F89BA0AF2C48C85B0006603C /* Assets.xcassets */,
+				F89BA0B42C48C85B0006603C /* Inertia_Pro.entitlements */,
+				F89BA0B12C48C85B0006603C /* Preview Content */,
+			);
+			path = editor;
+			sourceTree = "<group>";
+		};
+		F89BA0B12C48C85B0006603C /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				F89BA0B22C48C85B0006603C /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F89C08632C875AAE00F58F9A /* SetupFlow */ = {
+			isa = PBXGroup;
+			children = (
+				F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */,
+				F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */,
+				F86E02AD2C96DF39005F6254 /* SetupFlowStartScreen.swift */,
+				F89C08682C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift */,
+				F89C08642C875ABB00F58F9A /* SetupFlowInfoScreen.swift */,
+				F89C085B2C87317300F58F9A /* SetupActionButton.swift */,
+				F8B495692C87BC010076A42C /* VibeTextContainer.swift */,
+				F8B495672C87BBB90076A42C /* VibeTextField.swift */,
+				F89C08662C875AD700F58F9A /* SetupFlowBase.swift */,
+				F87582402CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift */,
+				F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */,
+				F8C639A12C89509900B060CA /* SetupFlowCompilingScreen.swift */,
+				F899B9CB2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift */,
+				F8B4956B2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift */,
+				F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */,
+				F899B9C92C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift */,
+				F8C4A0252C95E619004386D4 /* SetupFlowProjectLoad.swift */,
+			);
+			path = SetupFlow;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F89BA0A72C48C85A0006603C /* Inertia Pro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F89BA0B72C48C85B0006603C /* Build configuration list for PBXNativeTarget "Inertia Pro" */;
+			buildPhases = (
+				F89BA0A42C48C85A0006603C /* Sources */,
+				F89BA0A52C48C85A0006603C /* Frameworks */,
+				F89BA0A62C48C85A0006603C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Inertia Pro";
+			packageProductDependencies = (
+				F8EB6FCC2CD9D7CB001D978C /* Inertia */,
+				F8EB6FCF2CD9D7F3001D978C /* Inertia */,
+				F84A605A2CE3D3D900070036 /* Inertia */,
+			);
+			productName = "Vibe Animation";
+			productReference = F89BA0A82C48C85A0006603C /* Inertia Pro.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F89BA0A02C48C85A0006603C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					F89BA0A72C48C85A0006603C = {
+						CreatedOnToolsVersion = 15.2;
+					};
+				};
+			};
+			buildConfigurationList = F89BA0A32C48C85A0006603C /* Build configuration list for PBXProject "Inertia Pro" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F89BA09F2C48C85A0006603C;
+			packageReferences = (
+				F84A60592CE3D3D900070036 /* XCLocalSwiftPackageReference "runtime-swift/Inertia" */,
+			);
+			productRefGroup = F89BA0A92C48C85A0006603C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F89BA0A72C48C85A0006603C /* Inertia Pro */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F89BA0A62C48C85A0006603C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F81148232CBEC17E00326B61 /* animationsAdd.js in Resources */,
+				F84E8F1D2C65314C00DC20D6 /* actionablesAdd.js in Resources */,
+				F81148212CBEBF7E00326B61 /* animationsRemove.js in Resources */,
+				F89BA0B32C48C85B0006603C /* Preview Assets.xcassets in Resources */,
+				F84ABB562CBAD77500CA1933 /* actionablesRemove.js in Resources */,
+				F84ABB542CBAB56400CA1933 /* init.js in Resources */,
+				F89BA0B02C48C85B0006603C /* Assets.xcassets in Resources */,
+				F81148252CBEC1D900326B61 /* initInvokePlayback.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F89BA0A42C48C85A0006603C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8B4956C2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift in Sources */,
+				F89C08602C8742AA00F58F9A /* NavigationBackButton.swift in Sources */,
+				F8808EE72C86168D00713AAD /* RadioGroup.swift in Sources */,
+				F89C085C2C87317300F58F9A /* SetupActionButton.swift in Sources */,
+				F87838F62C5886E4009401EF /* WebRenderView.swift in Sources */,
+				F8C639A22C89509900B060CA /* SetupFlowCompilingScreen.swift in Sources */,
+				F86E02AC2C96DF1B005F6254 /* SetupFlowContainerScreen.swift in Sources */,
+				F89BA0AE2C48C85A0006603C /* EditorView.swift in Sources */,
+				F8DD5AAF2C7D40B4003A3330 /* ProjectsContainerView.swift in Sources */,
+				F89BA0BF2C48CD370006603C /* PanelView.swift in Sources */,
+				F8DD5AB12C7D421F003A3330 /* ProjectsContainerSplitView.swift in Sources */,
+				F87681252CA22AD90065CB6C /* SearchField.swift in Sources */,
+				F8641C442C978AA500E43338 /* VibeAppVM.swift in Sources */,
+				F89C08672C875AD700F58F9A /* SetupFlowBase.swift in Sources */,
+				F8C4A0262C95E619004386D4 /* SetupFlowProjectLoad.swift in Sources */,
+				F89C085E2C8734DB00F58F9A /* SetupTitleView.swift in Sources */,
+				F8B4956A2C87BC010076A42C /* VibeTextContainer.swift in Sources */,
+				F89C08692C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift in Sources */,
+				F8932C8B2C51D6AF00546975 /* MacRenderView.swift in Sources */,
+				F89BA0BB2C48CA280006603C /* Colors.swift in Sources */,
+				F8C2A87B2CAB75DF0054B165 /* AnimationsAttachedList.swift in Sources */,
+				F8DD5AB32C7D5AD0003A3330 /* ProjectsListView.swift in Sources */,
+				F89BA0BD2C48CBE10006603C /* MainLayout.swift in Sources */,
+				F8DD5AB92C7D5E89003A3330 /* ProjectButton.swift in Sources */,
+				F8B495682C87BBB90076A42C /* VibeTextField.swift in Sources */,
+				F86E02AE2C96DF39005F6254 /* SetupFlowStartScreen.swift in Sources */,
+				F8932C8D2C51D6F800546975 /* VirtualMachineView.swift in Sources */,
+				F8DD5AB52C7D5B38003A3330 /* LaunchLogo.swift in Sources */,
+				F87582412CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift in Sources */,
+				F89BA0AC2C48C85A0006603C /* Vibe_AnimationApp.swift in Sources */,
+				F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */,
+				F8C2A87D2CAB7C290054B165 /* AnimationsAvailableColumn.swift in Sources */,
+				F8744E342CDB06D300921BF9 /* AddressBar.swift in Sources */,
+				F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */,
+				F8C2A8792CAB75D50054B165 /* AnimationsList.swift in Sources */,
+				F89023E22CBC70F1000C9282 /* FocusIndicator.swift in Sources */,
+				F81316DF2CBCE36300266728 /* AttachAnimationButton.swift in Sources */,
+				F899B9CA2C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift in Sources */,
+				F899B9CC2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift in Sources */,
+				F89BA0C32C48D3880006603C /* RenderView.swift in Sources */,
+				F899B9CE2C88E21700633B83 /* SetupFlowCopyingScreen.swift in Sources */,
+				F8DD5AB72C7D5BD7003A3330 /* LaunchLogoTitle.swift in Sources */,
+				F810733F2C962A2F0061B761 /* MetaFile.swift in Sources */,
+				F89C08652C875ABB00F58F9A /* SetupFlowInfoScreen.swift in Sources */,
+				F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */,
+				F89BA0C12C48D0C80006603C /* CornerRadiusView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F89BA0B52C48C85B0006603C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F89BA0B62C48C85B0006603C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F89BA0B82C48C85B0006603C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = editor/Inertia_Pro.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"editor/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Inertia-Pro-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Inertia Pro";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vectorstudio.Inertia-Pro";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F89BA0B92C48C85B0006603C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = editor/Inertia_Pro.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"editor/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Inertia-Pro-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Inertia Pro";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vectorstudio.Inertia-Pro";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F89BA0A32C48C85A0006603C /* Build configuration list for PBXProject "Inertia Pro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F89BA0B52C48C85B0006603C /* Debug */,
+				F89BA0B62C48C85B0006603C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F89BA0B72C48C85B0006603C /* Build configuration list for PBXNativeTarget "Inertia Pro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F89BA0B82C48C85B0006603C /* Debug */,
+				F89BA0B92C48C85B0006603C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		F84A60592CE3D3D900070036 /* XCLocalSwiftPackageReference "runtime-swift/Inertia" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "runtime-swift/Inertia";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F84A605A2CE3D3D900070036 /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F8EB6FCC2CD9D7CB001D978C /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F8EB6FCF2CD9D7F3001D978C /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F89BA0A02C48C85A0006603C /* Project object */;
+}
