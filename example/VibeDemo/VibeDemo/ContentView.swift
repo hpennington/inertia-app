@@ -6,25 +6,22 @@
 //
 
 import SwiftUI
-import Vibe
+import Inertia
 
 struct ContentView: View {
     var body: some View {
         VStack {
-            Vibeable {
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundStyle(.tint)
-            }
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+                .vibeHello()
             
-            Vibeable {
-                VibeContainer(id: "animation2") {
-                    VStack {
-                        Vibeable {
-                            Text("Hello, world!")
-                        }
-                    }
+            VibeContainer(id: "animation2") {
+                VStack {
+                    Text("Hello, world!")
+                        .vibeHello()
                 }
+                
             }
         }
         .padding()

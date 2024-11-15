@@ -7,23 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F852BF222CE7F7A10099FB2D /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F852BF212CE7F7A10099FB2D /* Inertia */; };
+		F852BF262CE7F9C90099FB2D /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF232CE7F9C90099FB2D /* animation2.json */; };
+		F852BF272CE7F9C90099FB2D /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation1.json */; };
+		F852BF282CE7F9C90099FB2D /* animation3.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF252CE7F9C90099FB2D /* animation3.json */; };
 		F86317EC2C66DF05001DEE60 /* VibeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */; };
 		F86317EE2C66DF05001DEE60 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
 		F86317F02C66DF06001DEE60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
 		F86317F32C66DF06001DEE60 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
-		F86317FB2C66DF1B001DEE60 /* Vibe in Frameworks */ = {isa = PBXBuildFile; productRef = F86317FA2C66DF1B001DEE60 /* Vibe */; };
-		F8E75C2B2C6D9AEC001CBC2B /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F8E75C292C6D9AEC001CBC2B /* animation1.json */; };
-		F8E75C2C2C6D9AEC001CBC2B /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F8E75C2A2C6D9AEC001CBC2B /* animation2.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F852BF232CE7F9C90099FB2D /* animation2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation2.json; path = ../demo.vibe/animations/animation2.json; sourceTree = "<group>"; };
+		F852BF242CE7F9C90099FB2D /* animation1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation1.json; path = ../demo.vibe/animations/animation1.json; sourceTree = "<group>"; };
+		F852BF252CE7F9C90099FB2D /* animation3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation3.json; path = ../demo.vibe/animations/animation3.json; sourceTree = "<group>"; };
 		F86317E82C66DF05001DEE60 /* VibeDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VibeDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeDemoApp.swift; sourceTree = "<group>"; };
 		F86317ED2C66DF05001DEE60 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F86317EF2C66DF06001DEE60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		F8E75C292C6D9AEC001CBC2B /* animation1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = animation1.json; sourceTree = "<group>"; };
-		F8E75C2A2C6D9AEC001CBC2B /* animation2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = animation2.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F86317FB2C66DF1B001DEE60 /* Vibe in Frameworks */,
+				F852BF222CE7F7A10099FB2D /* Inertia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,8 +43,9 @@
 		F86317DF2C66DF05001DEE60 = {
 			isa = PBXGroup;
 			children = (
-				F8E75C292C6D9AEC001CBC2B /* animation1.json */,
-				F8E75C2A2C6D9AEC001CBC2B /* animation2.json */,
+				F852BF242CE7F9C90099FB2D /* animation1.json */,
+				F852BF232CE7F9C90099FB2D /* animation2.json */,
+				F852BF252CE7F9C90099FB2D /* animation3.json */,
 				F86317EA2C66DF05001DEE60 /* VibeDemo */,
 				F86317E92C66DF05001DEE60 /* Products */,
 			);
@@ -92,7 +95,7 @@
 			);
 			name = VibeDemo;
 			packageProductDependencies = (
-				F86317FA2C66DF1B001DEE60 /* Vibe */,
+				F852BF212CE7F7A10099FB2D /* Inertia */,
 			);
 			productName = VibeDemo;
 			productReference = F86317E82C66DF05001DEE60 /* VibeDemo.app */;
@@ -123,7 +126,7 @@
 			);
 			mainGroup = F86317DF2C66DF05001DEE60;
 			packageReferences = (
-				F86317F92C66DF1B001DEE60 /* XCLocalSwiftPackageReference "../../Vibe" */,
+				F852BF202CE7F7A10099FB2D /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */,
 			);
 			productRefGroup = F86317E92C66DF05001DEE60 /* Products */;
 			projectDirPath = "";
@@ -139,9 +142,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F852BF272CE7F9C90099FB2D /* animation1.json in Resources */,
 				F86317F32C66DF06001DEE60 /* Preview Assets.xcassets in Resources */,
-				F8E75C2C2C6D9AEC001CBC2B /* animation2.json in Resources */,
-				F8E75C2B2C6D9AEC001CBC2B /* animation1.json in Resources */,
+				F852BF282CE7F9C90099FB2D /* animation3.json in Resources */,
+				F852BF262CE7F9C90099FB2D /* animation2.json in Resources */,
 				F86317F02C66DF06001DEE60 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -303,9 +307,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.VibeDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -332,9 +340,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.VibeDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -362,16 +374,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F86317F92C66DF1B001DEE60 /* XCLocalSwiftPackageReference "../../Vibe" */ = {
+		F852BF202CE7F7A10099FB2D /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../Vibe;
+			relativePath = "../../runtime-swift/Inertia";
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F86317FA2C66DF1B001DEE60 /* Vibe */ = {
+		F852BF212CE7F7A10099FB2D /* Inertia */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Vibe;
+			productName = Inertia;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

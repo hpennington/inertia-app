@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Vibe
+import Inertia
 
 @main
 struct VibeDemoApp: App {
