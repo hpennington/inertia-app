@@ -126,20 +126,39 @@ func appendVibeModifier(of fileURL: URL) throws {
     var sourceFileContent = try String(contentsOf: fileURL)
     let sourceFile = Parser.parse(source: sourceFileContent)
     
-    class ViewHierarchyRewriter: SyntaxRewriter {
+    class SyntaxBodyRewriter: SyntaxRewriter {
         override func visit(_ node: VariableDeclSyntax) -> DeclSyntax {
             guard let binding = node.bindings.first(where: {
-                $0.pattern.as(IdentifierPatternSyntax.self)?.identifier.text == "body"
-                // TODO: Also somehow check that the same body is of some View
+                if $0.pattern.as(IdentifierPatternSyntax.self)?.identifier.text == "body" {
+                    return true
+                } else {
+                    return false
+                }
+                
             }) else {
                 return DeclSyntax(node)
             }
-                        
+            
+//            let rewriter = SyntaxFunctionCallRewriter()
+//            _ = rewriter.rewrite(node)
+            
             guard let accessorBlock = binding.accessorBlock else {
                 return DeclSyntax(node)
             }
+
+            
             
             let accessors = accessorBlock.accessors
+            guard let codeBlockItemList = accessors.as(CodeBlockItemListSyntax.self) else {
+                return DeclSyntax(node)
+            }
+            
+            for codeBlockElement in codeBlockItemList {
+                if codeBlockElement.item.syntaxNodeType == FunctionCallExprSyntax.self {
+                    print(FunctionCallExprSyntax(codeBlockElement.item)?.trailingClosure)
+                }
+            }
+            
             let newAccessors = accessors.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".vibeHello()")))
             let newAccessorBlock = accessorBlock.with(\.accessors, newAccessors)
             let newBinding = binding.with(\.accessorBlock, newAccessorBlock)
@@ -149,7 +168,7 @@ func appendVibeModifier(of fileURL: URL) throws {
         }
     }
 
-    let rewriter = ViewHierarchyRewriter()
+    let rewriter = SyntaxBodyRewriter()
     let updatedSource = rewriter.rewrite(sourceFile).description
     sourceFileContent = updatedSource
     // If "import Inertia" is not already present, find the insertion point after comments and imports
@@ -173,8 +192,8 @@ func appendVibeModifier(of fileURL: URL) throws {
     }
     
     // Save the updated source back to the original file
-    try sourceFileContent.write(to: fileURL, atomically: true, encoding: .utf8)
-    print("Updated file saved: \(fileURL.path)")
+//    try sourceFileContent.write(to: fileURL, atomically: true, encoding: .utf8)
+//    print("Updated file saved: \(fileURL.path)")
 }
 
 // Entry point

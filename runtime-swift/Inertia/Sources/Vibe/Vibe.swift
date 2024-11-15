@@ -87,9 +87,189 @@ public typealias VibeID = String
 //    }
 //}
 
+import Foundation
+
+func sendData(uri: URL, data: [String: Any]) {
+    let task = URLSession.shared.webSocketTask(with: uri)
+    task.resume()
+
+    do {
+        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+        guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+            print("Error: Could not encode JSON to String")
+            return
+        }
+        
+        let message = URLSessionWebSocketTask.Message.string(jsonString)
+        task.send(message) { error in
+            if let error = error {
+                print("Error sending message: \(error)")
+            } else {
+                print("Message sent: \(jsonString)")
+            }
+            
+            // Begin receiving responses
+            receiveMessage(task: task)
+        }
+        
+    } catch {
+        print("Error encoding data: \(error)")
+    }
+}
+
+func receiveMessage(task: URLSessionWebSocketTask) {
+    task.receive { result in
+        switch result {
+        case .failure(let error):
+            print("Error receiving message: \(error)")
+            task.cancel(with: .normalClosure, reason: nil)
+        case .success(let message):
+            switch message {
+            case .data(let data):
+                if let receivedString = String(data: data, encoding: .utf8) {
+                    print("Received message (data): \(receivedString)")
+                } else {
+                    print("Received binary data that could not be converted to string.")
+                }
+            case .string(let text):
+                print("Received message (text): \(text)")
+            @unknown default:
+                print("Received an unknown message type.")
+            }
+            
+            receiveMessage(task: task)
+        }
+    }
+}
+
+var connected = false
+
+
+import Foundation
+//
+//func getIPAddress() -> [String] {
+//    var addresses = [String]()
+//
+//    // Get list of all interfaces on the local machine:
+//    var ifaddr : UnsafeMutablePointer<ifaddrs>?
+//    guard getifaddrs(&ifaddr) == 0 else { return [] }
+//    guard let firstAddr = ifaddr else { return [] }
+//
+//    // For each interface ...
+//    for ptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
+//        let flags = Int32(ptr.pointee.ifa_flags)
+//        let addr = ptr.pointee.ifa_addr.pointee
+//
+//        // Check for running IPv4, IPv6 interfaces. Skip the loopback interface.
+//        if (flags & (IFF_UP|IFF_RUNNING|IFF_LOOPBACK)) == (IFF_UP|IFF_RUNNING) {
+//            if addr.sa_family == UInt8(AF_INET) || addr.sa_family == UInt8(AF_INET6) {
+//
+//                // Convert interface address to a human readable string:
+//                var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+//                if (getnameinfo(ptr.pointee.ifa_addr, socklen_t(addr.sa_len), &hostname, socklen_t(hostname.count),
+//                                nil, socklen_t(0), NI_NUMERICHOST) == 0) {
+//                    let address = String(cString: hostname)
+//                    addresses.append(address)
+//                }
+//            }
+//        }
+//    }
+//
+//    freeifaddrs(ifaddr)
+//    return addresses
+//}
+
+//func getHostIPAddressFromResolvConf() -> String? {
+//    guard let resolvContents = try? String(contentsOfFile: "/etc/resolv.conf") else { return nil }
+//
+//    let lines = resolvContents.components(separatedBy: "\n")
+//    for line in lines.reversed() {
+//        if line.starts(with: "nameserver") {
+//            let components = line.components(separatedBy: " ")
+//            if components.count > 1 {
+//                return components[1] // IP address
+//            }
+//        }
+//    }
+//    return nil
+//}
+//
+
+func getHostIPAddressFromResolvConf() -> String? {
+    guard let resolvContents = try? String(contentsOfFile: "/etc/resolv.conf") else {
+        print("Failed to read /etc/resolv.conf")
+        return nil
+    }
+    
+    let lines = resolvContents.components(separatedBy: "\n")
+    var potentialIPs = [String]()
+    
+    for line in lines {
+        if line.starts(with: "nameserver") {
+            let components = line.components(separatedBy: " ")
+            if components.count > 1 {
+                let ipAddress = components[1].trimmingCharacters(in: .whitespaces)
+                
+                // Simple IP address validation
+                if isValidIPAddress(ipAddress) {
+                    potentialIPs.append(ipAddress)
+                }
+            }
+        }
+    }
+    
+    if let firstValidIP = potentialIPs.first {
+        return firstValidIP
+    } else {
+        print("No valid IP addresses found in /etc/resolv.conf")
+        return nil
+    }
+}
+
+// Helper function to validate an IPv4 address format
+func isValidIPAddress(_ ipAddress: String) -> Bool {
+    let parts = ipAddress.split(separator: ".").map { Int($0) }
+    guard parts.count == 4, parts.allSatisfy({ $0 != nil && $0! >= 0 && $0! <= 255 }) else {
+        return false
+    }
+    return true
+}
+
+struct VibeHello<Content: View>: View {
+    let content: Content
+    
+    @State private var showSelectedBorder = false
+    
+    var body: some View {
+        content
+            .onTapGesture {
+                print("tapped \(content)")
+                showSelectedBorder.toggle()
+            }
+            .overlay {
+                if showSelectedBorder {
+                    Rectangle()
+                        .stroke(Color.green)
+                }
+            }
+            .onAppear {
+                if !connected {
+                    if let ip = getHostIPAddressFromResolvConf() {
+                        let uri = URL(string: "ws://\(ip):8060")!
+                        let data: [String: Any] = ["msg": "Sample message data text"]
+                        
+                        print("Starting to send data...")
+                        sendData(uri: uri, data: data)
+                        connected = true
+                    }
+                }
+            }
+    }
+}
+
 extension View {
-    public func vibeHello() -> some View {
-        self
+    public func vibeHello() ->  some View {
+        VibeHello(content: self)
     }
 }
 
@@ -213,4 +393,5 @@ func decodeVibeSchema(json: Data) -> VibeSchema? {
         return nil
     }
 }
+
 
