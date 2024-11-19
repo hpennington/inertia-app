@@ -13,10 +13,23 @@ private struct VibeDataModelKey: EnvironmentKey {
     static let defaultValue = VibeDataModel(containerId: "", vibeSchema: VibeSchema(id: "", objects: []))
 }
 
+private struct InertiaParentIDKey: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
 extension EnvironmentValues {
     var vibeDataModel: VibeDataModel {
         get { self[VibeDataModelKey.self] }
         set { self[VibeDataModelKey.self] = newValue }
+    }
+    
+    var inertiaParentID: String? {
+        get {
+            self[InertiaParentIDKey.self]
+        }
+        set {
+            self[InertiaParentIDKey.self] = newValue
+        }
     }
 }
 
@@ -31,19 +44,25 @@ public final class VibeDataModel {
 }
 
 public struct VibeContainer<Content: View>: View {
+    @Environment(\.inertiaParentID) var inertiaParentID
     let bundle: Bundle
     let id: VibeID
+    let hierarchyID: String
     
     @State private var vibeDataModel: VibeDataModel
+//    @State private var hierarchyID = UUID().uuidString
+    @State private var hierarchyPath: [String] = []
     @ViewBuilder let content: () -> Content
     
     public init(
         bundle: Bundle = Bundle.main,
         id: VibeID,
+        hierarchyID: String,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.bundle = bundle
         self.id = id
+        self.hierarchyID = hierarchyID
         self.content = content
         
         // TODO: - Solve error handling when file is missing or schema is wrong
@@ -70,6 +89,27 @@ public struct VibeContainer<Content: View>: View {
     public var body: some View {
         content()
             .environment(\.vibeDataModel, self.vibeDataModel)
+            .environment(\.inertiaParentID, self.hierarchyID)
+
+//            .onChange(of: hierarchyPath) { newValue in
+//                print(newValue)
+//            }
+            .onAppear {
+//                if inertiaParentID != nil {
+                    print("onAppear: hID: \(hierarchyID)")
+//                    hierarchyPath.append(hierarchyID)
+//                }
+            }
+            .preference(key: ParentPath.self, value: hierarchyPath)
+            .onPreferenceChange(ParentPath.self) { value in
+//                hierarchyPath.append(contentsOf: value)
+//                print(value)
+//                hierarchyPath = value
+//                hierarchyPath.append(hierarchyID)
+                if !value.isEmpty {
+                    print("onPreferenceChange: hID: \(hierarchyID), path: \(value)")
+                }
+            }
     }
 }
 
@@ -235,13 +275,27 @@ func isValidIPAddress(_ ipAddress: String) -> Bool {
     return true
 }
 
+struct ParentPath: PreferenceKey {
+    static var defaultValue: [String] = []
+    
+    static func reduce(value: inout [String], nextValue: () -> [String]) {
+        value += nextValue()
+    }
+}
+
 struct VibeHello<Content: View>: View {
+    let hierarchyID: String
     let content: Content
     
+    @Environment(\.inertiaParentID) var inertiaParentID
+    
     @State private var showSelectedBorder = false
+//    @State private var hierarchyID = UUID().uuidString
+    @State private var hierarchyPath: [String] = []
     
     var body: some View {
         content
+            .environment(\.inertiaParentID, hierarchyID)
             .onTapGesture {
                 print("tapped \(content)")
                 showSelectedBorder.toggle()
@@ -264,12 +318,31 @@ struct VibeHello<Content: View>: View {
                     }
                 }
             }
+            .onAppear {
+//                if inertiaParentID != nil {
+                    print("onAppear: hID: \(hierarchyID)")
+                    hierarchyPath.append(hierarchyID)
+//                }
+            }
+            .preference(key: ParentPath.self, value: hierarchyPath)
+            .onPreferenceChange(ParentPath.self) { value in
+//                hierarchyPath.append(contentsOf: value)
+                if !value.isEmpty {
+                    print("onPreferenceChange: hID: \(hierarchyID), path: \(value)")
+                    if !hierarchyPath.contains(value) {
+                        hierarchyPath.append(contentsOf: value)
+                    }
+                }
+                
+//                hierarchyPath = value
+//                hierarchyPath.append(hierarchyID)
+            }
     }
 }
 
 extension View {
-    public func vibeHello() ->  some View {
-        VibeHello(content: self)
+    public func vibeHello(hierarchyID: String) ->  some View {
+        VibeHello(hierarchyID: hierarchyID, content: self)
     }
 }
 

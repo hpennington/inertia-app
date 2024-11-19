@@ -12,8 +12,10 @@ import Inertia
 struct VibeDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            VibeContainer(id: "animation1") {
-                ContentView()
+            Group { // Never place VibeContainer as the first elemetn in the WindowGroup or onAppear will fire in different order.
+                VibeContainer(id: "animation1", hierarchyID: "4") {
+                    ContentView()
+                }
             }
         }
     }
