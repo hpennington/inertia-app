@@ -13,10 +13,13 @@ import Virtualization
 import Foundation
 import Network
 
+@Observable
 class WebSocketServer {
     let listener: NWListener
     var clients: [UUID: NWConnection] = [:]
-
+    var tree: Tree?
+    var actionableIds: Set<String> = Set()
+    
     init(port: UInt16) throws {
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
@@ -56,9 +59,17 @@ class WebSocketServer {
                 return
             }
 
-            if let data = data, !data.isEmpty, let message = String(data: data, encoding: .utf8) {
-                print("Received message from client \(clientId): \(message)")
-                self?.sendMessage("Echo: \(message)", to: connection)
+            if let data = data, !data.isEmpty {
+                guard let msg = try? JSONDecoder().decode(WebSocketSharedManager.MessageItem.self, from: data) else {
+                    print("Failed to Decode Message")
+                    return
+                }
+                print("Received message from client \(clientId): \(msg)")
+//                self?.sendMessage(data, to: connection)
+                
+                self?.tree = msg.tree
+                self?.actionableIds = msg.actionableIds
+                
             }
 
             // Continue listening for more messages
@@ -66,15 +77,15 @@ class WebSocketServer {
         }
     }
 
-    private func sendMessage(_ message: String, to connection: NWConnection) {
-        let messageData = message.data(using: .utf8) ?? Data()
+    private func sendMessage(_ messageData: Data, to connection: NWConnection) {
+//        let messageData = message.data(using: .utf8) ?? Data()
         let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .text)])
         
         connection.send(content: messageData, contentContext: context, isComplete: true, completion: .contentProcessed { error in
             if let error = error {
                 print("Error sending message: \(error)")
             } else {
-                print("Sent message to client: \(message)")
+                print("Sent message to client: \(messageData)")
             }
         })
     }
@@ -176,7 +187,7 @@ struct EditorView: View {
     @State private var installerFatory: MacOSVMInstalledFactory? = nil
     
     @State private var server = try! WebSocketServer(port: 8060)
-
+    
     let paths = VirtualMachinePaths()
     @Binding var url: String
     let framework: SetupFlowFramework
@@ -337,13 +348,13 @@ struct EditorView: View {
             }
             
         })
-        .flatMap({$0}))
+            .flatMap({$0}))
         
         let animationArgs = relavantAnimations.compactMap { (element: EditorView.Animation) -> String? in
             guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
                 return nil
             }
-
+            
             guard let container = self.animations.first(where: {$0.id == schema.id}) else {
                 return nil
             }
@@ -390,7 +401,7 @@ struct EditorView: View {
         let removeSuccess = await cleanAnimations()
         
         if removeSuccess {
-            let invokeSuccess = await invokePlayback()            
+            let invokeSuccess = await invokePlayback()
         }
     }
     
@@ -417,11 +428,88 @@ struct EditorView: View {
     @State private var isVmLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     
+    func convertTreeToListTreeArray(tree: Tree, actionableIds: Set<String>) -> [ListTree<String>] {
+        guard let rootNode = tree.rootNode else {
+            return [] // If there's no root node, return an empty array
+        }
+        // Convert the root node and its children into a ListTree structure
+        return [createListTree(from: rootNode, parent: nil, actionableIds: actionableIds)]
+    }
+
+    private func createListTree(
+        from node: Node,
+        parent: ListTree<String>?,
+        actionableIds: Set<String>
+    ) -> ListTree<String> {
+        // Create a new ListTree node for the current node
+        let currentListTree = ListTree(value: node.id, selected: actionableIds.contains(node.id))
+        currentListTree.parent = parent
+        
+        // Process children recursively and link them to the current node
+        currentListTree.children = node.children?.map { childNode in
+            createListTree(from: childNode, parent: currentListTree, actionableIds: actionableIds)
+        }
+        
+        return currentListTree
+    }
+
+    class ListTree<Value: Hashable>: Hashable {
+        let value: Value
+        var children: [ListTree]? = nil
+        weak var parent: ListTree? = nil
+        
+        var selected: Bool
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(value)
+        }
+        
+        public static func ==(lhs: ListTree, rhs: ListTree) -> Bool {
+            lhs.value == rhs.value
+        }
+        
+        init(value: Value, children: [ListTree]? = nil, parent: ListTree? = nil, selected: Bool = false) {
+            self.value = value
+            self.children = children
+            self.parent = parent
+            self.selected = selected
+        }
+    }
+    
+    var treeData: [ListTree<String>]? {
+        guard let tree = server.tree else {
+            return nil
+        }
+        
+        let actionableIds = server.actionableIds
+        
+        return convertTreeToListTreeArray(tree: tree, actionableIds: actionableIds)
+    }
+    
+    @ViewBuilder
+    var treeView: some View {
+        if let treeData {
+            List(treeData, id: \.value, children: \.children, selection: $server.actionableIds) { element in
+                Text(element.value)
+                    .tag(element.value)
+            }
+            .listStyle(.sidebar)
+            .padding(.top, 48)
+            
+        } else {
+            EmptyView()
+        }
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
                 PanelView()
                     .frame(width: hierarchyViewWidth)
+                    .frame(maxHeight: .infinity)
+                    .overlay {
+                        treeView
+                    }
             } content: {
                 Group {
                     switch framework {

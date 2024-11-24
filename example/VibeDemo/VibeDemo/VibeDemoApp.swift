@@ -12,9 +12,10 @@ import Inertia
 struct VibeDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            Group { // Never place VibeContainer as the first elemetn in the WindowGroup or onAppear will fire in different order.
-                VibeContainer(id: "animation1", hierarchyID: "4") {
+            VibeContainer(id: "animation1", hierarchyID: "7") {
+                HStack {
                     ContentView()
+                        .vibeHello(hierarchyID: "6")
                 }
             }
         }

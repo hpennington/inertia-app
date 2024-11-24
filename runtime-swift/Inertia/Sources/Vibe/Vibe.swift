@@ -9,16 +9,193 @@ import SwiftUI
 
 public typealias VibeID = String
 
+public class Node: Identifiable, Codable, CustomStringConvertible {
+    public let id: String
+    public var children: [Node]? = []
+    
+    init(id: String) {
+        self.id = id
+    }
+    
+    func addChild(_ child: Node) {
+        children?.append(child)
+//        child.parent = self
+    }
+    
+    public var description: String {
+        "{id: \(id), children: \(children)}"
+    }
+}
+
+public struct Tree: Codable, CustomStringConvertible {
+    private var nodeMap: [String: Node] = [:]
+    public var rootNode: Node?
+
+    mutating func addRelationship(id: String, parentId: String?, root: Bool) {
+        // Get or create the current node
+        let currentNode = nodeMap[id] ?? {
+            let newNode = Node(id: id)
+            nodeMap[id] = newNode
+            return newNode
+        }()
+
+        if let parentId = parentId {
+            // Get or create the parent node
+            let parentNode = nodeMap[parentId] ?? {
+                let newNode = Node(id: parentId)
+                nodeMap[parentId] = newNode
+                return newNode
+            }()
+
+            if root {
+                // If explicitly marked as root, set it as the root node
+                // Establish parent-child relationship
+                parentNode.addChild(currentNode)
+                rootNode = parentNode
+            } else {
+                parentNode.addChild(currentNode)
+                rootNode = currentNode
+            }
+        }
+    }
+    
+    public var description: String {
+        "root: \(rootNode)"
+    }
+}
+//
+//class Node: Codable, CustomStringConvertible {
+//    var description: String {
+//        "{id: \(id), parent: \(parent?.id ?? "nil"), children: \(children.map(\.id))}"
+//    }
+//    
+//    let id: String
+//    weak var parent: Node? // Use `weak` to avoid retain cycles
+//    var children: [Node] = []
+//    
+//    init(id: String) {
+//        self.id = id
+//    }
+//    
+//    func addChild(_ child: Node) {
+//        children.append(child)
+//        child.parent = self
+//    }
+//    
+//    // Custom CodingKeys to avoid cycles
+//    enum CodingKeys: String, CodingKey {
+//        case id
+//        case children
+//    }
+//    
+//    // Custom encoding to only include IDs of children
+//    func encode(to encoder: Encoder) throws {
+//        var container = encoder.container(keyedBy: CodingKeys.self)
+//        try container.encode(id, forKey: .id)
+//        try container.encode(children.map(\.id), forKey: .children)
+//    }
+//    
+//    // Custom decoding
+//    required init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        id = try container.decode(String.self, forKey: .id)
+//        let childIDs = try container.decode([String].self, forKey: .children)
+//        // Temporary placeholder for children (should be resolved in Tree)
+//        children = childIDs.map { Node(id: $0) }
+//    }
+//}
+//
+//public class Tree: Codable, CustomStringConvertible {
+//    public var description: String {
+//        "Root: \(rootNode?.description ?? "nil")"
+//    }
+//    
+//    private var nodeMap: [String: Node] = [:]
+//    var rootNode: Node?
+//
+//    func addRelationship(id: String, parentId: String?, root: Bool) {
+//        let currentNode = nodeMap[id] ?? {
+//            let newNode = Node(id: id)
+//            nodeMap[id] = newNode
+//            return newNode
+//        }()
+//
+//        if let parentId = parentId {
+//            let parentNode = nodeMap[parentId] ?? {
+//                let newNode = Node(id: parentId)
+//                nodeMap[parentId] = newNode
+//                return newNode
+//            }()
+//
+//            if root {
+//                parentNode.addChild(currentNode)
+//                rootNode = parentNode
+//            } else {
+//                parentNode.addChild(currentNode)
+//                rootNode = currentNode
+//            }
+//        }
+//    }
+//    
+//    // Custom CodingKeys
+//    enum CodingKeys: String, CodingKey {
+//        case nodes
+//        case rootNode
+//    }
+//    
+//    // Encode nodes and root node
+//    public func encode(to encoder: Encoder) throws {
+//        var container = encoder.container(keyedBy: CodingKeys.self)
+//        
+//        // Convert `nodeMap.values` to an Array of Nodes
+//        let nodesArray = Array(nodeMap.values)
+//        try container.encode(nodesArray, forKey: .nodes)
+//        try container.encode(rootNode?.id, forKey: .rootNode)
+//    }
+//    
+//    init() {
+//        
+//    }
+//
+//    // Decode nodes and resolve relationships
+//    public required init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        let nodes = try container.decode([Node].self, forKey: .nodes)
+//        let rootID = try container.decodeIfPresent(String.self, forKey: .rootNode)
+//
+//        // Rebuild the node map
+//        for node in nodes {
+//            nodeMap[node.id] = node
+//        }
+//        
+//        // Resolve children relationships
+//        for node in nodes {
+//            for childID in node.children.map(\.id) {
+//                if let childNode = nodeMap[childID] {
+//                    childNode.parent = node
+//                    node.children = node.children.map { $0.id == childID ? childNode : $0 }
+//                }
+//            }
+//        }
+//        
+//        rootNode = rootID.flatMap { nodeMap[$0] }
+//    }
+//}
+
 private struct VibeDataModelKey: EnvironmentKey {
-    static let defaultValue = VibeDataModel(containerId: "", vibeSchema: VibeSchema(id: "", objects: []))
+    static let defaultValue: VibeDataModel? = nil
 }
 
 private struct InertiaParentIDKey: EnvironmentKey {
     static let defaultValue: String? = nil
 }
 
+private struct IsInertiaContainerKey: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
 extension EnvironmentValues {
-    var vibeDataModel: VibeDataModel {
+    var vibeDataModel: VibeDataModel? {
         get { self[VibeDataModelKey.self] }
         set { self[VibeDataModelKey.self] = newValue }
     }
@@ -31,27 +208,38 @@ extension EnvironmentValues {
             self[InertiaParentIDKey.self] = newValue
         }
     }
+    
+    var isInertiaContainer: Bool {
+        get {
+            self[IsInertiaContainerKey.self]
+        }
+        set {
+            self[IsInertiaContainerKey.self] = newValue
+        }
+    }
 }
+
+
 
 public final class VibeDataModel {
     public let containerId: VibeID
     public let vibeSchema: VibeSchema
+    public var tree: Tree
+    public var actionableIds: Set<String>
     
-    public init(containerId: VibeID, vibeSchema: VibeSchema) {
+    public init(containerId: VibeID, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<String>) {
         self.containerId = containerId
         self.vibeSchema = vibeSchema
+        self.tree = tree
+        self.actionableIds = actionableIds
     }
 }
 
 public struct VibeContainer<Content: View>: View {
-    @Environment(\.inertiaParentID) var inertiaParentID
     let bundle: Bundle
     let id: VibeID
     let hierarchyID: String
-    
     @State private var vibeDataModel: VibeDataModel
-//    @State private var hierarchyID = UUID().uuidString
-    @State private var hierarchyPath: [String] = []
     @ViewBuilder let content: () -> Content
     
     public init(
@@ -70,7 +258,7 @@ public struct VibeContainer<Content: View>: View {
             let schemaText = try! String(contentsOf: url, encoding: .utf8)
             if let data = schemaText.data(using: .utf8),
                let schema = decodeVibeSchema(json: data) {
-                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id, vibeSchema: schema))
+                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id, vibeSchema: schema, tree: Tree(), actionableIds: Set()))
             } else {
                 fatalError()
             }
@@ -88,152 +276,84 @@ public struct VibeContainer<Content: View>: View {
     
     public var body: some View {
         content()
+            .environment(\.inertiaParentID, hierarchyID)
             .environment(\.vibeDataModel, self.vibeDataModel)
-            .environment(\.inertiaParentID, self.hierarchyID)
-
-//            .onChange(of: hierarchyPath) { newValue in
-//                print(newValue)
-//            }
-            .onAppear {
-//                if inertiaParentID != nil {
-                    print("onAppear: hID: \(hierarchyID)")
-//                    hierarchyPath.append(hierarchyID)
-//                }
-            }
-            .preference(key: ParentPath.self, value: hierarchyPath)
-            .onPreferenceChange(ParentPath.self) { value in
-//                hierarchyPath.append(contentsOf: value)
-//                print(value)
-//                hierarchyPath = value
-//                hierarchyPath.append(hierarchyID)
-                if !value.isEmpty {
-                    print("onPreferenceChange: hID: \(hierarchyID), path: \(value)")
-                }
-            }
+            .environment(\.isInertiaContainer, true)
     }
 }
 
-//public struct Vibeable<Content: View>: View {
-//    @ViewBuilder let content: () -> Content
-//    
-//    public init(
-//        @ViewBuilder content: @escaping () -> Content
-//    ) {
-//        self.content = content
-//    }
-//    
-//    public var body: some View {
-//        content()
-//    }
-//}
+public class WebSocketSharedManager {
+    var task: URLSessionWebSocketTask? = nil
+    var isConnected: Bool = false
+    
+    static let shared = WebSocketSharedManager()
 
-import Foundation
-
-func sendData(uri: URL, data: [String: Any]) {
-    let task = URLSession.shared.webSocketTask(with: uri)
-    task.resume()
-
-    do {
-        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-        guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-            print("Error: Could not encode JSON to String")
-            return
-        }
+    init() {
         
-        let message = URLSessionWebSocketTask.Message.string(jsonString)
-        task.send(message) { error in
-            if let error = error {
-                print("Error sending message: \(error)")
-            } else {
-                print("Message sent: \(jsonString)")
-            }
-            
-            // Begin receiving responses
-            receiveMessage(task: task)
-        }
-        
-    } catch {
-        print("Error encoding data: \(error)")
     }
-}
+    
+    func connect(uri: URL) {
+        self.task = URLSession.shared.webSocketTask(with: uri)
+        self.task?.resume()
+        isConnected = true
+    }
+    
+    public struct MessageItem: Codable {
+        public let tree: Tree
+        public let actionableIds: Set<String>
+    }
+    
+    func sendData(message: MessageItem) {
+        do {
+            guard let jsonData = try? JSONEncoder().encode(message) else {
+                print("Error: Could not encode JSON to data")
+                 return
+            }
 
-func receiveMessage(task: URLSessionWebSocketTask) {
-    task.receive { result in
-        switch result {
-        case .failure(let error):
-            print("Error receiving message: \(error)")
-            task.cancel(with: .normalClosure, reason: nil)
-        case .success(let message):
-            switch message {
-            case .data(let data):
-                if let receivedString = String(data: data, encoding: .utf8) {
-                    print("Received message (data): \(receivedString)")
+            let messageData = URLSessionWebSocketTask.Message.data(jsonData)
+            task?.send(messageData) { error in
+                if let error = error {
+                    print("Error sending message: \(error)")
                 } else {
-                    print("Received binary data that could not be converted to string.")
+                    print("Message sent: \(messageData)")
                 }
-            case .string(let text):
-                print("Received message (text): \(text)")
-            @unknown default:
-                print("Received an unknown message type.")
+                
+                // Begin receiving responses
+                if let task = self.task {
+                    self.receiveMessage(task: task)
+                }
             }
             
-            receiveMessage(task: task)
+        } catch {
+            print("Error encoding data: \(error)")
+        }
+    }
+    
+    func receiveMessage(task: URLSessionWebSocketTask) {
+        task.receive { result in
+            switch result {
+            case .failure(let error):
+                print("Error receiving message: \(error)")
+                task.cancel(with: .normalClosure, reason: nil)
+            case .success(let message):
+                switch message {
+                case .data(let data):
+                    if let receivedString = try? JSONDecoder().decode(Tree.self, from: data) {
+                        print("Received message (data): \(receivedString)")
+                    } else {
+                        print("Received binary data that could not be converted to string.")
+                    }
+                case .string(let text):
+                    print("Received message (text): \(text)")
+                @unknown default:
+                    print("Received an unknown message type.")
+                }
+                
+                self.receiveMessage(task: task)
+            }
         }
     }
 }
-
-var connected = false
-
-
-import Foundation
-//
-//func getIPAddress() -> [String] {
-//    var addresses = [String]()
-//
-//    // Get list of all interfaces on the local machine:
-//    var ifaddr : UnsafeMutablePointer<ifaddrs>?
-//    guard getifaddrs(&ifaddr) == 0 else { return [] }
-//    guard let firstAddr = ifaddr else { return [] }
-//
-//    // For each interface ...
-//    for ptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
-//        let flags = Int32(ptr.pointee.ifa_flags)
-//        let addr = ptr.pointee.ifa_addr.pointee
-//
-//        // Check for running IPv4, IPv6 interfaces. Skip the loopback interface.
-//        if (flags & (IFF_UP|IFF_RUNNING|IFF_LOOPBACK)) == (IFF_UP|IFF_RUNNING) {
-//            if addr.sa_family == UInt8(AF_INET) || addr.sa_family == UInt8(AF_INET6) {
-//
-//                // Convert interface address to a human readable string:
-//                var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-//                if (getnameinfo(ptr.pointee.ifa_addr, socklen_t(addr.sa_len), &hostname, socklen_t(hostname.count),
-//                                nil, socklen_t(0), NI_NUMERICHOST) == 0) {
-//                    let address = String(cString: hostname)
-//                    addresses.append(address)
-//                }
-//            }
-//        }
-//    }
-//
-//    freeifaddrs(ifaddr)
-//    return addresses
-//}
-
-//func getHostIPAddressFromResolvConf() -> String? {
-//    guard let resolvContents = try? String(contentsOfFile: "/etc/resolv.conf") else { return nil }
-//
-//    let lines = resolvContents.components(separatedBy: "\n")
-//    for line in lines.reversed() {
-//        if line.starts(with: "nameserver") {
-//            let components = line.components(separatedBy: " ")
-//            if components.count > 1 {
-//                return components[1] // IP address
-//            }
-//        }
-//    }
-//    return nil
-//}
-//
 
 func getHostIPAddressFromResolvConf() -> String? {
     guard let resolvContents = try? String(contentsOfFile: "/etc/resolv.conf") else {
@@ -276,10 +396,10 @@ func isValidIPAddress(_ ipAddress: String) -> Bool {
 }
 
 struct ParentPath: PreferenceKey {
-    static var defaultValue: [String] = []
+    static var defaultValue: [String]? = nil
     
-    static func reduce(value: inout [String], nextValue: () -> [String]) {
-        value += nextValue()
+    static func reduce(value: inout [String]?, nextValue: () -> [String]?) {
+        value? += nextValue() ?? []
     }
 }
 
@@ -287,18 +407,49 @@ struct VibeHello<Content: View>: View {
     let hierarchyID: String
     let content: Content
     
+    @Environment(\.vibeDataModel) var vibeDataModel
     @Environment(\.inertiaParentID) var inertiaParentID
+    @Environment(\.isInertiaContainer) var isInertiaContainer
     
     @State private var showSelectedBorder = false
-//    @State private var hierarchyID = UUID().uuidString
-    @State private var hierarchyPath: [String] = []
+    let manager = WebSocketSharedManager.shared
     
     var body: some View {
         content
             .environment(\.inertiaParentID, hierarchyID)
+            .environment(\.isInertiaContainer, false)
             .onTapGesture {
                 print("tapped \(content)")
                 showSelectedBorder.toggle()
+                
+                guard let vibeDataModel else {
+                    return
+                }
+                
+                
+                
+                if vibeDataModel.actionableIds.contains(hierarchyID) {
+                    vibeDataModel.actionableIds.remove(hierarchyID)
+                } else {
+                    vibeDataModel.actionableIds.insert(hierarchyID)
+                }
+                
+                if let ip = getHostIPAddressFromResolvConf() {
+                    let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                    
+                    print("Starting to send data...")
+                    
+                    if !manager.isConnected {
+                        manager.connect(uri: uri)
+                    }
+                    
+                    let tree = vibeDataModel.tree
+                    let actionableIds = vibeDataModel.actionableIds
+                    let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
+                    manager.sendData(message: message)
+                }
+                
             }
             .overlay {
                 if showSelectedBorder {
@@ -307,35 +458,25 @@ struct VibeHello<Content: View>: View {
                 }
             }
             .onAppear {
-                if !connected {
-                    if let ip = getHostIPAddressFromResolvConf() {
-                        let uri = URL(string: "ws://\(ip):8060")!
-                        let data: [String: Any] = ["msg": "Sample message data text"]
-                        
-                        print("Starting to send data...")
-                        sendData(uri: uri, data: data)
-                        connected = true
+                print("onAppear: \(hierarchyID)")
+                vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, root: isInertiaContainer)
+                print(vibeDataModel?.tree)
+                    
+                if let ip = getHostIPAddressFromResolvConf() {
+                    let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                    
+                    print("Starting to send data...")
+                    
+                    if !manager.isConnected {
+                        manager.connect(uri: uri)
+                    }
+                    
+                    if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
+                        let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
+                        manager.sendData(message: message)
                     }
                 }
-            }
-            .onAppear {
-//                if inertiaParentID != nil {
-                    print("onAppear: hID: \(hierarchyID)")
-                    hierarchyPath.append(hierarchyID)
-//                }
-            }
-            .preference(key: ParentPath.self, value: hierarchyPath)
-            .onPreferenceChange(ParentPath.self) { value in
-//                hierarchyPath.append(contentsOf: value)
-                if !value.isEmpty {
-                    print("onPreferenceChange: hID: \(hierarchyID), path: \(value)")
-                    if !hierarchyPath.contains(value) {
-                        hierarchyPath.append(contentsOf: value)
-                    }
-                }
-                
-//                hierarchyPath = value
-//                hierarchyPath.append(hierarchyID)
             }
     }
 }
