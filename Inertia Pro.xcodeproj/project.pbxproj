@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */; };
+		F8067EF62CF4C2DA002E7B89 /* TreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8067EF52CF4C2DA002E7B89 /* TreeView.swift */; };
 		F810733F2C962A2F0061B761 /* MetaFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F810733E2C962A2F0061B761 /* MetaFile.swift */; };
 		F81148212CBEBF7E00326B61 /* animationsRemove.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148202CBEBF7E00326B61 /* animationsRemove.js */; };
 		F81148232CBEC17E00326B61 /* animationsAdd.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148222CBEC17E00326B61 /* animationsAdd.js */; };
@@ -68,6 +69,7 @@
 
 /* Begin PBXFileReference section */
 		F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSVMInstaller.swift; sourceTree = "<group>"; };
+		F8067EF52CF4C2DA002E7B89 /* TreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeView.swift; sourceTree = "<group>"; };
 		F810733E2C962A2F0061B761 /* MetaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaFile.swift; sourceTree = "<group>"; };
 		F81148202CBEBF7E00326B61 /* animationsRemove.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsRemove.js; sourceTree = "<group>"; };
 		F81148222CBEC17E00326B61 /* animationsAdd.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsAdd.js; sourceTree = "<group>"; };
@@ -140,6 +142,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F8067EF42CF4C2B5002E7B89 /* ViewHierarchy */ = {
+			isa = PBXGroup;
+			children = (
+				F8067EF52CF4C2DA002E7B89 /* TreeView.swift */,
+			);
+			path = ViewHierarchy;
+			sourceTree = "<group>";
+		};
 		F81073402C962A3B0061B761 /* Project File Format */ = {
 			isa = PBXGroup;
 			children = (
@@ -191,6 +201,7 @@
 				F89023E12CBC70F1000C9282 /* FocusIndicator.swift */,
 				F89C085D2C8734DB00F58F9A /* SetupTitleView.swift */,
 				F8DD5AB42C7D5B38003A3330 /* LaunchLogo.swift */,
+				F8067EF42CF4C2B5002E7B89 /* ViewHierarchy */,
 				F89C08632C875AAE00F58F9A /* SetupFlow */,
 				F89BA0AD2C48C85A0006603C /* EditorView.swift */,
 				F87681242CA22AD90065CB6C /* SearchField.swift */,
@@ -378,6 +389,7 @@
 				F899B9CE2C88E21700633B83 /* SetupFlowCopyingScreen.swift in Sources */,
 				F8DD5AB72C7D5BD7003A3330 /* LaunchLogoTitle.swift in Sources */,
 				F810733F2C962A2F0061B761 /* MetaFile.swift in Sources */,
+				F8067EF62CF4C2DA002E7B89 /* TreeView.swift in Sources */,
 				F89C08652C875ABB00F58F9A /* SetupFlowInfoScreen.swift in Sources */,
 				F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */,
 				F89BA0C12C48D0C80006603C /* CornerRadiusView.swift in Sources */,

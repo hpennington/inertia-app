@@ -424,77 +424,48 @@ struct EditorView: View {
         return map
     }
     
+    func transformTreeToTreeItems(node: Node) -> TreeItem {
+        var childrenOut: [TreeItem]? = nil
+        if let children = node.children {
+            for child in children {
+                childrenOut?.append(transformTreeToTreeItems(node: child))
+            }
+        }
+        
+        return TreeItem(id: node.id, displayName: node.id, children: childrenOut)
+    }
+    
     @State private var installOpacity = CGFloat.zero
     @State private var isVmLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     
-    func convertTreeToListTreeArray(tree: Tree, actionableIds: Set<String>) -> [ListTree<String>] {
-        guard let rootNode = tree.rootNode else {
-            return [] // If there's no root node, return an empty array
-        }
-        // Convert the root node and its children into a ListTree structure
-        return [createListTree(from: rootNode, parent: nil, actionableIds: actionableIds)]
+    func convertTreeToTreeItem(tree: Tree) -> TreeItem? {
+        guard let rootNode = tree.rootNode else { return nil }
+        return convertNodeToTreeItem(node: rootNode)
     }
 
-    private func createListTree(
-        from node: Node,
-        parent: ListTree<String>?,
-        actionableIds: Set<String>
-    ) -> ListTree<String> {
-        // Create a new ListTree node for the current node
-        let currentListTree = ListTree(value: node.id, selected: actionableIds.contains(node.id))
-        currentListTree.parent = parent
-        
-        // Process children recursively and link them to the current node
-        currentListTree.children = node.children?.map { childNode in
-            createListTree(from: childNode, parent: currentListTree, actionableIds: actionableIds)
-        }
-        
-        return currentListTree
-    }
-
-    class ListTree<Value: Hashable>: Hashable {
-        let value: Value
-        var children: [ListTree]? = nil
-        weak var parent: ListTree? = nil
-        
-        var selected: Bool
-        
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(value)
-        }
-        
-        public static func ==(lhs: ListTree, rhs: ListTree) -> Bool {
-            lhs.value == rhs.value
-        }
-        
-        init(value: Value, children: [ListTree]? = nil, parent: ListTree? = nil, selected: Bool = false) {
-            self.value = value
-            self.children = children
-            self.parent = parent
-            self.selected = selected
-        }
-    }
-    
-    var treeData: [ListTree<String>]? {
-        guard let tree = server.tree else {
-            return nil
-        }
-        
-        let actionableIds = server.actionableIds
-        
-        return convertTreeToListTreeArray(tree: tree, actionableIds: actionableIds)
+    private func convertNodeToTreeItem(node: Node) -> TreeItem {
+        let children = node.children?.map { convertNodeToTreeItem(node: $0) } ?? []
+        return TreeItem(
+            id: node.id,
+            displayName: node.id, // Use `id` directly as `displayName`
+            children: children.isEmpty ? nil : children
+        )
     }
     
     @ViewBuilder
     var treeView: some View {
-        if let treeData {
-            List(treeData, id: \.value, children: \.children, selection: $server.actionableIds) { element in
-                Text(element.value)
-                    .tag(element.value)
+        if let tree = server.tree {
+            if let rootItem = convertTreeToTreeItem(tree: tree) {
+                TreeView(rootItem: rootItem, isSelected: $server.actionableIds)
+                    .onAppear {
+                        print(rootItem)
+                    }
+                    .padding(.vertical, 42)
+                    .padding(.horizontal, 24)
+            } else {
+                EmptyView()
             }
-            .listStyle(.sidebar)
-            .padding(.top, 48)
             
         } else {
             EmptyView()
@@ -507,7 +478,7 @@ struct EditorView: View {
                 PanelView()
                     .frame(width: hierarchyViewWidth)
                     .frame(maxHeight: .infinity)
-                    .overlay {
+                    .overlay(alignment: .topLeading) {
                         treeView
                     }
             } content: {
