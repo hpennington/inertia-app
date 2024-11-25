@@ -348,7 +348,7 @@ struct EditorView: View {
             }
             
         })
-            .flatMap({$0}))
+        .flatMap({$0}))
         
         let animationArgs = relavantAnimations.compactMap { (element: EditorView.Animation) -> String? in
             guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
@@ -457,7 +457,7 @@ struct EditorView: View {
     var treeView: some View {
         if let tree = server.tree {
             if let rootItem = convertTreeToTreeItem(tree: tree) {
-                TreeView(rootItem: rootItem, isSelected: $server.actionableIds)
+                TreeView(id: rootItem.id, displayName: rootItem.displayName, rootItem: rootItem, isSelected: $server.actionableIds)
                     .onAppear {
                         print(rootItem)
                     }

@@ -21,7 +21,6 @@ struct TreeItem {
 
 struct TreeNode: View {
     let item: TreeItem
-    let depth: Int
     let isExpanded: Binding<Set<String>>
     let isSelected: Binding<Set<String>>
 
@@ -34,9 +33,11 @@ struct TreeNode: View {
             for child in children {
                 if isSelected.wrappedValue.contains(child.id) {
                     return true
-                } else {
-                    return _isDescendantSelected(node: child)
                 }
+            }
+            
+            for child in children {
+                return _isDescendantSelected(node: child)
             }
         }
         
@@ -72,19 +73,16 @@ struct TreeNode: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: .zero) {
                 Button {
-                    
+                    toggleExpanded()
                 } label: {
                     Image(systemName: isNodeExpanded ? "chevron.down" : "chevron.right")
                         .renderingMode(.template)
                         .frame(width: 24, height: 24)
                         .opacity(isLeafNode ? 0.0 : 1.0)
                         .contentShape(Rectangle())
-                        .onTapGesture {
-                            toggleExpanded()
-                        }
                 }
                 .buttonStyle(.plain)
                 .disabled(isLeafNode || isDescendantSelected ? true : false)
@@ -93,18 +91,19 @@ struct TreeNode: View {
                     .padding(.horizontal)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        toggleSelected()
-                    }
+                    
                 Spacer(minLength: .zero)
             }
             .background(isNodeSelected ? .accent : .clear)
-            
+            .cornerRadius(4)
+            .onTapGesture {
+                toggleSelected()
+            }
 
-            
-            if let children = item.children, isNodeExpanded {
+            let expanded = isNodeExpanded == true
+            if let children = item.children, expanded {
                 ForEach(children, id: \.id) { child in
-                    TreeNode(item: child, depth: depth + 1, isExpanded: isExpanded, isSelected: isSelected)
+                    TreeNode(item: child, isExpanded: isExpanded, isSelected: isSelected)
                         .padding(.leading, 8)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -124,15 +123,19 @@ struct TreeNode: View {
 }
 
 struct TreeView: View {
+    let id: String
+    let displayName: String
     let rootItem: TreeItem
     let isSelected: Binding<Set<String>>
     
     @State private var isExpanded: Set<String> = Set()
     
-    
     var body: some View {
         VStack(alignment: .leading) {
-            TreeNode(item: rootItem, depth: 0, isExpanded: $isExpanded, isSelected: isSelected)
+            Text(rootItem.displayName)
+                .foregroundStyle(.gray)
+            Divider()
+            TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: isSelected)
         }
     }
 }
@@ -158,6 +161,6 @@ struct TreeView: View {
         ]
     )
     
-    TreeView(rootItem: rootItem, isSelected: .constant(Set()))
+    TreeView(id: "abc", displayName: "ABC", rootItem: rootItem, isSelected: .constant(Set()))
         .frame(minWidth: 200, minHeight: 200)
 }

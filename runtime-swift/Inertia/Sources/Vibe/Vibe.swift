@@ -19,7 +19,6 @@ public class Node: Identifiable, Codable, CustomStringConvertible {
     
     func addChild(_ child: Node) {
         children?.append(child)
-//        child.parent = self
     }
     
     public var description: String {
@@ -63,124 +62,6 @@ public struct Tree: Codable, CustomStringConvertible {
         "root: \(rootNode)"
     }
 }
-//
-//class Node: Codable, CustomStringConvertible {
-//    var description: String {
-//        "{id: \(id), parent: \(parent?.id ?? "nil"), children: \(children.map(\.id))}"
-//    }
-//    
-//    let id: String
-//    weak var parent: Node? // Use `weak` to avoid retain cycles
-//    var children: [Node] = []
-//    
-//    init(id: String) {
-//        self.id = id
-//    }
-//    
-//    func addChild(_ child: Node) {
-//        children.append(child)
-//        child.parent = self
-//    }
-//    
-//    // Custom CodingKeys to avoid cycles
-//    enum CodingKeys: String, CodingKey {
-//        case id
-//        case children
-//    }
-//    
-//    // Custom encoding to only include IDs of children
-//    func encode(to encoder: Encoder) throws {
-//        var container = encoder.container(keyedBy: CodingKeys.self)
-//        try container.encode(id, forKey: .id)
-//        try container.encode(children.map(\.id), forKey: .children)
-//    }
-//    
-//    // Custom decoding
-//    required init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        id = try container.decode(String.self, forKey: .id)
-//        let childIDs = try container.decode([String].self, forKey: .children)
-//        // Temporary placeholder for children (should be resolved in Tree)
-//        children = childIDs.map { Node(id: $0) }
-//    }
-//}
-//
-//public class Tree: Codable, CustomStringConvertible {
-//    public var description: String {
-//        "Root: \(rootNode?.description ?? "nil")"
-//    }
-//    
-//    private var nodeMap: [String: Node] = [:]
-//    var rootNode: Node?
-//
-//    func addRelationship(id: String, parentId: String?, root: Bool) {
-//        let currentNode = nodeMap[id] ?? {
-//            let newNode = Node(id: id)
-//            nodeMap[id] = newNode
-//            return newNode
-//        }()
-//
-//        if let parentId = parentId {
-//            let parentNode = nodeMap[parentId] ?? {
-//                let newNode = Node(id: parentId)
-//                nodeMap[parentId] = newNode
-//                return newNode
-//            }()
-//
-//            if root {
-//                parentNode.addChild(currentNode)
-//                rootNode = parentNode
-//            } else {
-//                parentNode.addChild(currentNode)
-//                rootNode = currentNode
-//            }
-//        }
-//    }
-//    
-//    // Custom CodingKeys
-//    enum CodingKeys: String, CodingKey {
-//        case nodes
-//        case rootNode
-//    }
-//    
-//    // Encode nodes and root node
-//    public func encode(to encoder: Encoder) throws {
-//        var container = encoder.container(keyedBy: CodingKeys.self)
-//        
-//        // Convert `nodeMap.values` to an Array of Nodes
-//        let nodesArray = Array(nodeMap.values)
-//        try container.encode(nodesArray, forKey: .nodes)
-//        try container.encode(rootNode?.id, forKey: .rootNode)
-//    }
-//    
-//    init() {
-//        
-//    }
-//
-//    // Decode nodes and resolve relationships
-//    public required init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        let nodes = try container.decode([Node].self, forKey: .nodes)
-//        let rootID = try container.decodeIfPresent(String.self, forKey: .rootNode)
-//
-//        // Rebuild the node map
-//        for node in nodes {
-//            nodeMap[node.id] = node
-//        }
-//        
-//        // Resolve children relationships
-//        for node in nodes {
-//            for childID in node.children.map(\.id) {
-//                if let childNode = nodeMap[childID] {
-//                    childNode.parent = node
-//                    node.children = node.children.map { $0.id == childID ? childNode : $0 }
-//                }
-//            }
-//        }
-//        
-//        rootNode = rootID.flatMap { nodeMap[$0] }
-//    }
-//}
 
 private struct VibeDataModelKey: EnvironmentKey {
     static let defaultValue: VibeDataModel? = nil
@@ -218,8 +99,6 @@ extension EnvironmentValues {
         }
     }
 }
-
-
 
 public final class VibeDataModel {
     public let containerId: VibeID
@@ -425,9 +304,7 @@ struct VibeHello<Content: View>: View {
                 guard let vibeDataModel else {
                     return
                 }
-                
-                
-                
+
                 if vibeDataModel.actionableIds.contains(hierarchyID) {
                     vibeDataModel.actionableIds.remove(hierarchyID)
                 } else {
@@ -449,7 +326,6 @@ struct VibeHello<Content: View>: View {
                     let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
                     manager.sendData(message: message)
                 }
-                
             }
             .overlay {
                 if showSelectedBorder {
