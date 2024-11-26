@@ -9,7 +9,11 @@ import SwiftUI
 
 public typealias VibeID = String
 
-public class Node: Identifiable, Codable, CustomStringConvertible {
+public class Node: Identifiable, Codable, Equatable, CustomStringConvertible {
+    public static func == (lhs: Node, rhs: Node) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     public let id: String
     public var children: [Node]? = []
     
@@ -26,7 +30,17 @@ public class Node: Identifiable, Codable, CustomStringConvertible {
     }
 }
 
-public struct Tree: Codable, CustomStringConvertible {
+public struct Tree: Identifiable, Codable, CustomStringConvertible, Equatable {
+    public static func == (lhs: Tree, rhs: Tree) -> Bool {
+        return lhs.rootNode == rhs.rootNode
+    }
+    
+    public let id: String
+    
+    init(id: String) {
+        self.id = id
+    }
+    
     private var nodeMap: [String: Node] = [:]
     public var rootNode: Node?
 
@@ -59,9 +73,10 @@ public struct Tree: Codable, CustomStringConvertible {
     }
     
     public var description: String {
-        "root: \(rootNode)"
+        "treeId: \(id) root: \(rootNode)"
     }
 }
+
 
 private struct VibeDataModelKey: EnvironmentKey {
     static let defaultValue: VibeDataModel? = nil
@@ -138,7 +153,7 @@ public struct VibeContainer<Content: View>: View {
             let schemaText = try! String(contentsOf: url, encoding: .utf8)
             if let data = schemaText.data(using: .utf8),
                let schema = decodeVibeSchema(json: data) {
-                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id, vibeSchema: schema, tree: Tree(), actionableIds: Set()))
+                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id, vibeSchema: schema, tree: Tree(id: id), actionableIds: Set()))
             } else {
                 fatalError()
             }

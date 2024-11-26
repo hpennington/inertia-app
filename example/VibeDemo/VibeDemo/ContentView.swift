@@ -23,16 +23,13 @@ struct ContentView: View {
                 Text("Hello, jerry!")
                     .vibeHello(hierarchyID: "Jerry")
                 
-                VStack {
+                List {
                     Text("Item 1")
+                        .vibeHello(hierarchyID: "24")
                     Text("Item 2")
-                    Text("Item 3")
-                    Text("Item 4")
-                    Text("Item 5")
-                    Text("Item 6")
-                    Text("Item 7")
-                    Text("Item 8")
+                        .vibeHello(hierarchyID: "25")
                 }
+                .vibeHello(hierarchyID: "23")
             }
             .vibeHello(hierarchyID: "19")
         }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TreeItem {
+struct TreeItem: Identifiable {
     let id: String
     let displayName: String
     let children: [TreeItem]?
@@ -164,6 +164,6 @@ struct TreeView: View {
         ]
     )
     
-    TreeView(id: "abc", displayName: "ABC", rootItem: rootItem, isSelected: .constant(Set()))
+    return TreeView(id: "abc", displayName: "ABC", rootItem: rootItem, isSelected: .constant(Set()))
         .frame(minWidth: 200, minHeight: 200)
 }

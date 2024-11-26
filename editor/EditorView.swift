@@ -14,12 +14,30 @@ import Foundation
 import Network
 
 @Observable
+class TreePacket: Identifiable, Equatable, CustomStringConvertible {
+    static func == (lhs: TreePacket, rhs: TreePacket) -> Bool {
+        lhs.tree == rhs.tree && lhs.actionableIds == rhs.actionableIds
+    }
+    
+    var description: String {
+        "tree: \(tree), actionableIds: \(actionableIds)"
+    }
+    
+    var tree: Tree
+    var actionableIds: Set<String>
+    
+    init(tree: Tree, actionableIds: Set<String>) {
+        self.tree = tree
+        self.actionableIds = actionableIds
+    }
+}
+
+@Observable
 class WebSocketServer {
     let listener: NWListener
     var clients: [UUID: NWConnection] = [:]
-    var tree: Tree?
-    var actionableIds: Set<String> = Set()
-    
+    var treePackets: [TreePacket] = []
+    var treePacketsLUT: [String: Int] = [:]
     let clientId = UUID()
     
     init(port: UInt16) throws {
@@ -51,6 +69,49 @@ class WebSocketServer {
 
         receiveMessage(on: connection, clientId: clientId)
     }
+    
+    private func keyInDescendants(treeA: Tree, treeB: Tree) -> String? {
+        let treeItemA = convertTreeToTreeItem(tree: treeA)
+        let treeItemB = convertTreeToTreeItem(tree: treeB)
+        return keyInDescendants(treeItemA: treeItemA, treeItemB: treeItemB)
+    }
+    
+    func convertTreeToTreeItem(tree: Tree) -> TreeItem {
+        guard let rootNode = tree.rootNode else { fatalError() }
+        return convertNodeToTreeItem(node: rootNode)
+    }
+
+    private func convertNodeToTreeItem(node: Node) -> TreeItem {
+        let children = node.children?.map { convertNodeToTreeItem(node: $0) } ?? []
+        return TreeItem(
+            id: node.id,
+            displayName: node.id, // Use `id` directly as `displayName`
+            children: children.isEmpty ? nil : children
+        )
+    }
+    
+    private func keyInDescendants(treeItemA: TreeItem, treeItemB: TreeItem) -> String? {
+        if treeItemA.id == treeItemB.id {
+            return treeItemA.id
+        }
+        
+        if let childrenA = treeItemA.children {
+            if let childrenB = treeItemB.children {
+                for childB in childrenB {
+                    return keyInDescendants(treeItemA: treeItemA, treeItemB: childB)
+                }
+                
+                for childA in childrenA {
+                    for childB in childrenB {
+                        return keyInDescendants(treeItemA: treeItemA, treeItemB: childA)
+                    }
+                }
+            }
+            
+        }
+        
+        return nil
+    }
 
     private func receiveMessage(on connection: NWConnection, clientId: UUID) {
         connection.receiveMessage { [weak self] (data, context, isComplete, error) in
@@ -66,11 +127,29 @@ class WebSocketServer {
                     return
                 }
                 print("Received message from client \(clientId): \(msg)")
-//                self?.sendMessage(data, to: connection)
                 
-                self?.tree = msg.tree
-                self?.actionableIds = msg.actionableIds
-                
+                if let weakSelf = self {
+                    if !weakSelf.treePackets.isEmpty {
+                        for treePacket in weakSelf.treePackets {
+                            let tree = treePacket.tree
+                            
+                            if let key = weakSelf.keyInDescendants(treeA: msg.tree, treeB: tree) {
+                                if let offset = weakSelf.treePacketsLUT[key] {
+                                    weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
+                                } else {
+                                    weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+                                    weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                                }
+                            } else {
+                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+                                weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                            }
+                        }
+                    } else {
+                        weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+                        weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                    }
+                }
             }
 
             // Continue listening for more messages
@@ -451,8 +530,8 @@ struct EditorView: View {
     @State private var isVmLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     
-    func convertTreeToTreeItem(tree: Tree) -> TreeItem? {
-        guard let rootNode = tree.rootNode else { return nil }
+    func convertTreeToTreeItem(tree: Tree) -> TreeItem {
+        guard let rootNode = tree.rootNode else { fatalError() }
         return convertNodeToTreeItem(node: rootNode)
     }
 
@@ -467,25 +546,34 @@ struct EditorView: View {
     
     @ViewBuilder
     var treeView: some View {
-        if let tree = server.tree {
-            if let rootItem = convertTreeToTreeItem(tree: tree) {
-                
-                TreeView(id: rootItem.id, displayName: rootItem.displayName, rootItem: rootItem, isSelected: $server.actionableIds)
+        ScrollView {
+            VStack {
+                ForEach(server.treePackets, id: \.id) { treePacket in
+                    TreeView(
+                        id: treePacket.tree.id,
+                        displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,
+                        rootItem: convertTreeToTreeItem(tree: treePacket.tree),
+                        isSelected: Binding(
+                            get: {
+                                treePacket.actionableIds
+                            },
+                            set: {
+                                treePacket.actionableIds = $0
+                                server.sendSelectedIds($0)
+                            }
+                        )
+                    )
                     .padding(.vertical, 42)
                     .padding(.horizontal, 24)
-                    .onChange(of: server.actionableIds) { _, newValue in
-                        server.sendSelectedIds(newValue)
-                    }
-                    .onAppear {
-                        print(rootItem)
-                    }
-            } else {
-                EmptyView()
+                }
+                
+                if !server.treePackets.isEmpty {
+                    Divider()
+                }
             }
-            
-        } else {
-            EmptyView()
         }
+        .padding(.vertical, 42)
+        .padding(.horizontal, 24)
     }
     
     var body: some View {
