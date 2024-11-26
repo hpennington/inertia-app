@@ -100,6 +100,7 @@ extension EnvironmentValues {
     }
 }
 
+@Observable
 public final class VibeDataModel {
     public let containerId: VibeID
     public let vibeSchema: VibeSchema
@@ -164,11 +165,11 @@ public struct VibeContainer<Content: View>: View {
 public class WebSocketSharedManager {
     var task: URLSessionWebSocketTask? = nil
     var isConnected: Bool = false
-    
+    public var messageReceived: ((_ selectedIds: Set<String>) -> Void)!
     static let shared = WebSocketSharedManager()
 
     init() {
-        
+
     }
     
     func connect(uri: URL) {
@@ -180,6 +181,14 @@ public class WebSocketSharedManager {
     public struct MessageItem: Codable {
         public let tree: Tree
         public let actionableIds: Set<String>
+    }
+    
+    public struct MessageItem2: Codable {
+        public let selectedIds: Set<String>
+        
+        public init(selectedIds: Set<String>) {
+            self.selectedIds = selectedIds
+        }
     }
     
     func sendData(message: MessageItem) {
@@ -217,19 +226,22 @@ public class WebSocketSharedManager {
             case .success(let message):
                 switch message {
                 case .data(let data):
-                    if let receivedString = try? JSONDecoder().decode(Tree.self, from: data) {
-                        print("Received message (data): \(receivedString)")
-                    } else {
-                        print("Received binary data that could not be converted to string.")
-                    }
+                    
+                    let receivedSelectedIds = try! JSONDecoder().decode(WebSocketSharedManager.MessageItem2.self, from: data)
+                        print("Received message (data): \(receivedSelectedIds)")
+                        self.messageReceived(receivedSelectedIds.selectedIds)
+//                    } else {
+//                        print("Received binary data that could not be converted to string.")
+//                    }
                 case .string(let text):
+                    fatalError()
                     print("Received message (text): \(text)")
                 @unknown default:
                     print("Received an unknown message type.")
                 }
-                
-                self.receiveMessage(task: task)
             }
+            
+            self.receiveMessage(task: task)
         }
     }
 }
@@ -282,6 +294,8 @@ struct ParentPath: PreferenceKey {
     }
 }
 
+let manager = WebSocketSharedManager.shared
+
 struct VibeHello<Content: View>: View {
     let hierarchyID: String
     let content: Content
@@ -290,17 +304,20 @@ struct VibeHello<Content: View>: View {
     @Environment(\.inertiaParentID) var inertiaParentID
     @Environment(\.isInertiaContainer) var isInertiaContainer
     
-    @State private var showSelectedBorder = false
-    let manager = WebSocketSharedManager.shared
-    
+    var showSelectedBorder: Bool {
+        guard let vibeDataModel else {
+            return false
+        }
+        
+        return vibeDataModel.actionableIds.contains(hierarchyID)
+    }
+
     var body: some View {
         content
             .environment(\.inertiaParentID, hierarchyID)
             .environment(\.isInertiaContainer, false)
             .onTapGesture {
-                print("tapped \(content)")
-                showSelectedBorder.toggle()
-                
+                print("tapped \(content)")                
                 guard let vibeDataModel else {
                     return
                 }
@@ -334,6 +351,21 @@ struct VibeHello<Content: View>: View {
                 }
             }
             .onAppear {
+                if let ip = getHostIPAddressFromResolvConf() {
+                    let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                    
+                    print("Starting to send data...")
+                    
+                    if !manager.isConnected {
+                        manager.connect(uri: uri)
+                    }
+                    
+                    manager.messageReceived = handleMessage
+                }
+                
+            }
+            .onAppear {
                 print("onAppear: \(hierarchyID)")
                 vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, root: isInertiaContainer)
                 print(vibeDataModel?.tree)
@@ -354,6 +386,10 @@ struct VibeHello<Content: View>: View {
                     }
                 }
             }
+    }
+    
+    func handleMessage(selectedIds: Set<String>) {
+        vibeDataModel?.actionableIds = selectedIds
     }
 }
 

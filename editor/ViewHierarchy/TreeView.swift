@@ -75,22 +75,25 @@ struct TreeNode: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: .zero) {
-                Button {
-                    toggleExpanded()
-                } label: {
-                    Image(systemName: isNodeExpanded ? "chevron.down" : "chevron.right")
-                        .renderingMode(.template)
-                        .frame(width: 24, height: 24)
-                        .opacity(isLeafNode ? 0.0 : 1.0)
-                        .contentShape(Rectangle())
+                if !isLeafNode {
+                    Button {
+                        toggleExpanded()
+                    } label: {
+                        Image(systemName: isNodeExpanded ? "chevron.down" : "chevron.right")
+                            .renderingMode(.template)
+                            .frame(width: 24, height: 24)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isDescendantSelected)
                 }
-                .buttonStyle(.plain)
-                .disabled(isLeafNode || isDescendantSelected ? true : false)
                 
                 Text(item.displayName)
-                    .padding(.horizontal)
+                    .padding(.leading, item.children == nil ? 8 : .zero)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 24)
                     .contentShape(Rectangle())
+                    
                     
                 Spacer(minLength: .zero)
             }
@@ -104,7 +107,7 @@ struct TreeNode: View {
             if let children = item.children, expanded {
                 ForEach(children, id: \.id) { child in
                     TreeNode(item: child, isExpanded: isExpanded, isSelected: isSelected)
-                        .padding(.leading, 8)
+                        .padding(.leading, 16)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
@@ -132,7 +135,7 @@ struct TreeView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(rootItem.displayName)
+            Text("View Hierarchy")
                 .foregroundStyle(.gray)
             Divider()
             TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: isSelected)

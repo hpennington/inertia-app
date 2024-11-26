@@ -20,6 +20,8 @@ class WebSocketServer {
     var tree: Tree?
     var actionableIds: Set<String> = Set()
     
+    let clientId = UUID()
+    
     init(port: UInt16) throws {
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
@@ -42,7 +44,6 @@ class WebSocketServer {
     }
 
     private func handleNewConnection(_ connection: NWConnection) {
-        let clientId = UUID()
         clients[clientId] = connection
 
         connection.start(queue: .main)
@@ -76,10 +77,21 @@ class WebSocketServer {
             self?.receiveMessage(on: connection, clientId: clientId)
         }
     }
+    
+    func sendSelectedIds(_ ids: Set<String>) {
+        guard let connection = clients[clientId] else {
+            print("No connection")
+            return
+        }
+        
+        let messageItem = WebSocketSharedManager.MessageItem2(selectedIds: ids)
+        let data = try! JSONEncoder().encode(messageItem)
+        sendMessage(data, to: connection)
+    }
 
     private func sendMessage(_ messageData: Data, to connection: NWConnection) {
 //        let messageData = message.data(using: .utf8) ?? Data()
-        let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .text)])
+        let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .binary)])
         
         connection.send(content: messageData, contentContext: context, isComplete: true, completion: .contentProcessed { error in
             if let error = error {
@@ -458,11 +470,11 @@ struct EditorView: View {
         if let tree = server.tree {
             if let rootItem = convertTreeToTreeItem(tree: tree) {
                 TreeView(id: rootItem.id, displayName: rootItem.displayName, rootItem: rootItem, isSelected: $server.actionableIds)
-                    .onAppear {
-                        print(rootItem)
-                    }
                     .padding(.vertical, 42)
                     .padding(.horizontal, 24)
+                    .onChange(of: server.actionableIds) { _, newValue in
+                        server.sendSelectedIds(newValue)
+                    }
             } else {
                 EmptyView()
             }
