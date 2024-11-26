@@ -469,11 +469,15 @@ struct EditorView: View {
     var treeView: some View {
         if let tree = server.tree {
             if let rootItem = convertTreeToTreeItem(tree: tree) {
+                
                 TreeView(id: rootItem.id, displayName: rootItem.displayName, rootItem: rootItem, isSelected: $server.actionableIds)
                     .padding(.vertical, 42)
                     .padding(.horizontal, 24)
                     .onChange(of: server.actionableIds) { _, newValue in
                         server.sendSelectedIds(newValue)
+                    }
+                    .onAppear {
+                        print(rootItem)
                     }
             } else {
                 EmptyView()
