@@ -74,20 +74,6 @@ class WebSocketServer {
         receiveMessage(on: connection, clientId: clientId)
     }
     
-    func convertTreeToTreeItem(tree: Tree) -> TreeItem {
-        guard let rootNode = tree.rootNode else { fatalError() }
-        return convertNodeToTreeItem(node: rootNode)
-    }
-
-    private func convertNodeToTreeItem(node: Node) -> TreeItem {
-        let children = node.children?.map { convertNodeToTreeItem(node: $0) } ?? []
-        return TreeItem(
-            id: node.id,
-            displayName: node.id, // Use `id` directly as `displayName`
-            children: children.isEmpty ? nil : children
-        )
-    }
-    
     private func retrieveAllIds(tree: Tree) -> [String]? {
         guard let root = tree.rootNode else {
             return nil
@@ -128,15 +114,17 @@ class WebSocketServer {
                 
                 if let weakSelf = self {
                     if !weakSelf.treePackets.isEmpty {
+                        guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
+                            return
+                        }
+                        
+                        var foundOldSet = false
+                        
                         treePacketIterator: for treePacket in weakSelf.treePackets {
                             let values = treePacket.tree.nodeMap.values
                             for node in values {
                                 node.tree = treePacket.tree
                                 node.link()
-                            }
-
-                            guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
-                                return
                             }
                             
                             guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
@@ -146,27 +134,32 @@ class WebSocketServer {
                             let newSet = Set(newTreeIds)
                             let oldSet = Set(oldTreeIds)
                                                   
-                            var foundOldSet = false
+                            var lookupId: String? = nil
                             
                             newSetSearch: for id in oldSet {
                                 if newSet.contains(id) {
                                     foundOldSet = true
-                                    break newSetSearch
+                                    
+                                    for oldId in oldSet {
+                                        if weakSelf.treePacketsLUT.keys.contains(oldId) {
+                                            lookupId = oldId
+                                            break newSetSearch
+                                        }
+                                    }
                                 }
                             }
                             
                             if foundOldSet {
-                                for id in oldSet {
-                                    if let offset = weakSelf.treePacketsLUT[id] {
-                                        weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
-                                    }
+                                if let lookupId, let offset = weakSelf.treePacketsLUT[lookupId] {
+                                    weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
                                 }
-                            } else {
-                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-                                weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
-                                break treePacketIterator
                             }
                         }
+                        
+                        if !foundOldSet {
+                           weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+                           weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                       }
                     } else {
                         if let id = msg.tree.rootNode?.id {
                             weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
@@ -570,7 +563,7 @@ struct EditorView: View {
     var treeView: some View {
         ScrollView {
             VStack {
-                ForEach(Array(Set(server.treePackets)), id: \.id) { treePacket in
+                ForEach(server.treePackets, id: \.id) { treePacket in
                     TreeView(
                         id: treePacket.tree.id,
                         displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,
