@@ -16,31 +16,34 @@ struct ContentView: View {
                 .foregroundStyle(.tint)
                 .vibeHello(hierarchyID: "8")
             
-            VStack {
-                Text("Hello, world!")
-                    .vibeHello(hierarchyID: "1")
-                
-                Text("Hello, jerry!")
-                    .vibeHello(hierarchyID: "Jerry")
-                
-                List {
-                    Text("Item 1")
-                        .vibeHello(hierarchyID: "24")
-                        .onAppear {
-                            print("item 1 on appear")
-                        }
-                    Text("Item 2")
-                        .vibeHello(hierarchyID: "25")
-                        .onAppear {
-                            print("item 2 on appear")
-                        }
+        
+            VibeContainer(id: "animation2", hierarchyID: "animation2-0") {
+                VStack {
+                    Text("Hello, world!")
+                        .vibeHello(hierarchyID: "1")
+                    
+                    Text("Hello, jerry!")
+                        .vibeHello(hierarchyID: "Jerry")
+                    
+                    List {
+                        Text("Item 1")
+                            .vibeHello(hierarchyID: "24")
+                            .onAppear {
+                                print("item 1 on appear")
+                            }
+                        Text("Item 2")
+                            .vibeHello(hierarchyID: "25")
+                            .onAppear {
+                                print("item 2 on appear")
+                            }
+                    }
+                    .vibeHello(hierarchyID: "23")
+                    .onAppear {
+                        print("list on appear")
+                    }
                 }
-                .vibeHello(hierarchyID: "23")
-                .onAppear {
-                    print("list on appear")
-                }
+                .vibeHello(hierarchyID: "19")
             }
-            .vibeHello(hierarchyID: "19")
         }
         .padding()
     }

@@ -133,7 +133,7 @@ public class Tree: Identifiable, Hashable, Codable, CustomStringConvertible, Equ
     public var nodeMap: [String: Node] = [:]
     public var rootNode: Node?
 
-    func addRelationship(id: String, parentId: String?, root: Bool) {
+    func addRelationship(id: String, parentId: String?, parentIsContainer: Bool) {
         // Get or create the current node
         let currentNode = nodeMap[id] ?? {
             let newNode = Node(id: id, parentId: parentId)
@@ -149,14 +149,14 @@ public class Tree: Identifiable, Hashable, Codable, CustomStringConvertible, Equ
                 return newNode
             }()
 
-            if root {
+            if parentIsContainer {
                 // If explicitly marked as root, set it as the root node
                 // Establish parent-child relationship
                 parentNode.addChild(currentNode)
                 rootNode = parentNode
             } else {
                 parentNode.addChild(currentNode)
-                if rootNode == nil {
+                if rootNode == nil && parentNode.parent == nil {
                     rootNode = parentNode
                 }
             }
@@ -484,7 +484,7 @@ struct VibeHello<Content: View>: View {
         .onAppear {
             print("onAppear: \(hierarchyID)")
             NSLog("adding relationship: hierarchyID: \(hierarchyID) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
-            vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, root: isInertiaContainer)
+            vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
             if let tree = vibeDataModel?.tree {
                 for node in tree.nodeMap.values {
                     node.tree = tree
