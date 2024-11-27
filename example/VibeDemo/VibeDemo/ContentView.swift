@@ -14,7 +14,7 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-                .vibeHello(hierarchyID: "bird")
+                .vibeHello(hierarchyID: "deeznuts")
             
         
 //            VibeContainer(id: "animation2", hierarchyID: "animation2-0") {

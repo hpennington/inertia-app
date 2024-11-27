@@ -182,9 +182,12 @@ extension EnvironmentValues {
 @Observable
 public final class VibeDataModel {
     public let containerId: VibeID
-    public let vibeSchema: VibeSchema
+    public var vibeSchema: VibeSchema
     public var tree: Tree
     public var actionableIds: Set<String>
+    
+    public var states: [VibeID: VibeAnimationState]
+    public var actionableIdToAnimationIdMap: [String: String] = [:]
     public var isActionable: Bool = true
     
     public init(containerId: VibeID, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<String>) {
@@ -192,6 +195,7 @@ public final class VibeDataModel {
         self.vibeSchema = vibeSchema
         self.tree = tree
         self.actionableIds = actionableIds
+        self.states = [:]
     }
 }
 
@@ -235,10 +239,18 @@ public struct VibeContainer<Content: View>: View {
     }
     
     public var body: some View {
-        content()
-            .environment(\.inertiaParentID, hierarchyID)
-            .environment(\.vibeDataModel, self.vibeDataModel)
-            .environment(\.isInertiaContainer, true)
+        GeometryReader { proxy in
+            VStack(spacing: .zero) {
+                Spacer(minLength: .zero)
+                content()
+                    .environment(\.inertiaParentID, hierarchyID)
+                    .environment(\.vibeDataModel, self.vibeDataModel)
+                    .environment(\.isInertiaContainer, true)
+                    .environment(\.vibeCanvasSize, proxy.size)
+                Spacer(minLength: .zero)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
     }
 }
 
@@ -246,7 +258,7 @@ public class WebSocketSharedManager {
     var task: URLSessionWebSocketTask? = nil
     var isConnected: Bool = false
     public var messageReceived: ((_ selectedIds: Set<String>) -> Void)!
-    public var messageReceivedSchema: ((_ schema: [String]) -> Void)!
+    public var messageReceivedSchema: ((_ schemas: [VibeSchemaWrapper]) -> Void)!
     static let shared = WebSocketSharedManager()
 
     init() {
@@ -269,14 +281,6 @@ public class WebSocketSharedManager {
         
         public init(selectedIds: Set<String>) {
             self.selectedIds = selectedIds
-        }
-    }
-    
-    public struct MessageItem3: Codable {
-        public let schema: [String]
-        
-        public init(schema: [String]) {
-            self.schema = schema
         }
     }
     
@@ -317,11 +321,11 @@ public class WebSocketSharedManager {
                 case .data(let data):
                     
                     if let receivedSelectedIds = try? JSONDecoder().decode(WebSocketSharedManager.MessageItem2.self, from: data) {
-                        print("Received message (data): \(receivedSelectedIds)")
+                        NSLog("Received message (data): \(receivedSelectedIds)")
                         self.messageReceived(receivedSelectedIds.selectedIds)
-                    } else if let receivedVibeSchema = try? JSONDecoder().decode(WebSocketSharedManager.MessageItem3.self, from: data) {
-                        print("Received message (data): \(receivedVibeSchema)")
-                        self.messageReceivedSchema(receivedVibeSchema.schema)
+                    } else if let receivedVibeSchema = try? JSONDecoder().decode([VibeSchemaWrapper].self, from: data) {
+                        NSLog("Received message (data): \(receivedVibeSchema)")
+                        self.messageReceivedSchema(receivedVibeSchema)
                     }
                         
 //                    } else {
@@ -391,13 +395,30 @@ struct ParentPath: PreferenceKey {
 
 let manager = WebSocketSharedManager.shared
 
+struct VibeCanvasSizeKey: EnvironmentKey {
+    static let defaultValue: CGSize = .zero
+}
+
+extension EnvironmentValues {
+    var vibeCanvasSize: CGSize {
+        get { self[VibeCanvasSizeKey.self] }
+        set { self[VibeCanvasSizeKey.self] = newValue }
+    }
+}
+
 struct VibeHello<Content: View>: View {
     let hierarchyID: String
     let content: Content
     
+    init(hierarchyID: String, content: Content) {
+        self.hierarchyID = hierarchyID
+        self.content = content
+    }
+    
     @Environment(\.vibeDataModel) var vibeDataModel
     @Environment(\.inertiaParentID) var inertiaParentID
     @Environment(\.isInertiaContainer) var isInertiaContainer
+    @Environment(\.vibeCanvasSize) var vibeCanvasSize: CGSize
     
     var showSelectedBorder: Bool {
         guard let vibeDataModel else {
@@ -406,111 +427,239 @@ struct VibeHello<Content: View>: View {
         
         return vibeDataModel.actionableIds.contains(hierarchyID)
     }
-
-    var body: some View {
-        if vibeDataModel?.isActionable ?? false {
-            ZStack(alignment: .center) {
-                content
+    
+    var wrappedContent: some View {
+        ZStack(alignment: .center) {
+            content
+        }
+        .environment(\.inertiaParentID, hierarchyID)
+        .environment(\.isInertiaContainer, false)
+        .buttonStyle(.plain)
+        .onTapGesture {
+            print("tapped \(content)")
+            guard let vibeDataModel else {
+                return
             }
-            .environment(\.inertiaParentID, hierarchyID)
-            .environment(\.isInertiaContainer, false)
-            .buttonStyle(.plain)
-            .onTapGesture {
-                print("tapped \(content)")
-                guard let vibeDataModel else {
-                    return
-                }
 
-                if vibeDataModel.actionableIds.contains(hierarchyID) {
-                    vibeDataModel.actionableIds.remove(hierarchyID)
-                } else {
-                    vibeDataModel.actionableIds.insert(hierarchyID)
+            if vibeDataModel.actionableIds.contains(hierarchyID) {
+                vibeDataModel.actionableIds.remove(hierarchyID)
+            } else {
+                vibeDataModel.actionableIds.insert(hierarchyID)
+            }
+            
+            if let ip = getHostIPAddressFromResolvConf() {
+                let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                
+                print("Starting to send data...")
+                
+                if !manager.isConnected {
+                    manager.connect(uri: uri)
                 }
                 
-                if let ip = getHostIPAddressFromResolvConf() {
-                    let uri = URL(string: "ws://\(ip):8060")!
-    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                    
-                    print("Starting to send data...")
-                    
-                    if !manager.isConnected {
-                        manager.connect(uri: uri)
-                    }
-                    
-                    let tree = vibeDataModel.tree
-                    let actionableIds = vibeDataModel.actionableIds
+                let tree = vibeDataModel.tree
+                let actionableIds = vibeDataModel.actionableIds
+                let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
+                manager.sendData(message: message)
+            }
+        }
+        .overlay {
+            if showSelectedBorder {
+                Rectangle()
+                    .stroke(Color.green)
+            }
+        }
+        .onAppear {
+            if let ip = getHostIPAddressFromResolvConf() {
+                let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                
+                print("Starting to send data...")
+                
+                if !manager.isConnected {
+                    manager.connect(uri: uri)
+                }
+                
+                manager.messageReceived = handleMessage
+                manager.messageReceivedSchema = handleMessageSchema
+            }
+            
+        }
+        .onChange(of: vibeDataModel?.tree, { oldValue, newValue in
+            if let tree = newValue {
+                for node in tree.nodeMap.values {
+                    node.tree = tree
+                    node.link()
+                }
+            }
+        })
+        .onAppear {
+            print("onAppear: \(hierarchyID)")
+            NSLog("adding relationship: hierarchyID: \(hierarchyID) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
+            vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
+            if let tree = vibeDataModel?.tree {
+                for node in tree.nodeMap.values {
+                    node.tree = tree
+                    node.link()
+                }
+            }
+            
+            if let ip = getHostIPAddressFromResolvConf() {
+                let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                
+                print("Starting to send data...")
+                
+                if !manager.isConnected {
+                    manager.connect(uri: uri)
+                }
+                
+                if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
                     let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
                     manager.sendData(message: message)
                 }
             }
-            .overlay {
-                if showSelectedBorder {
-                    Rectangle()
-                        .stroke(Color.green)
-                }
-            }
-            .onAppear {
-                if let ip = getHostIPAddressFromResolvConf() {
-                    let uri = URL(string: "ws://\(ip):8060")!
-    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                    
-                    print("Starting to send data...")
-                    
-                    if !manager.isConnected {
-                        manager.connect(uri: uri)
-                    }
-                    
-                    manager.messageReceived = handleMessage
-                    manager.messageReceivedSchema = handleMessageSchema
-                }
-                
-            }
-            .onChange(of: vibeDataModel?.tree, { oldValue, newValue in
-                if let tree = newValue {
-                    for node in tree.nodeMap.values {
-                        node.tree = tree
-                        node.link()
-                    }
-                }
-            })
-            .onAppear {
-                print("onAppear: \(hierarchyID)")
-                NSLog("adding relationship: hierarchyID: \(hierarchyID) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
-                vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
-                if let tree = vibeDataModel?.tree {
-                    for node in tree.nodeMap.values {
-                        node.tree = tree
-                        node.link()
-                    }
-                }
-                
-                if let ip = getHostIPAddressFromResolvConf() {
-                    let uri = URL(string: "ws://\(ip):8060")!
-    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                    
-                    print("Starting to send data...")
-                    
-                    if !manager.isConnected {
-                        manager.connect(uri: uri)
-                    }
-                    
-                    if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
-                        let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
-                        manager.sendData(message: message)
-                    }
-                }
+        }
+    }
+
+    var body: some View {
+        if vibeDataModel?.isActionable ?? false {
+            if let animation {
+                wrappedContent
+                    .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
+                        contentView
+                            .scaleEffect(values.scale)
+                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
+                            .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
+                            .offset(x: values.translate.width * vibeCanvasSize.width / 2, y: values.translate.height * vibeCanvasSize.height / 2)
+                            .opacity(values.opacity)
+                    }, keyframes: { _ in
+                        KeyframeTrack {
+                            for keyframe in animation.keyframes {
+                                CubicKeyframe(keyframe.values, duration: keyframe.duration)
+                            }
+                        }
+                    })
+            } else {
+                wrappedContent
             }
         } else {
-            content
+            if let animation {
+                content
+                    .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
+                        contentView
+                            .scaleEffect(values.scale)
+                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
+                            .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
+                            .offset(x: values.translate.width * vibeCanvasSize.width / 2, y: values.translate.height * vibeCanvasSize.height / 2)
+                            .opacity(values.opacity)
+                    }, keyframes: { _ in
+                        KeyframeTrack {
+                            for keyframe in animation.keyframes {
+                                CubicKeyframe(keyframe.values, duration: keyframe.duration)
+                            }
+                        }
+                    })
+            } else {
+                content
+            }
         }
+    }
+    
+    var animation: VibeAnimationSchema? {
+        guard let vibeDataModel else {
+            NSLog("vibeDataModel is nil")
+            return nil
+        }
+        
+        if vibeDataModel.actionableIds.contains(hierarchyID) {
+            NSLog("contains id")
+            
+            
+            guard let animationId = vibeDataModel.actionableIdToAnimationIdMap[hierarchyID] else {
+                NSLog("animationId is nil")
+                return nil
+            }
+            NSLog("hierarchyId: \(hierarchyID) animationId: \(animationId)")
+            let animation = vibeDataModel.vibeSchema.objects.first(where: { $0.animation.id == animationId })?.animation
+            
+            if let animation {
+                return animation
+            } else {
+                NSLog("\(vibeDataModel.vibeSchema.objects)")
+                NSLog("animation is nil")
+                return nil
+            }
+        }
+        
+        NSLog("animation nil at end")
+        return nil
+        
     }
     
     func handleMessage(selectedIds: Set<String>) {
         vibeDataModel?.actionableIds = selectedIds
     }
     
-    func handleMessageSchema(schema: [String]) {
-        NSLog("\(schema)")
+    func handleMessageSchema(schemaWrappers: [VibeSchemaWrapper]) {
+        for schemaWrapper in schemaWrappers {
+            
+            if schemaWrapper.container.containerId == vibeDataModel?.containerId {
+                vibeDataModel?.vibeSchema = schemaWrapper.schema
+                vibeDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId
+                NSLog("animationId: \(schemaWrapper.animationId)")
+            }
+        }
+    }
+}
+
+public struct VibeAnimationState: Identifiable, Equatable, Codable {
+    public let id: VibeID
+    public let trigger: Bool?
+    public let isCancelled: Bool
+    
+    public init(id: VibeID, trigger: Bool? = nil, isCancelled: Bool = false) {
+        self.id = id
+        self.trigger = trigger
+        self.isCancelled = isCancelled
+    }
+}
+
+public struct AnimationContainer: Codable, Hashable {
+    public let actionableId: String
+    public let containerId: String
+    
+    public init(actionableId: String, containerId: String) {
+        self.actionableId = actionableId
+        self.containerId = containerId
+    }
+}
+
+public struct InertiaAnimation: Codable, Hashable {
+    public let actionableId: String
+    public let containerId: String
+    public let containerActionableId: String
+    public let animationId: String
+    
+    public init(actionableId: String, containerId: String, containerActionableId: String, animationId: String) {
+        self.actionableId = actionableId
+        self.containerId = containerId
+        self.containerActionableId = containerActionableId
+        self.animationId = animationId
+    }
+}
+
+public struct VibeSchemaWrapper: Codable {
+    public let schema: VibeSchema
+    public let actionableId: String
+    public let container: AnimationContainer
+    public let animationId: String
+    
+    public init(schema: VibeSchema, actionableId: String, container: AnimationContainer, animationId: String) {
+        self.schema = schema
+        self.actionableId = actionableId
+        self.container = container
+        self.animationId = animationId
     }
 }
 

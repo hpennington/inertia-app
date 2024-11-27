@@ -179,15 +179,13 @@ class WebSocketServer {
         sendMessage(data, to: connection)
     }
     
-    func sendSchema(_ schema: [String]) {
+    func sendSchema(_ schemaWrappers: [VibeSchemaWrapper]) {
         guard let connection = clients[clientId] else {
             print("No connection")
             return
         }
-        
-        let messageItem = WebSocketSharedManager.MessageItem3(schema: schema)
-        print(messageItem)
-        let data = try! JSONEncoder().encode(messageItem)
+    
+        let data = try! JSONEncoder().encode(schemaWrappers)
         sendMessage(data, to: connection)
     }
 
@@ -372,9 +370,8 @@ struct EditorView: View {
         }
     }
     
-    func executeVibeSwiftWebsocketFunction(args: [String]) async -> Result<Int, VibeSwiftWebsocketError> {
-        print(args.count)
-        server.sendSchema(args)
+    func executeVibeSwiftWebsocketFunction(schemaWrappers: [VibeSchemaWrapper]) async -> Result<Int, VibeSwiftWebsocketError> {
+        server.sendSchema(schemaWrappers)
         return .success(1)
     }
     
@@ -432,68 +429,44 @@ struct EditorView: View {
         }
     }
     
-    struct AnimationContainer: Codable, Hashable {
-        let actionableId: String
-        let containerId: String
-    }
-    
-    struct Animation: Codable, Hashable {
-        let actionableId: String
-        let containerId: String
-        let containerActionableId: String
-        let animationId: String
-    }
-    
-    struct VibeSchemaWrapper: Codable {
-        let schema: VibeSchema
-        let actionableId: String
-        let container: EditorView.AnimationContainer
-        let animationId: String
-    }
-    
     private func runInvokePlayback(swift: Bool? = nil) async -> Bool {
-        let relavantAnimations = Set(editorModel.animations.compactMap({element in
-            let containerId = element.containerId
-            let actionableIds = element.actionableIds
-            
-            if let container = editorModel.containers.first(where: { container in
-                container.containerId == containerId
-            }) {
-                return actionableIds.map {
-                    Animation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "body-vibe-id", animationId: element.animationId)
-                }
-                .flatMap({$0})
-            } else {
-                return actionableIds.map {
-                    Animation(actionableId: $0, containerId: containerId, containerActionableId: "body-vibe-id", animationId: element.animationId)
-                }
-                .flatMap({$0})
-            }
-            
-        })
-        .flatMap({$0}))
-        
-        let animationArgs = relavantAnimations.compactMap { (element: EditorView.Animation) -> String? in
-            guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
-                return nil
-            }
-            
-            guard let container = self.animations.first(where: {$0.id == schema.id}) else {
-                return nil
-            }
-            
-            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
-            
-            guard let data = try? JSONEncoder().encode(updateSchema) else {
-                return nil
-            }
-            
-            return String(data: data, encoding: .utf8)
-        }
-        
-        
         if swift == true {
-            let result = await executeVibeSwiftWebsocketFunction(args: animationArgs)
+            let relavantAnimations = Set(editorModel.animations.compactMap({element in
+                let containerId = element.containerId
+                let actionableIds = element.actionableIds
+                
+                if let container = editorModel.containers.first(where: { container in
+                    container.containerId == containerId
+                }) {
+                    return actionableIds.map {
+                        InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
+                    }
+                    .flatMap({$0})
+                } else {
+                    return actionableIds.map {
+                        InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
+                    }
+                    .flatMap({$0})
+                }
+                
+            })
+            .flatMap({$0}))
+            
+            let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> VibeSchemaWrapper? in
+                guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
+                    return nil
+                }
+                
+                guard let container = self.animations.first(where: {$0.id == schema.id}) else {
+                    return nil
+                }
+                
+                let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
+                
+                return updateSchema
+            }
+            
+            let result = await executeVibeSwiftWebsocketFunction(schemaWrappers: animationArgs)
             
             switch result {
             case .success(let success):
@@ -503,6 +476,45 @@ struct EditorView: View {
                 return false
             }
         } else {
+            let relavantAnimations = Set(editorModel.animations.compactMap({element in
+                let containerId = element.containerId
+                let actionableIds = element.actionableIds
+                
+                if let container = editorModel.containers.first(where: { container in
+                    container.containerId == containerId
+                }) {
+                    return actionableIds.map {
+                        InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "body-vibe-id", animationId: element.animationId)
+                    }
+                    .flatMap({$0})
+                } else {
+                    return actionableIds.map {
+                        InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "body-vibe-id", animationId: element.animationId)
+                    }
+                    .flatMap({$0})
+                }
+                
+            })
+            .flatMap({$0}))
+            
+            let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> String? in
+                guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
+                    return nil
+                }
+                
+                guard let container = self.animations.first(where: {$0.id == schema.id}) else {
+                    return nil
+                }
+                
+                let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
+                
+                guard let data = try? JSONEncoder().encode(updateSchema) else {
+                    return nil
+                }
+                
+                return String(data: data, encoding: .utf8)
+            }
+            
             let result = await executeVibeWebFunction(function: "invokePlayback", args: animationArgs)
             
             switch result {
