@@ -16,7 +16,7 @@ import Network
 @Observable
 class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertible {
     static func == (lhs: TreePacket, rhs: TreePacket) -> Bool {
-        lhs.tree == rhs.tree
+        lhs.tree == rhs.tree && lhs.actionableIds == rhs.actionableIds
     }
     
     func hash(into hasher: inout Hasher) {
@@ -105,65 +105,60 @@ class WebSocketServer {
             }
 
             if let data = data, !data.isEmpty {
-                guard let msg = try? JSONDecoder().decode(WebSocketSharedManager.MessageItem.self, from: data) else {
-                    print("Failed to Decode Message")
-                    return
-                }
-                
-                
-                
-                if let weakSelf = self {
-                    if !weakSelf.treePackets.isEmpty {
-                        guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
-                            return
-                        }
-                        
-                        var foundOldSet = false
-                        
-                        treePacketIterator: for treePacket in weakSelf.treePackets {
-                            let values = treePacket.tree.nodeMap.values
-                            for node in values {
-                                node.tree = treePacket.tree
-                                node.link()
-                            }
-                            
-                            guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
+                if let msg = try? JSONDecoder().decode(WebSocketSharedManager.MessageItem.self, from: data) {
+                    if let weakSelf = self {
+                        if !weakSelf.treePackets.isEmpty {
+                            guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
                                 return
                             }
                             
-                            let newSet = Set(newTreeIds)
-                            let oldSet = Set(oldTreeIds)
-                                                  
-                            var lookupId: String? = nil
+                            var foundOldSet = false
                             
-                            newSetSearch: for id in oldSet {
-                                if newSet.contains(id) {
-                                    foundOldSet = true
-                                    
-                                    for oldId in oldSet {
-                                        if weakSelf.treePacketsLUT.keys.contains(oldId) {
-                                            lookupId = oldId
-                                            break newSetSearch
+                            treePacketIterator: for treePacket in weakSelf.treePackets {
+                                let values = treePacket.tree.nodeMap.values
+                                for node in values {
+                                    node.tree = treePacket.tree
+                                    node.link()
+                                }
+                                
+                                guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
+                                    return
+                                }
+                                
+                                let newSet = Set(newTreeIds)
+                                let oldSet = Set(oldTreeIds)
+                                                      
+                                var lookupId: String? = nil
+                                
+                                newSetSearch: for id in oldSet {
+                                    if newSet.contains(id) {
+                                        foundOldSet = true
+                                        
+                                        for oldId in oldSet {
+                                            if weakSelf.treePacketsLUT.keys.contains(oldId) {
+                                                lookupId = oldId
+                                                break newSetSearch
+                                            }
                                         }
+                                    }
+                                }
+                                
+                                if foundOldSet {
+                                    if let lookupId, let offset = weakSelf.treePacketsLUT[lookupId] {
+                                        weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
                                     }
                                 }
                             }
                             
-                            if foundOldSet {
-                                if let lookupId, let offset = weakSelf.treePacketsLUT[lookupId] {
-                                    weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
-                                }
+                            if !foundOldSet {
+                               weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+                               weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                           }
+                        } else {
+                            if let id = msg.tree.rootNode?.id {
+                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+                                weakSelf.treePacketsLUT[id] = weakSelf.treePackets.count - 1
                             }
-                        }
-                        
-                        if !foundOldSet {
-                           weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-                           weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
-                       }
-                    } else {
-                        if let id = msg.tree.rootNode?.id {
-                            weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-                            weakSelf.treePacketsLUT[id] = weakSelf.treePackets.count - 1
                         }
                     }
                 }
@@ -180,6 +175,18 @@ class WebSocketServer {
         }
         
         let messageItem = WebSocketSharedManager.MessageItem2(selectedIds: ids)
+        let data = try! JSONEncoder().encode(messageItem)
+        sendMessage(data, to: connection)
+    }
+    
+    func sendSchema(_ schema: [String]) {
+        guard let connection = clients[clientId] else {
+            print("No connection")
+            return
+        }
+        
+        let messageItem = WebSocketSharedManager.MessageItem3(schema: schema)
+        print(messageItem)
         let data = try! JSONEncoder().encode(messageItem)
         sendMessage(data, to: connection)
     }
@@ -212,6 +219,10 @@ enum VibeWebScriptError: Error {
     case didFailToParse
     case didFailToEval(Error)
     case didFailToParseReturnValue
+}
+
+enum VibeSwiftWebsocketError: Error {
+    case didFailToEval(Error)
 }
 
 @Observable
@@ -361,6 +372,12 @@ struct EditorView: View {
         }
     }
     
+    func executeVibeSwiftWebsocketFunction(args: [String]) async -> Result<Int, VibeSwiftWebsocketError> {
+        print(args.count)
+        server.sendSchema(args)
+        return .success(1)
+    }
+    
     private func attachVibeActionables() async {
         let actionablesResult = await executeVibeWebScript(script: .actionablesAdd)
         switch actionablesResult {
@@ -434,7 +451,7 @@ struct EditorView: View {
         let animationId: String
     }
     
-    private func runInvokePlayback() async -> Bool {
+    private func runInvokePlayback(swift: Bool? = nil) async -> Bool {
         let relavantAnimations = Set(editorModel.animations.compactMap({element in
             let containerId = element.containerId
             let actionableIds = element.actionableIds
@@ -474,14 +491,27 @@ struct EditorView: View {
             return String(data: data, encoding: .utf8)
         }
         
-        let result = await executeVibeWebFunction(function: "invokePlayback", args: animationArgs)
         
-        switch result {
-        case .success(let success):
-            return success == 1
-        case .failure(let failure):
-            print(failure)
-            return false
+        if swift == true {
+            let result = await executeVibeSwiftWebsocketFunction(args: animationArgs)
+            
+            switch result {
+            case .success(let success):
+                return success == 1
+            case .failure(let failure):
+                print(failure)
+                return false
+            }
+        } else {
+            let result = await executeVibeWebFunction(function: "invokePlayback", args: animationArgs)
+            
+            switch result {
+            case .success(let success):
+                return success == 1
+            case .failure(let failure):
+                print(failure)
+                return false
+            }
         }
     }
     
@@ -504,11 +534,16 @@ struct EditorView: View {
     }
     
     private func tapPlay() async {
-        let removeSuccess = await cleanAnimations()
-        
-        if removeSuccess {
-            let invokeSuccess = await invokePlayback()
+        if framework == .swiftUI {
+            print(await runInvokePlayback(swift: true))
+        } else if framework == .react {
+            let removeSuccess = await cleanAnimations()
+            
+            if removeSuccess {
+                let invokeSuccess = await invokePlayback()
+            }
         }
+        
     }
     
     private func determineFocused(newValue: Bool) async {
@@ -589,6 +624,37 @@ struct EditorView: View {
         }
         .padding(.vertical, 42)
         .padding(.horizontal, 24)
+    }
+    
+    func attachAnimation(id: String, actionableIds: Set<String>) {
+        let containers = self.animations
+        let animations = self.animations.flatMap({$0.objects})
+        
+        if let container = containers.first(where: { container in container.id == id }) {
+            
+            editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
+        } else if let animation = animations.first(where: { animation in animation.id == id }) {
+            if framework == .swiftUI {
+                editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
+                for treePacket in server.treePackets {
+                    for id in treePacket.actionableIds {
+                        selectedActionabeIDTracker.selectedActionableIds.insert(id)
+                    }
+                }
+                
+                editorModel.animations.append(
+                    ActionableAnimationAssociater(
+                        actionableIds: selectedActionabeIDTracker.selectedActionableIds,
+                        containerId: animation.containerId,
+                        animationId: animation.id
+                    )
+                )
+            } else if framework == .react {
+                editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["body-vibe-id"]), containerId: animation.containerId))
+                editorModel.animations.append(ActionableAnimationAssociater(actionableIds: actionableIds, containerId: animation.containerId, animationId: animation.id))
+            }
+            
+        }
     }
     
     var body: some View {
@@ -672,7 +738,7 @@ struct EditorView: View {
                                         }
                                         .task {
                                             server.start()
-
+                                        
                                             // Keep the server running
 //                                            RunLoop.main.run()
                                         }
@@ -747,18 +813,7 @@ struct EditorView: View {
                                 selected: $selectedAnimation,
                                 actionableIds: $selectedActionabeIDTracker.wrappedValue.selectedActionableIds,
                                 disabled: false,
-                                actionTitle: attachActionTitle) { id, actionableIds in
-                                    let containers = self.animations
-                                    let animations = self.animations.flatMap({$0.objects})
-                                    
-                                    if let container = containers.first(where: { container in container.id == id }) {
-                                        
-                                        editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
-                                    } else if let animation = animations.first(where: { animation in animation.id == id }) {
-                                        editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["body-vibe-id"]), containerId: animation.containerId))
-                                        editorModel.animations.append(ActionableAnimationAssociater(actionableIds: actionableIds, containerId: animation.containerId, animationId: animation.id))
-                                    }
-                                }
+                                actionTitle: attachActionTitle, attachAnimation: self.attachAnimation)
                                 .padding(.vertical)
                         }
                         .frame(maxHeight: .infinity)

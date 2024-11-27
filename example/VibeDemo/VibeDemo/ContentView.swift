@@ -14,10 +14,10 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-                .vibeHello(hierarchyID: "8")
+                .vibeHello(hierarchyID: "bird")
             
         
-            VibeContainer(id: "animation2", hierarchyID: "animation2-0") {
+//            VibeContainer(id: "animation2", hierarchyID: "animation2-0") {
                 VStack {
                     Text("Hello, world!")
                         .vibeHello(hierarchyID: "1")
@@ -43,7 +43,7 @@ struct ContentView: View {
                     }
                 }
                 .vibeHello(hierarchyID: "19")
-            }
+//            }
         }
         .padding()
     }

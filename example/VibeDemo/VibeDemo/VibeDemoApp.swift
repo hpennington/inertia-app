@@ -12,7 +12,7 @@ import Inertia
 struct VibeDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            VibeContainer(id: "animation1", hierarchyID: "7") {
+            VibeContainer(id: "animation1", hierarchyID: "animation1") {
                 HStack {
                     ContentView()
                         .vibeHello(hierarchyID: "6")
