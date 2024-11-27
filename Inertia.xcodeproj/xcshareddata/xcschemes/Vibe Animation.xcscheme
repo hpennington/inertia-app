@@ -17,7 +17,7 @@
                BlueprintIdentifier = "F89BA0A72C48C85A0006603C"
                BuildableName = "Inertia Pro.app"
                BlueprintName = "Inertia Pro"
-               ReferencedContainer = "container:Inertia Pro.xcodeproj">
+               ReferencedContainer = "container:Inertia.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,7 +46,7 @@
             BlueprintIdentifier = "F89BA0A72C48C85A0006603C"
             BuildableName = "Inertia Pro.app"
             BlueprintName = "Inertia Pro"
-            ReferencedContainer = "container:Inertia Pro.xcodeproj">
+            ReferencedContainer = "container:Inertia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -63,7 +63,7 @@
             BlueprintIdentifier = "F89BA0A72C48C85A0006603C"
             BuildableName = "Inertia Pro.app"
             BlueprintName = "Inertia Pro"
-            ReferencedContainer = "container:Inertia Pro.xcodeproj">
+            ReferencedContainer = "container:Inertia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

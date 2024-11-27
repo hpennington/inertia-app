@@ -14,9 +14,13 @@ import Foundation
 import Network
 
 @Observable
-class TreePacket: Identifiable, Equatable, CustomStringConvertible {
+class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertible {
     static func == (lhs: TreePacket, rhs: TreePacket) -> Bool {
-        lhs.tree == rhs.tree && lhs.actionableIds == rhs.actionableIds
+        lhs.tree == rhs.tree
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(tree)
     }
     
     var description: String {
@@ -70,12 +74,6 @@ class WebSocketServer {
         receiveMessage(on: connection, clientId: clientId)
     }
     
-    private func keyInDescendants(treeA: Tree, treeB: Tree) -> String? {
-        let treeItemA = convertTreeToTreeItem(tree: treeA)
-        let treeItemB = convertTreeToTreeItem(tree: treeB)
-        return keyInDescendants(treeItemA: treeItemA, treeItemB: treeItemB)
-    }
-    
     func convertTreeToTreeItem(tree: Tree) -> TreeItem {
         guard let rootNode = tree.rootNode else { fatalError() }
         return convertNodeToTreeItem(node: rootNode)
@@ -90,27 +88,26 @@ class WebSocketServer {
         )
     }
     
-    private func keyInDescendants(treeItemA: TreeItem, treeItemB: TreeItem) -> String? {
-        if treeItemA.id == treeItemB.id {
-            return treeItemA.id
+    private func retrieveAllIds(tree: Tree) -> [String]? {
+        guard let root = tree.rootNode else {
+            return nil
         }
         
-        if let childrenA = treeItemA.children {
-            if let childrenB = treeItemB.children {
-                for childB in childrenB {
-                    return keyInDescendants(treeItemA: treeItemA, treeItemB: childB)
-                }
-                
-                for childA in childrenA {
-                    for childB in childrenB {
-                        return keyInDescendants(treeItemA: treeItemA, treeItemB: childA)
-                    }
+        return retrieveAllIds(treeItem: root)
+    }
+
+    private func retrieveAllIds(treeItem: Node) -> [String]? {
+        var ids: [String] = [treeItem.id]
+        
+        if let children = treeItem.children {
+            for child in children {
+                if let childIds = retrieveAllIds(treeItem: child) {
+                    ids.append(contentsOf: childIds)
                 }
             }
-            
         }
         
-        return nil
+        return ids
     }
 
     private func receiveMessage(on connection: NWConnection, clientId: UUID) {
@@ -126,33 +123,59 @@ class WebSocketServer {
                     print("Failed to Decode Message")
                     return
                 }
-                print("Received message from client \(clientId): \(msg)")
+                
+                
                 
                 if let weakSelf = self {
                     if !weakSelf.treePackets.isEmpty {
-                        for treePacket in weakSelf.treePackets {
-                            let tree = treePacket.tree
+                        treePacketIterator: for treePacket in weakSelf.treePackets {
+                            let values = treePacket.tree.nodeMap.values
+                            for node in values {
+                                node.tree = treePacket.tree
+                                node.link()
+                            }
+
+                            guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
+                                return
+                            }
                             
-                            if let key = weakSelf.keyInDescendants(treeA: msg.tree, treeB: tree) {
-                                if let offset = weakSelf.treePacketsLUT[key] {
-                                    weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
-                                } else {
-                                    weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-                                    weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                            guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
+                                return
+                            }
+                            
+                            let newSet = Set(newTreeIds)
+                            let oldSet = Set(oldTreeIds)
+                                                  
+                            var foundOldSet = false
+                            
+                            newSetSearch: for id in oldSet {
+                                if newSet.contains(id) {
+                                    foundOldSet = true
+                                    break newSetSearch
+                                }
+                            }
+                            
+                            if foundOldSet {
+                                for id in oldSet {
+                                    if let offset = weakSelf.treePacketsLUT[id] {
+                                        weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
+                                    }
                                 }
                             } else {
                                 weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
                                 weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                                break treePacketIterator
                             }
                         }
                     } else {
-                        weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-                        weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+                        if let id = msg.tree.rootNode?.id {
+                            weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+                            weakSelf.treePacketsLUT[id] = weakSelf.treePackets.count - 1
+                        }
                     }
                 }
             }
 
-            // Continue listening for more messages
             self?.receiveMessage(on: connection, clientId: clientId)
         }
     }
@@ -197,7 +220,6 @@ enum VibeWebScriptError: Error {
     case didFailToEval(Error)
     case didFailToParseReturnValue
 }
-
 
 @Observable
 final class SelectedActionableIDTracker {
@@ -531,7 +553,7 @@ struct EditorView: View {
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     
     func convertTreeToTreeItem(tree: Tree) -> TreeItem {
-        guard let rootNode = tree.rootNode else { fatalError() }
+        guard let rootNode = tree.rootNode else { fatalError("rootNode is nil") }
         return convertNodeToTreeItem(node: rootNode)
     }
 
@@ -548,7 +570,7 @@ struct EditorView: View {
     var treeView: some View {
         ScrollView {
             VStack {
-                ForEach(server.treePackets, id: \.id) { treePacket in
+                ForEach(Array(Set(server.treePackets)), id: \.id) { treePacket in
                     TreeView(
                         id: treePacket.tree.id,
                         displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,

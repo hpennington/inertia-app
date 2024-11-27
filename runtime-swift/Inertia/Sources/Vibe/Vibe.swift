@@ -9,30 +9,119 @@ import SwiftUI
 
 public typealias VibeID = String
 
-public class Node: Identifiable, Codable, Equatable, CustomStringConvertible {
+//public class Node: Identifiable, Hashable, Codable, Equatable, CustomStringConvertible {
+//    public static func == (lhs: Node, rhs: Node) -> Bool {
+//        return lhs.id == rhs.id
+//    }
+//    
+//    public func hash(into hasher: inout Hasher) {
+//        hasher.combine(id)
+//    }
+//    
+//    public let id: String
+//    public weak var parent: Node? = nil
+//    public var children: [Node]? = []
+//    
+//    init(id: String) {
+//        self.id = id
+//    }
+//    
+//    func addChild(_ child: Node) {
+//        child.parent = self
+//        children?.append(child)
+//    }
+//    
+//    public var description: String {
+//        "{id: \(id), parent: \(parent) children: \(children)}"
+//    }
+//}
+
+public class Node: Identifiable, Hashable, Codable, Equatable, CustomStringConvertible {
     public static func == (lhs: Node, rhs: Node) -> Bool {
         return lhs.id == rhs.id
     }
     
-    public let id: String
-    public var children: [Node]? = []
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
     
-    init(id: String) {
+    public let id: String
+    public weak var parent: Node?
+    public var children: [Node]? = []
+    public weak var tree: Tree? = nil
+    
+    init(id: String, parentId: String? = nil) {
         self.id = id
+        self.parentId = parentId
     }
     
     func addChild(_ child: Node) {
+        child.parent = self
+        child.parentId = self.id
         children?.append(child)
     }
     
     public var description: String {
-        "{id: \(id), children: \(children)}"
+        "{id: \(id), parentId: \(parentId), parent.id: \(parent?.id), children: \(children?.map {$0.id})}"
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case parentId = "parentId"
+        case children
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
+        children = try container.decodeIfPresent([Node].self, forKey: .children)
+    }
+    
+    private var parentId: String? = nil
+    
+    public func link() {
+        if let parentId {
+            self.parent = tree!.nodeMap[parentId]
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(parentId, forKey: .parentId) // Encode only the parent's ID
+        try container.encode(children, forKey: .children)
     }
 }
 
-public struct Tree: Identifiable, Codable, CustomStringConvertible, Equatable {
+public class Tree: Identifiable, Hashable, Codable, CustomStringConvertible, Equatable {
     public static func == (lhs: Tree, rhs: Tree) -> Bool {
         return lhs.rootNode == rhs.rootNode
+    }
+    
+    required public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.nodeMap = try container.decode([String : Node].self, forKey: .nodeMap)
+        self.rootNode = try container.decodeIfPresent(Node.self, forKey: .rootNode)
+    }
+    
+    enum CodingKeys: CodingKey {
+        case id
+        case nodeMap
+        case rootNode
+    }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.id, forKey: .id)
+        try container.encode(self.nodeMap, forKey: .nodeMap)
+        try container.encodeIfPresent(self.rootNode, forKey: .rootNode)
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(nodeMap)
     }
     
     public let id: String
@@ -41,13 +130,13 @@ public struct Tree: Identifiable, Codable, CustomStringConvertible, Equatable {
         self.id = id
     }
     
-    private var nodeMap: [String: Node] = [:]
+    public var nodeMap: [String: Node] = [:]
     public var rootNode: Node?
 
-    mutating func addRelationship(id: String, parentId: String?, root: Bool) {
+    func addRelationship(id: String, parentId: String?, root: Bool) {
         // Get or create the current node
         let currentNode = nodeMap[id] ?? {
-            let newNode = Node(id: id)
+            let newNode = Node(id: id, parentId: parentId)
             nodeMap[id] = newNode
             return newNode
         }()
@@ -67,7 +156,9 @@ public struct Tree: Identifiable, Codable, CustomStringConvertible, Equatable {
                 rootNode = parentNode
             } else {
                 parentNode.addChild(currentNode)
-                rootNode = currentNode
+                if rootNode == nil {
+                    rootNode = parentNode
+                }
             }
         }
     }
@@ -328,79 +419,95 @@ struct VibeHello<Content: View>: View {
     }
 
     var body: some View {
-        content
-            .environment(\.inertiaParentID, hierarchyID)
-            .environment(\.isInertiaContainer, false)
-            .onTapGesture {
-                print("tapped \(content)")                
-                guard let vibeDataModel else {
-                    return
-                }
+        ZStack(alignment: .center) {
+            content     
+        }
+        .environment(\.inertiaParentID, hierarchyID)
+        .environment(\.isInertiaContainer, false)
+        .onTapGesture {
+            print("tapped \(content)")
+            guard let vibeDataModel else {
+                return
+            }
 
-                if vibeDataModel.actionableIds.contains(hierarchyID) {
-                    vibeDataModel.actionableIds.remove(hierarchyID)
-                } else {
-                    vibeDataModel.actionableIds.insert(hierarchyID)
+            if vibeDataModel.actionableIds.contains(hierarchyID) {
+                vibeDataModel.actionableIds.remove(hierarchyID)
+            } else {
+                vibeDataModel.actionableIds.insert(hierarchyID)
+            }
+            
+            if let ip = getHostIPAddressFromResolvConf() {
+                let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                
+                print("Starting to send data...")
+                
+                if !manager.isConnected {
+                    manager.connect(uri: uri)
                 }
                 
-                if let ip = getHostIPAddressFromResolvConf() {
-                    let uri = URL(string: "ws://\(ip):8060")!
+                let tree = vibeDataModel.tree
+                let actionableIds = vibeDataModel.actionableIds
+                let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
+                manager.sendData(message: message)
+            }
+        }
+        .overlay {
+            if showSelectedBorder {
+                Rectangle()
+                    .stroke(Color.green)
+            }
+        }
+        .onAppear {
+            if let ip = getHostIPAddressFromResolvConf() {
+                let uri = URL(string: "ws://\(ip):8060")!
 //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                    
-                    print("Starting to send data...")
-                    
-                    if !manager.isConnected {
-                        manager.connect(uri: uri)
-                    }
-                    
-                    let tree = vibeDataModel.tree
-                    let actionableIds = vibeDataModel.actionableIds
+                
+                print("Starting to send data...")
+                
+                if !manager.isConnected {
+                    manager.connect(uri: uri)
+                }
+                
+                manager.messageReceived = handleMessage
+            }
+            
+        }
+        .onChange(of: vibeDataModel?.tree, { oldValue, newValue in
+            if let tree = newValue {
+                for node in tree.nodeMap.values {
+                    node.tree = tree
+                    node.link()
+                }
+            }
+        })
+        .onAppear {
+            print("onAppear: \(hierarchyID)")
+            NSLog("adding relationship: hierarchyID: \(hierarchyID) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
+            vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, root: isInertiaContainer)
+            if let tree = vibeDataModel?.tree {
+                for node in tree.nodeMap.values {
+                    node.tree = tree
+                    node.link()
+                }
+            }
+            
+            if let ip = getHostIPAddressFromResolvConf() {
+                let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                
+                print("Starting to send data...")
+                
+                if !manager.isConnected {
+                    manager.connect(uri: uri)
+                }
+                
+                if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
                     let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
                     manager.sendData(message: message)
                 }
             }
-            .overlay {
-                if showSelectedBorder {
-                    Rectangle()
-                        .stroke(Color.green)
-                }
-            }
-            .onAppear {
-                if let ip = getHostIPAddressFromResolvConf() {
-                    let uri = URL(string: "ws://\(ip):8060")!
-//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                    
-                    print("Starting to send data...")
-                    
-                    if !manager.isConnected {
-                        manager.connect(uri: uri)
-                    }
-                    
-                    manager.messageReceived = handleMessage
-                }
-                
-            }
-            .onAppear {
-                print("onAppear: \(hierarchyID)")
-                vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, root: isInertiaContainer)
-                print(vibeDataModel?.tree)
-                    
-                if let ip = getHostIPAddressFromResolvConf() {
-                    let uri = URL(string: "ws://\(ip):8060")!
-//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                    
-                    print("Starting to send data...")
-                    
-                    if !manager.isConnected {
-                        manager.connect(uri: uri)
-                    }
-                    
-                    if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
-                        let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
-                        manager.sendData(message: message)
-                    }
-                }
-            }
+        }
     }
     
     func handleMessage(selectedIds: Set<String>) {

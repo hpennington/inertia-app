@@ -26,10 +26,19 @@ struct ContentView: View {
                 List {
                     Text("Item 1")
                         .vibeHello(hierarchyID: "24")
+                        .onAppear {
+                            print("item 1 on appear")
+                        }
                     Text("Item 2")
                         .vibeHello(hierarchyID: "25")
+                        .onAppear {
+                            print("item 2 on appear")
+                        }
                 }
                 .vibeHello(hierarchyID: "23")
+                .onAppear {
+                    print("list on appear")
+                }
             }
             .vibeHello(hierarchyID: "19")
         }

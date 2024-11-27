@@ -302,7 +302,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F89BA0A32C48C85A0006603C /* Build configuration list for PBXProject "Inertia Pro" */;
+			buildConfigurationList = F89BA0A32C48C85A0006603C /* Build configuration list for PBXProject "Inertia" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -532,7 +532,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Inertia-Pro-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Inertia Pro";
+				INFOPLIST_KEY_CFBundleDisplayName = Inertia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -563,7 +563,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Inertia-Pro-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Inertia Pro";
+				INFOPLIST_KEY_CFBundleDisplayName = Inertia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -582,7 +582,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F89BA0A32C48C85A0006603C /* Build configuration list for PBXProject "Inertia Pro" */ = {
+		F89BA0A32C48C85A0006603C /* Build configuration list for PBXProject "Inertia" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F89BA0B52C48C85B0006603C /* Debug */,
