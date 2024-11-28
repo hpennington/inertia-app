@@ -232,7 +232,7 @@ public struct VibeContainer<Content: View>: View {
 ////                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
 //            }
         } else {
-            print("Failed to parse the vibe file")
+            NSLog("Failed to parse the vibe file")
             fatalError()
 //            self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
         }
@@ -407,11 +407,10 @@ extension EnvironmentValues {
 }
 
 struct VibeHello<Content: View>: View {
-    let hierarchyID: String
+    @State private var hierarchyID: String = UUID().uuidString
     let content: Content
     
-    init(hierarchyID: String, content: Content) {
-        self.hierarchyID = hierarchyID
+    init(content: Content) {
         self.content = content
     }
     
@@ -664,8 +663,8 @@ public struct VibeSchemaWrapper: Codable {
 }
 
 extension View {
-    public func vibeHello(hierarchyID: String) ->  some View {
-        VibeHello(hierarchyID: hierarchyID, content: self)
+    public func vibeHello() ->  some View {
+        VibeHello(content: self)
     }
 }
 
