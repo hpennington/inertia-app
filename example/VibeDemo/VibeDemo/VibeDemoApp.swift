@@ -15,7 +15,7 @@ struct VibeDemoApp: App {
             VibeContainer(id: "animation1", hierarchyID: "animation1") {
                 HStack {
                     ContentView()
-                        .vibeHello(hierarchyID: "6")
+                        .vibeHello()
                 }
             }
         }

@@ -411,7 +411,7 @@ struct VibeHello<Content: View>: View {
     let content: Content
     
     init(content: Content) {
-        self.content = content
+        self.content = content        
     }
     
     @Environment(\.vibeDataModel) var vibeDataModel
@@ -572,9 +572,6 @@ struct VibeHello<Content: View>: View {
         }
         
         if vibeDataModel.actionableIds.contains(hierarchyID) {
-            NSLog("contains id")
-            
-            
             guard let animationId = vibeDataModel.actionableIdToAnimationIdMap[hierarchyID] else {
                 NSLog("animationId is nil")
                 return nil
@@ -602,7 +599,6 @@ struct VibeHello<Content: View>: View {
     
     func handleMessageSchema(schemaWrappers: [VibeSchemaWrapper]) {
         for schemaWrapper in schemaWrappers {
-            
             if schemaWrapper.container.containerId == vibeDataModel?.containerId {
                 vibeDataModel?.vibeSchema = schemaWrapper.schema
                 vibeDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId

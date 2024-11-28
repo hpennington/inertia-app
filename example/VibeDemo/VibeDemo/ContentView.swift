@@ -11,41 +11,52 @@ import Inertia
 struct ContentView: View {
     var body: some View {
         VStack {
+            Spacer()
+                .frame(height: 48)
+            Text("Hello, world!")
+                .vibeHello()
+            Spacer()
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-                .vibeHello(hierarchyID: "deeznuts")
+                .vibeHello()
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+                .vibeHello()
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+                .vibeHello()
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+                .vibeHello()
             
-        
-//            VibeContainer(id: "animation2", hierarchyID: "animation2-0") {
-                VStack {
-                    Text("Hello, world!")
-                        .vibeHello(hierarchyID: "1")
-                    
-                    Text("Hello, jerry!")
-                        .vibeHello(hierarchyID: "Jerry")
-                    
-                    List {
-                        Text("Item 1")
-                            .vibeHello(hierarchyID: "24")
-                            .onAppear {
-                                print("item 1 on appear")
-                            }
-                        Text("Item 2")
-                            .vibeHello(hierarchyID: "25")
-                            .onAppear {
-                                print("item 2 on appear")
-                            }
-                    }
-                    .vibeHello(hierarchyID: "23")
-                    .onAppear {
-                        print("list on appear")
-                    }
-                }
-                .vibeHello(hierarchyID: "19")
-//            }
+            HStack {
+                Image(systemName: "chevron.left")
+                    .imageScale(.large)
+                    .foregroundStyle(.tint)
+                    .vibeHello()
+                Image(systemName: "chevron.up")
+                    .imageScale(.large)
+                    .foregroundStyle(.tint)
+                    .vibeHello()
+                Image(systemName: "chevron.right")
+                    .imageScale(.large)
+                    .foregroundStyle(.tint)
+                    .vibeHello()
+            }
+            .vibeHello()
+            
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+                .vibeHello()
+            Spacer()
         }
         .padding()
+        .vibeHello()
     }
 }
 
