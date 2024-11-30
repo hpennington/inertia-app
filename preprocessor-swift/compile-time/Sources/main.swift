@@ -159,7 +159,7 @@ func appendVibeModifier(of fileURL: URL) throws {
                 }
             }
             
-            let newAccessors = accessors.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".vibeHello()")))
+            let newAccessors = accessors.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable()")))
             let newAccessorBlock = accessorBlock.with(\.accessors, newAccessors)
             let newBinding = binding.with(\.accessorBlock, newAccessorBlock)
             let newBindings = PatternBindingListSyntax(arrayLiteral: newBinding)
