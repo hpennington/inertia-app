@@ -49,6 +49,12 @@ struct ContentView: View {
             }
             .inertiaEditable()
             
+            Button("Start") {
+                
+            }
+            .buttonStyle(.bordered)
+            .inertiaEditable()
+            
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
