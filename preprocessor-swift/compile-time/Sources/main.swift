@@ -192,8 +192,8 @@ func appendVibeModifier(of fileURL: URL) throws {
     }
     
     // Save the updated source back to the original file
-//    try sourceFileContent.write(to: fileURL, atomically: true, encoding: .utf8)
-//    print("Updated file saved: \(fileURL.path)")
+    try sourceFileContent.write(to: fileURL, atomically: true, encoding: .utf8)
+    print("Updated file saved: \(fileURL.path)")
 }
 
 // Entry point
