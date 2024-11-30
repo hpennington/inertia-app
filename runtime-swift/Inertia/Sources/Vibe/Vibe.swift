@@ -202,19 +202,19 @@ public final class VibeDataModel {
 public struct VibeContainer<Content: View>: View {
     let bundle: Bundle
     let id: VibeID
-    let hierarchyID: String
+    let hierarchyId: String
     @State private var vibeDataModel: VibeDataModel
     @ViewBuilder let content: () -> Content
     
     public init(
         bundle: Bundle = Bundle.main,
         id: VibeID,
-        hierarchyID: String,
+        hierarchyId: String,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.bundle = bundle
         self.id = id
-        self.hierarchyID = hierarchyID
+        self.hierarchyId = hierarchyId
         self.content = content
         
         // TODO: - Solve error handling when file is missing or schema is wrong
@@ -243,7 +243,7 @@ public struct VibeContainer<Content: View>: View {
             VStack(spacing: .zero) {
                 Spacer(minLength: .zero)
                 content()
-                    .environment(\.inertiaParentID, hierarchyID)
+                    .environment(\.inertiaParentID, hierarchyId)
                     .environment(\.vibeDataModel, self.vibeDataModel)
                     .environment(\.isInertiaContainer, true)
                     .environment(\.vibeCanvasSize, proxy.size)
@@ -254,12 +254,12 @@ public struct VibeContainer<Content: View>: View {
     }
 }
 
-public class WebSocketSharedManager {
+public class WebSocketClient {
     var task: URLSessionWebSocketTask? = nil
     var isConnected: Bool = false
     public var messageReceived: ((_ selectedIds: Set<String>) -> Void)!
     public var messageReceivedSchema: ((_ schemas: [VibeSchemaWrapper]) -> Void)!
-    static let shared = WebSocketSharedManager()
+    static let shared = WebSocketClient()
 
     init() {
 
@@ -271,12 +271,42 @@ public class WebSocketSharedManager {
         isConnected = true
     }
     
-    public struct MessageItem: Codable {
-        public let tree: Tree
-        public let actionableIds: Set<String>
+    public enum MessageType: Codable {
+        case actionable
+        case actionables
+        case selected
+        case schema
     }
     
-    public struct MessageItem2: Codable {
+    public struct MessageWrapper: Codable {
+        public let type: MessageType
+        public let payload: Data
+        
+        public init(type: MessageType, payload: Data) {
+            self.type = type
+            self.payload = payload
+        }
+    }
+    
+    public struct MessageActionables: Codable {
+        public let tree: Tree
+        public let actionableIds: Set<String>
+        
+        public init(tree: Tree, actionableIds: Set<String>) {
+            self.tree = tree
+            self.actionableIds = actionableIds
+        }
+    }
+    
+    public struct MessageActionable: Codable {
+        public let isActionable: Bool
+        
+        public init(isActionable: Bool) {
+            self.isActionable = isActionable
+        }
+    }
+    
+    public struct MessageSelected: Codable {
         public let selectedIds: Set<String>
         
         public init(selectedIds: Set<String>) {
@@ -284,14 +314,85 @@ public class WebSocketSharedManager {
         }
     }
     
-    func sendData(message: MessageItem) {
+    public struct MessageSchema: Codable {
+        public let schemaWrappers: [VibeSchemaWrapper]
+        
+        public init(schemaWrappers: [VibeSchemaWrapper]) {
+            self.schemaWrappers = schemaWrappers
+        }
+    }
+    
+    func sendMessage(_ message: MessageActionables) {
         do {
             guard let jsonData = try? JSONEncoder().encode(message) else {
                 print("Error: Could not encode JSON to data")
                  return
             }
+            
+            let messageWrapper = MessageWrapper(type: .actionables, payload: jsonData)
+            let messageWrapperData = try JSONEncoder().encode(messageWrapper)
 
-            let messageData = URLSessionWebSocketTask.Message.data(jsonData)
+            let messageData = URLSessionWebSocketTask.Message.data(messageWrapperData)
+            task?.send(messageData) { error in
+                if let error = error {
+                    print("Error sending message: \(error)")
+                } else {
+                    print("Message sent: \(messageData)")
+                }
+                
+                // Begin receiving responses
+                if let task = self.task {
+                    self.receiveMessage(task: task)
+                }
+            }
+            
+        } catch {
+            print("Error encoding data: \(error)")
+        }
+    }
+    
+    func sendMessage(_ message: MessageSelected) {
+        do {
+            guard let jsonData = try? JSONEncoder().encode(message) else {
+                print("Error: Could not encode JSON to data")
+                 return
+            }
+            
+            let messageWrapper = MessageWrapper(type: .selected, payload: jsonData)
+            let messageWrapperData = try JSONEncoder().encode(messageWrapper)
+
+            let messageData = URLSessionWebSocketTask.Message.data(messageWrapperData)
+            task?.send(messageData) { error in
+                if let error = error {
+                    print("Error sending message: \(error)")
+                } else {
+                    print("Message sent: \(messageData)")
+                }
+                
+                // Begin receiving responses
+                if let task = self.task {
+                    self.receiveMessage(task: task)
+                }
+            }
+            
+        } catch {
+            print("Error encoding data: \(error)")
+        }
+    }
+    
+    func sendMessage(_ message: MessageSchema) {
+        do {
+            guard let jsonData = try? JSONEncoder().encode(message) else {
+                print("Error: Could not encode JSON to data")
+                 return
+            }
+            
+            let messageWrapper = MessageWrapper(type: .schema, payload: jsonData)
+            guard let messageWrapperData = try? JSONEncoder().encode(messageWrapper) else {
+                return
+            }
+
+            let messageData = URLSessionWebSocketTask.Message.data(messageWrapperData)
             task?.send(messageData) { error in
                 if let error = error {
                     print("Error sending message: \(error)")
@@ -320,18 +421,30 @@ public class WebSocketSharedManager {
                 switch message {
                 case .data(let data):
                     
-                    if let receivedSelectedIds = try? JSONDecoder().decode(WebSocketSharedManager.MessageItem2.self, from: data) {
-                        NSLog("Received message (data): \(receivedSelectedIds)")
-                        self.messageReceived(receivedSelectedIds.selectedIds)
-                    } else if let receivedVibeSchema = try? JSONDecoder().decode([VibeSchemaWrapper].self, from: data) {
-                        NSLog("Received message (data): \(receivedVibeSchema)")
-                        self.messageReceivedSchema(receivedVibeSchema)
+                    guard let messageWrapper = try? JSONDecoder().decode(WebSocketClient.MessageWrapper.self, from: data) else {
+                        return
                     }
+                    
+                    switch messageWrapper.type {
+                    case .actionable:
+                        fatalError()
+                    case .actionables:
+                        fatalError()
+                    case .schema:
+                        guard let schemaMessage = try? JSONDecoder().decode(WebSocketClient.MessageSchema.self, from: messageWrapper.payload) else {
+                            return
+                        }
                         
-//                    } else {
-//                        print("Received binary data that could not be converted to string.")
-//                    }
+                        NSLog("Received message (data): \(schemaMessage)")
+                        self.messageReceivedSchema(schemaMessage.schemaWrappers)
+                    case .selected:
+                        guard let selectedIdsMessage = try? JSONDecoder().decode(WebSocketClient.MessageSelected.self, from: messageWrapper.payload) else {
+                            return
+                        }
                         
+                        NSLog("Received message (data): \(selectedIdsMessage)")
+                        self.messageReceived(selectedIdsMessage.selectedIds)
+                    }
                 case .string(let text):
                     fatalError()
                     print("Received message (text): \(text)")
@@ -393,7 +506,7 @@ struct ParentPath: PreferenceKey {
     }
 }
 
-let manager = WebSocketSharedManager.shared
+let manager = WebSocketClient.shared
 
 struct VibeCanvasSizeKey: EnvironmentKey {
     static let defaultValue: CGSize = .zero
@@ -406,8 +519,21 @@ extension EnvironmentValues {
     }
 }
 
-struct VibeHello<Content: View>: View {
+struct InertiaActionable<Content: View>: View {
+    let content: Content
+    
+    init(content: Content) {
+        self.content = content
+    }
+    
+    var body: some View {
+        content
+    }
+}
+
+struct InertiaEditable<Content: View>: View {
     @State private var hierarchyID: String = UUID().uuidString
+    @State private var dragOffset: CGSize = .zero
     let content: Content
     
     init(content: Content) {
@@ -425,6 +551,16 @@ struct VibeHello<Content: View>: View {
         }
         
         return vibeDataModel.actionableIds.contains(hierarchyID)
+    }
+    
+    var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                dragOffset = value.translation
+            }
+            .onEnded { value in
+                dragOffset = value.translation
+            }
     }
     
     var wrappedContent: some View {
@@ -458,8 +594,8 @@ struct VibeHello<Content: View>: View {
                 
                 let tree = vibeDataModel.tree
                 let actionableIds = vibeDataModel.actionableIds
-                let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
-                manager.sendData(message: message)
+                let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
+                manager.sendMessage(message)
             }
         }
         .overlay {
@@ -468,6 +604,8 @@ struct VibeHello<Content: View>: View {
                     .stroke(Color.green)
             }
         }
+        .offset(dragOffset)
+        .gesture(dragGesture)
         .onAppear {
             if let ip = getHostIPAddressFromResolvConf() {
                 let uri = URL(string: "ws://\(ip):8060")!
@@ -514,8 +652,8 @@ struct VibeHello<Content: View>: View {
                 }
                 
                 if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
-                    let message = WebSocketSharedManager.MessageItem(tree: tree, actionableIds: actionableIds)
-                    manager.sendData(message: message)
+                    let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
+                    manager.sendMessage(message)
                 }
             }
         }
@@ -659,8 +797,18 @@ public struct VibeSchemaWrapper: Codable {
 }
 
 extension View {
-    public func vibeHello() ->  some View {
-        VibeHello(content: self)
+    public func inertiaEditable() -> some View {
+        InertiaEditable(content: self)
+    }
+    
+    public func inertia() -> some View {
+        InertiaActionable(content: self)
+    }
+    
+    public func inertiaContainer(id: VibeID, hierarchyId: String) -> some View {
+        VibeContainer(id: id, hierarchyId: hierarchyId) {
+            self
+        }
     }
 }
 

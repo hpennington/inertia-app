@@ -105,35 +105,46 @@ class WebSocketServer {
             }
 
             if let data = data, !data.isEmpty {
-                if let msg = try? JSONDecoder().decode(WebSocketSharedManager.MessageItem.self, from: data) {
+                guard let messageWrapper = try? JSONDecoder().decode(WebSocketClient.MessageWrapper.self, from: data) else {
+                    return
+                }
+                
+                switch messageWrapper.type {
+                case .actionable:
+                    break
+                case .actionables:
+                    guard let msg = try? JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload) else {
+                        return
+                    }
+                    
                     if let weakSelf = self {
                         if !weakSelf.treePackets.isEmpty {
                             guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
                                 return
                             }
-                            
+
                             var foundOldSet = false
-                            
+
                             treePacketIterator: for treePacket in weakSelf.treePackets {
                                 let values = treePacket.tree.nodeMap.values
                                 for node in values {
                                     node.tree = treePacket.tree
                                     node.link()
                                 }
-                                
+
                                 guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
                                     return
                                 }
-                                
+
                                 let newSet = Set(newTreeIds)
                                 let oldSet = Set(oldTreeIds)
-                                                      
+
                                 var lookupId: String? = nil
-                                
+
                                 newSetSearch: for id in oldSet {
                                     if newSet.contains(id) {
                                         foundOldSet = true
-                                        
+
                                         for oldId in oldSet {
                                             if weakSelf.treePacketsLUT.keys.contains(oldId) {
                                                 lookupId = oldId
@@ -142,14 +153,14 @@ class WebSocketServer {
                                         }
                                     }
                                 }
-                                
+
                                 if foundOldSet {
                                     if let lookupId, let offset = weakSelf.treePacketsLUT[lookupId] {
                                         weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
                                     }
                                 }
                             }
-                            
+
                             if !foundOldSet {
                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
                                weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
@@ -161,11 +172,35 @@ class WebSocketServer {
                             }
                         }
                     }
+                case .selected:
+                    break
+                case .schema:
+                    break
                 }
             }
 
             self?.receiveMessage(on: connection, clientId: clientId)
         }
+    }
+    
+    func sendIsActionable(_ isActionable: Bool) {
+        guard let connection = clients[clientId] else {
+            print("No connection")
+            return
+        }
+        
+        
+        let messageItem = WebSocketClient.MessageActionable(isActionable: isActionable)
+        guard let data = try? JSONEncoder().encode(messageItem) else {
+            return
+        }
+        
+        let messageWrapper = WebSocketClient.MessageWrapper(type: .actionable, payload: data)
+        
+        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
+            return
+        }
+        sendMessage(wrapperData, to: connection)
     }
     
     func sendSelectedIds(_ ids: Set<String>) {
@@ -174,9 +209,17 @@ class WebSocketServer {
             return
         }
         
-        let messageItem = WebSocketSharedManager.MessageItem2(selectedIds: ids)
-        let data = try! JSONEncoder().encode(messageItem)
-        sendMessage(data, to: connection)
+        let messageItem = WebSocketClient.MessageSelected(selectedIds: ids)
+        guard let data = try? JSONEncoder().encode(messageItem) else {
+            return
+        }
+        
+        let messageWrapper = WebSocketClient.MessageWrapper(type: .selected, payload: data)
+        
+        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
+            return
+        }
+        sendMessage(wrapperData, to: connection)
     }
     
     func sendSchema(_ schemaWrappers: [VibeSchemaWrapper]) {
@@ -185,12 +228,21 @@ class WebSocketServer {
             return
         }
     
-        let data = try! JSONEncoder().encode(schemaWrappers)
-        sendMessage(data, to: connection)
+        let message = WebSocketClient.MessageSchema(schemaWrappers: schemaWrappers)
+        
+        guard let data = try? JSONEncoder().encode(message) else {
+            return
+        }
+        
+        let messageWrapper = WebSocketClient.MessageWrapper(type: .schema, payload: data)
+        
+        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
+            return
+        }
+        sendMessage(wrapperData, to: connection)
     }
 
     private func sendMessage(_ messageData: Data, to connection: NWConnection) {
-//        let messageData = message.data(using: .utf8) ?? Data()
         let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .binary)])
         
         connection.send(content: messageData, contentContext: context, isComplete: true, completion: .contentProcessed { error in
