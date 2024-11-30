@@ -188,7 +188,7 @@ public final class VibeDataModel {
     
     public var states: [VibeID: VibeAnimationState]
     public var actionableIdToAnimationIdMap: [String: String] = [:]
-    public var isActionable: Bool = true
+    public var isActionable: Bool = false
     
     public init(containerId: VibeID, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<String>) {
         self.containerId = containerId
@@ -257,8 +257,9 @@ public struct VibeContainer<Content: View>: View {
 public class WebSocketClient {
     var task: URLSessionWebSocketTask? = nil
     var isConnected: Bool = false
-    public var messageReceived: ((_ selectedIds: Set<String>) -> Void)!
-    public var messageReceivedSchema: ((_ schemas: [VibeSchemaWrapper]) -> Void)!
+    public var messageReceived: ((_ selectedIds: Set<String>) -> Void)? = nil
+    public var messageReceivedSchema: ((_ schemas: [VibeSchemaWrapper]) -> Void)? = nil
+    public var messageReceivedIsActionable: ((_ isActionable: Bool) -> Void)? = nil
     static let shared = WebSocketClient()
 
     init() {
@@ -427,7 +428,12 @@ public class WebSocketClient {
                     
                     switch messageWrapper.type {
                     case .actionable:
-                        fatalError()
+                        guard let actionableMessage = try? JSONDecoder().decode(WebSocketClient.MessageActionable.self, from: messageWrapper.payload) else {
+                            return
+                        }
+                        
+                        NSLog("Received message (data): \(actionableMessage)")
+                        self.messageReceivedIsActionable?(actionableMessage.isActionable)
                     case .actionables:
                         fatalError()
                     case .schema:
@@ -436,14 +442,14 @@ public class WebSocketClient {
                         }
                         
                         NSLog("Received message (data): \(schemaMessage)")
-                        self.messageReceivedSchema(schemaMessage.schemaWrappers)
+                        self.messageReceivedSchema?(schemaMessage.schemaWrappers)
                     case .selected:
                         guard let selectedIdsMessage = try? JSONDecoder().decode(WebSocketClient.MessageSelected.self, from: messageWrapper.payload) else {
                             return
                         }
                         
                         NSLog("Received message (data): \(selectedIdsMessage)")
-                        self.messageReceived(selectedIdsMessage.selectedIds)
+                        self.messageReceived?(selectedIdsMessage.selectedIds)
                     }
                 case .string(let text):
                     fatalError()
@@ -534,6 +540,8 @@ struct InertiaActionable<Content: View>: View {
 struct InertiaEditable<Content: View>: View {
     @State private var hierarchyID: String = UUID().uuidString
     @State private var dragOffset: CGSize = .zero
+    @State private var animation: VibeAnimationSchema? = nil
+    
     let content: Content
     
     init(content: Content) {
@@ -556,10 +564,15 @@ struct InertiaEditable<Content: View>: View {
     var dragGesture: some Gesture {
         DragGesture()
             .onChanged { value in
-                dragOffset = value.translation
+                if vibeDataModel?.isActionable == true {
+                    dragOffset = value.translation
+                }
+                
             }
             .onEnded { value in
-                dragOffset = value.translation
+                if vibeDataModel?.isActionable == true {
+                    dragOffset = value.translation
+                }
             }
     }
     
@@ -567,12 +580,13 @@ struct InertiaEditable<Content: View>: View {
         ZStack(alignment: .center) {
             content
         }
-        .environment(\.inertiaParentID, hierarchyID)
-        .environment(\.isInertiaContainer, false)
-        .buttonStyle(.plain)
         .onTapGesture {
             print("tapped \(content)")
             guard let vibeDataModel else {
+                return
+            }
+            
+            guard vibeDataModel.isActionable else {
                 return
             }
 
@@ -599,13 +613,43 @@ struct InertiaEditable<Content: View>: View {
             }
         }
         .overlay {
-            if showSelectedBorder {
+            if showSelectedBorder && vibeDataModel?.isActionable ?? false{
                 Rectangle()
                     .stroke(Color.green)
             }
         }
         .offset(dragOffset)
         .gesture(dragGesture)
+    }
+
+    var body: some View {
+        Group {
+            if let animation = animation ?? getAnimation {
+                wrappedContent
+                    .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
+                        contentView
+                            .scaleEffect(values.scale)
+                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
+                            .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
+                            .offset(x: values.translate.width * vibeCanvasSize.width / 2, y: values.translate.height * vibeCanvasSize.height / 2)
+                            .opacity(values.opacity)
+                    }, keyframes: { _ in
+                        KeyframeTrack {
+                            for keyframe in animation.keyframes {
+                                CubicKeyframe(keyframe.values, duration: keyframe.duration)
+                            }
+                        }
+                    })
+                    .onAppear {
+                        self.animation = animation
+                    }
+            } else {
+                wrappedContent
+            }
+        }
+        .environment(\.inertiaParentID, hierarchyID)
+        .environment(\.isInertiaContainer, false)
+        .buttonStyle(.plain)
         .onAppear {
             if let ip = getHostIPAddressFromResolvConf() {
                 let uri = URL(string: "ws://\(ip):8060")!
@@ -619,6 +663,7 @@ struct InertiaEditable<Content: View>: View {
                 
                 manager.messageReceived = handleMessage
                 manager.messageReceivedSchema = handleMessageSchema
+                manager.messageReceivedIsActionable = handleMessageActionable
             }
             
         }
@@ -658,52 +703,8 @@ struct InertiaEditable<Content: View>: View {
             }
         }
     }
-
-    var body: some View {
-        if vibeDataModel?.isActionable ?? false {
-            if let animation {
-                wrappedContent
-                    .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
-                        contentView
-                            .scaleEffect(values.scale)
-                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
-                            .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
-                            .offset(x: values.translate.width * vibeCanvasSize.width / 2, y: values.translate.height * vibeCanvasSize.height / 2)
-                            .opacity(values.opacity)
-                    }, keyframes: { _ in
-                        KeyframeTrack {
-                            for keyframe in animation.keyframes {
-                                CubicKeyframe(keyframe.values, duration: keyframe.duration)
-                            }
-                        }
-                    })
-            } else {
-                wrappedContent
-            }
-        } else {
-            if let animation {
-                content
-                    .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
-                        contentView
-                            .scaleEffect(values.scale)
-                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
-                            .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
-                            .offset(x: values.translate.width * vibeCanvasSize.width / 2, y: values.translate.height * vibeCanvasSize.height / 2)
-                            .opacity(values.opacity)
-                    }, keyframes: { _ in
-                        KeyframeTrack {
-                            for keyframe in animation.keyframes {
-                                CubicKeyframe(keyframe.values, duration: keyframe.duration)
-                            }
-                        }
-                    })
-            } else {
-                content
-            }
-        }
-    }
     
-    var animation: VibeAnimationSchema? {
+    var getAnimation: VibeAnimationSchema? {
         guard let vibeDataModel else {
             NSLog("vibeDataModel is nil")
             return nil
@@ -743,6 +744,10 @@ struct InertiaEditable<Content: View>: View {
                 NSLog("animationId: \(schemaWrapper.animationId)")
             }
         }
+    }
+    
+    func handleMessageActionable(isActionable: Bool) {
+        vibeDataModel?.isActionable = isActionable
     }
 }
 

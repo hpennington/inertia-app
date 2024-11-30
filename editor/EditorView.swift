@@ -189,7 +189,6 @@ class WebSocketServer {
             return
         }
         
-        
         let messageItem = WebSocketClient.MessageActionable(isActionable: isActionable)
         guard let data = try? JSONEncoder().encode(messageItem) else {
             return
@@ -644,50 +643,10 @@ struct EditorView: View {
     @State private var isVmLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     
-    func convertTreeToTreeItem(tree: Tree) -> TreeItem {
-        guard let rootNode = tree.rootNode else { fatalError("rootNode is nil") }
-        return convertNodeToTreeItem(node: rootNode)
-    }
-
-    private func convertNodeToTreeItem(node: Node) -> TreeItem {
-        let children = node.children?.map { convertNodeToTreeItem(node: $0) } ?? []
-        return TreeItem(
-            id: node.id,
-            displayName: node.id, // Use `id` directly as `displayName`
-            children: children.isEmpty ? nil : children
-        )
-    }
-    
     @ViewBuilder
     var treeView: some View {
-        ScrollView {
-            VStack {
-                ForEach(server.treePackets, id: \.id) { treePacket in
-                    TreeView(
-                        id: treePacket.tree.id,
-                        displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,
-                        rootItem: convertTreeToTreeItem(tree: treePacket.tree),
-                        isSelected: Binding(
-                            get: {
-                                treePacket.actionableIds
-                            },
-                            set: {
-                                treePacket.actionableIds = $0
-                                server.sendSelectedIds($0)
-                            }
-                        )
-                    )
-                    .padding(.vertical, 42)
-                    .padding(.horizontal, 24)
-                }
-                
-                if !server.treePackets.isEmpty {
-                    Divider()
-                }
-            }
-        }
-        .padding(.vertical, 42)
-        .padding(.horizontal, 24)
+        TreeViewContainer(server: server)
+            .disabled(!isFocused)
     }
     
     func attachAnimation(id: String, actionableIds: Set<String>) {
@@ -862,6 +821,9 @@ struct EditorView: View {
                             HStack() {
                                 FocusIndicator(isOn: $isFocused)
                                     .disabled(appMode != .animate)
+                                    .onChange(of: isFocused) { _, newValue in
+                                        server.sendIsActionable(newValue)
+                                    }
                                 Spacer(minLength: .zero)
                                 Button {
                                     Task {

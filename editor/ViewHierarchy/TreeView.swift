@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Inertia
 
 struct TreeItem: Identifiable {
     let id: String
@@ -139,6 +140,63 @@ struct TreeView: View {
                 .foregroundStyle(.gray)
             Divider()
             TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: isSelected)
+        }
+    }
+}
+
+struct TreeViewContainer: View {
+    @Environment(\.isEnabled) var isEnabled
+    
+    let server: WebSocketServer
+    
+    func convertTreeToTreeItem(tree: Tree) -> TreeItem {
+        guard let rootNode = tree.rootNode else { fatalError("rootNode is nil") }
+        return convertNodeToTreeItem(node: rootNode)
+    }
+
+    private func convertNodeToTreeItem(node: Node) -> TreeItem {
+        let children = node.children?.map { convertNodeToTreeItem(node: $0) } ?? []
+        return TreeItem(
+            id: node.id,
+            displayName: node.id, // Use `id` directly as `displayName`
+            children: children.isEmpty ? nil : children
+        )
+    }
+    var body: some View {
+        ScrollView {
+            VStack {
+                ForEach(server.treePackets, id: \.id) { treePacket in
+                    TreeView(
+                        id: treePacket.tree.id,
+                        displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,
+                        rootItem: convertTreeToTreeItem(tree: treePacket.tree),
+                        isSelected: Binding(
+                            get: {
+                                treePacket.actionableIds
+                            },
+                            set: {
+                                treePacket.actionableIds = $0
+                                server.sendSelectedIds($0)
+                            }
+                        )
+                    )
+                    .padding(.vertical, 42)
+                    .padding(.horizontal, 24)
+                }
+                
+                if !server.treePackets.isEmpty {
+                    Divider()
+                }
+            }
+        }
+        .padding(.vertical, 42)
+        .padding(.horizontal, 24)
+        .foregroundColor(!isEnabled ? .gray : nil)
+        .overlay {
+            if !isEnabled && server.treePackets.count > .zero {
+                Color.gray.opacity(0.0125)
+                    .cornerRadius(8)
+            }
         }
     }
 }
