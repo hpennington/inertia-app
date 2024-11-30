@@ -21,5 +21,6 @@ internal struct BindableSize: ViewModifier {
                     }
                 }
             )
+            .fixedSize()
     }
 }

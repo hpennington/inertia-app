@@ -150,6 +150,10 @@ private struct InertiaParentIDKey: EnvironmentKey {
     static let defaultValue: String? = nil
 }
 
+private struct InertiaContainerIdKey: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
 private struct IsInertiaContainerKey: EnvironmentKey {
     static let defaultValue: Bool = false
 }
@@ -169,6 +173,15 @@ extension EnvironmentValues {
         }
     }
     
+    var inertiaContainerId: String? {
+        get {
+            self[InertiaContainerIdKey.self]
+        }
+        set {
+            self[InertiaContainerIdKey.self] = newValue
+        }
+    }
+    
     var isInertiaContainer: Bool {
         get {
             self[IsInertiaContainerKey.self]
@@ -179,10 +192,10 @@ extension EnvironmentValues {
     }
 }
 
-public protocol VibeDataModel: Equatable {
-    var objects: [VibeID: VibeShape] { get set }
-    var states: [VibeID: VibeAnimationState] { get set }
-}
+//public protocol VibeDataModel: Equatable {
+//    public var objects: [VibeID: VibeShape] { get set }
+//    public var states: [VibeID: VibeAnimationState] { get set }
+//}
 
 public final class VibeViewModel: ObservableObject {
 //    public let id: VibeID
@@ -244,8 +257,8 @@ public struct VibeViewRepresentable: NSViewRepresentable {
     
     public func makeNSView(context: Context) -> NSViewType {
         let view = view()
-        view.isOpaque = false
-        view.backgroundColor = .clear
+//        view.isOpaque = false
+//        view.backgroundColor = .clear
         return view
     }
     
@@ -316,14 +329,14 @@ public struct InertiaContainer<Content: View>: View {
     
     public var body: some View {
         GeometryReader { proxy in
-            VStack(spacing: .zero) {
-                Spacer(minLength: .zero)
+            ZStack(alignment: .center) {
                 content()
                     .environment(\.inertiaParentID, hierarchyId)
                     .environment(\.vibeDataModel, self.vibeDataModel)
                     .environment(\.isInertiaContainer, true)
-                    .environment(\.vibeCanvasSize, proxy.size)
-                Spacer(minLength: .zero)
+                    .environment(\.inertiaContainerSize, proxy.size)
+                    .environment(\.inertiaContainerId, hierarchyId)
+                    .coordinateSpace(.named(hierarchyId))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -595,7 +608,7 @@ struct VibeCanvasSizeKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var vibeCanvasSize: CGSize {
+    var inertiaContainerSize: CGSize {
         get { self[VibeCanvasSizeKey.self] }
         set { self[VibeCanvasSizeKey.self] = newValue }
     }
@@ -617,6 +630,7 @@ struct InertiaEditable<Content: View>: View {
     @State private var hierarchyID: String = UUID().uuidString
     @State private var dragOffset: CGSize = .zero
     @State private var animation: VibeAnimationSchema? = nil
+    @State private var contentSize: CGSize = .zero
     @State private var vm = VibeViewModel()
     
     let content: Content
@@ -627,8 +641,9 @@ struct InertiaEditable<Content: View>: View {
     
     @Environment(\.vibeDataModel) var vibeDataModel
     @Environment(\.inertiaParentID) var inertiaParentID
+    @Environment(\.inertiaContainerId) var inertiaContainerId
     @Environment(\.isInertiaContainer) var isInertiaContainer
-    @Environment(\.vibeCanvasSize) var vibeCanvasSize: CGSize
+    @Environment(\.inertiaContainerSize) var inertiaContainerSize: CGSize
     
     var showSelectedBorder: Bool {
         guard let vibeDataModel else {
@@ -656,42 +671,40 @@ struct InertiaEditable<Content: View>: View {
     var wrappedContent: some View {
         ZStack(alignment: .center) {
             content
+                .modifier(BindableSize(size: $contentSize))
         }
-        .highPriorityGesture(
-            TapGesture()
-                .onEnded {
-                    print("tapped \(content)")
-                    guard let vibeDataModel else {
-                        return
-                    }
-                    
-                    guard vibeDataModel.isActionable else {
-                        return
-                    }
+        .onTapGesture {
+            print("tapped \(content)")
+            guard let vibeDataModel else {
+                return
+            }
+            
+            guard vibeDataModel.isActionable else {
+                return
+            }
 
-                    if vibeDataModel.actionableIds.contains(hierarchyID) {
-                        vibeDataModel.actionableIds.remove(hierarchyID)
-                    } else {
-                        vibeDataModel.actionableIds.insert(hierarchyID)
-                    }
-                    
-                    if let ip = getHostIPAddressFromResolvConf() {
-                        let uri = URL(string: "ws://\(ip):8060")!
-        //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                        
-                        print("Starting to send data...")
-                        
-                        if !manager.isConnected {
-                            manager.connect(uri: uri)
-                        }
-                        
-                        let tree = vibeDataModel.tree
-                        let actionableIds = vibeDataModel.actionableIds
-                        let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
-                        manager.sendMessage(message)
-                    }
+            if vibeDataModel.actionableIds.contains(hierarchyID) {
+                vibeDataModel.actionableIds.remove(hierarchyID)
+            } else {
+                vibeDataModel.actionableIds.insert(hierarchyID)
+            }
+            
+            if let ip = getHostIPAddressFromResolvConf() {
+                let uri = URL(string: "ws://\(ip):8060")!
+//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                
+                print("Starting to send data...")
+                
+                if !manager.isConnected {
+                    manager.connect(uri: uri)
                 }
-        )
+                
+                let tree = vibeDataModel.tree
+                let actionableIds = vibeDataModel.actionableIds
+                let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
+                manager.sendMessage(message)
+            }
+        }
         .overlay {
             if showSelectedBorder && vibeDataModel?.isActionable ?? false{
                 Rectangle()
@@ -703,92 +716,123 @@ struct InertiaEditable<Content: View>: View {
     }
 
     var animatedBody: some View {
-        Group {
-            if let animation = animation ?? getAnimation {
-                wrappedContent
-                    .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
-                        contentView
-                            .scaleEffect(values.scale)
-                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
-                            .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
-                            .offset(x: values.translate.width * vibeCanvasSize.width / 2, y: values.translate.height * vibeCanvasSize.height / 2)
-                            .opacity(values.opacity)
-                    }, keyframes: { _ in
-                        KeyframeTrack {
-                            for keyframe in animation.keyframes {
-                                CubicKeyframe(keyframe.values, duration: keyframe.duration)
+//        GeometryReader { rootProxy in
+            Group {
+                if let animation = animation ?? getAnimation {
+                    wrappedContent
+                        .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
+                            contentView
+                                .scaleEffect(values.scale)
+                                .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
+                                .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
+                                .offset(x: values.translate.width * inertiaContainerSize.width / 2, y: values.translate.height * inertiaContainerSize.height / 2)
+                                .opacity(values.opacity)
+                        }, keyframes: { _ in
+                            KeyframeTrack {
+                                for keyframe in animation.keyframes {
+                                    CubicKeyframe(keyframe.values, duration: keyframe.duration)
+                                }
                             }
+                        })
+                        .onAppear {
+                            self.animation = animation
                         }
-                    })
-                    .onAppear {
-                        self.animation = animation
+
+                    
+                } else {
+                    wrappedContent
+
+                }
+            }
+//            .frame(minWidth: contentSize.width, minHeight: contentSize.height)
+
+            .background(
+                GeometryReader { proxy in
+                    backgroundView
+                        .frame(width: inertiaContainerSize.width, height: inertiaContainerSize.height)
+                        .offset(x: -proxy.frame(in: .named(inertiaContainerId)).origin.x, y: -proxy.frame(in: .named(inertiaContainerId)).origin.y)
+                }
+            )
+            .environment(\.inertiaParentID, hierarchyID)
+            .environment(\.isInertiaContainer, false)
+            .buttonStyle(.plain)
+            .onAppear {
+                if let ip = getHostIPAddressFromResolvConf() {
+                    let uri = URL(string: "ws://\(ip):8060")!
+    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                    
+                    print("Starting to send data...")
+                    
+                    if !manager.isConnected {
+                        manager.connect(uri: uri)
                     }
-            } else {
-                wrappedContent
-            }
-        }
-        .environment(\.inertiaParentID, hierarchyID)
-        .environment(\.isInertiaContainer, false)
-        .buttonStyle(.plain)
-        .onAppear {
-            if let ip = getHostIPAddressFromResolvConf() {
-                let uri = URL(string: "ws://\(ip):8060")!
-//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                
-                print("Starting to send data...")
-                
-                if !manager.isConnected {
-                    manager.connect(uri: uri)
+                    
+                    manager.messageReceived = handleMessage
+                    manager.messageReceivedSchema = handleMessageSchema
+                    manager.messageReceivedIsActionable = handleMessageActionable
                 }
                 
-                manager.messageReceived = handleMessage
-                manager.messageReceivedSchema = handleMessageSchema
-                manager.messageReceivedIsActionable = handleMessageActionable
             }
-            
-        }
-        .onChange(of: vibeDataModel?.tree, { oldValue, newValue in
-            if let tree = newValue {
-                for node in tree.nodeMap.values {
-                    node.tree = tree
-                    node.link()
+            .onChange(of: vibeDataModel?.tree, { oldValue, newValue in
+                if let tree = newValue {
+                    for node in tree.nodeMap.values {
+                        node.tree = tree
+                        node.link()
+                    }
                 }
-            }
-        })
-        .onAppear {
-            print("onAppear: \(hierarchyID)")
-            NSLog("adding relationship: hierarchyID: \(hierarchyID) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
-            vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
-            if let tree = vibeDataModel?.tree {
-                for node in tree.nodeMap.values {
-                    node.tree = tree
-                    node.link()
-                }
-            }
-            
-            if let ip = getHostIPAddressFromResolvConf() {
-                let uri = URL(string: "ws://\(ip):8060")!
-//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                
-                print("Starting to send data...")
-                
-                if !manager.isConnected {
-                    manager.connect(uri: uri)
+            })
+            .onAppear {
+                print("onAppear: \(hierarchyID)")
+                NSLog("adding relationship: hierarchyID: \(hierarchyID) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
+                vibeDataModel?.tree.addRelationship(id: hierarchyID, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
+                if let tree = vibeDataModel?.tree {
+                    for node in tree.nodeMap.values {
+                        node.tree = tree
+                        node.link()
+                    }
                 }
                 
-                if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
-                    let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
-                    manager.sendMessage(message)
+                if let ip = getHostIPAddressFromResolvConf() {
+                    let uri = URL(string: "ws://\(ip):8060")!
+    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+                    
+                    print("Starting to send data...")
+                    
+                    if !manager.isConnected {
+                        manager.connect(uri: uri)
+                    }
+                    
+                    if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
+                        let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
+                        manager.sendMessage(message)
+                    }
                 }
             }
-        }
+            .onDisappear {
+                if let zIndex = vibeDataModel?.vibeSchema.objects.first(where: { element in
+                    element.id == hierarchyID
+                })?.zIndex {
+                    vm.layerOwner[zIndex]?.removeAll()
+                }
+            }
+//            .frame(width: rootProxy.size.width, height: rootProxy.size.height)
+//        }
+        
+    //                Spacer(minLength: .zero)
+//        }
     }
     
     @ViewBuilder
     private var backgroundView: some View {
-        let frame = CGRect(origin: .zero, size: vibeCanvasSize)
+        let frame = CGRect(origin: .zero, size: inertiaContainerSize)
         let device = vm.device
-        let object = vm.dataModel.objects[id]
+        guard let vibeDataModel else {
+            return AnyView(EmptyView())
+        }
+        
+        let object = vibeDataModel.vibeSchema.objects.first(where: { element in
+            element.id == vibeDataModel.vibeSchema.id
+        })
 
         guard let currentViewZIndex = object?.zIndex else {
             return AnyView(EmptyView())
@@ -799,12 +843,12 @@ struct InertiaEditable<Content: View>: View {
         }
         
         if vm.layerOwner[currentViewZIndex - 1] == nil {
-            vm.layerOwner[currentViewZIndex - 1] = self.id
-        } else if vm.layerOwner[currentViewZIndex - 1] != self.id {
+            vm.layerOwner[currentViewZIndex - 1] = self.hierarchyID
+        } else if vm.layerOwner[currentViewZIndex - 1] != self.hierarchyID {
             return AnyView(EmptyView())
         }
         
-        let zUnderObjects = vm.dataModel.objects.values.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
+        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
 
         if !zUnderObjects.isEmpty {
             let uiview = TouchForwardingComponent(interactive: false, component: {
@@ -823,7 +867,8 @@ struct InertiaEditable<Content: View>: View {
                     }
                     
                     return VertexRenderer(frame: frame, device: device, vertices: vertices)
-                }.frame(width: vibeCanvasSize.width, height: vibeCanvasSize.height)}, frame: frame)
+                }.frame(width: inertiaContainerSize.width, height: inertiaContainerSize.height)}, frame: frame)
+            
             
             return AnyView(
                 VibeViewRepresentable {
@@ -836,22 +881,7 @@ struct InertiaEditable<Content: View>: View {
     }
     
     var body: some View {
-        GeometryReader { proxy in
-            Group {
-                animatedBody
-            }
-            .frame(width: proxy.size.width, height: proxy.size.height)
-            .background(alignment: .topLeading) {
-                backgroundView
-                    .frame(width: vibeCanvasSize.width, height: vibeCanvasSize.height)
-                    .offset(x: -proxy.frame(in: .named(vm.id)).origin.x, y: -proxy.frame(in: .named(vm.id)).origin.y)
-            }
-            .onDisappear {
-                if let zIndex = vm.dataModel.objects[id]?.zIndex {
-                    vm.layerOwner[zIndex]?.removeAll()
-                }
-            }
-        }
+        animatedBody
     }
     
     var getAnimation: VibeAnimationSchema? {
@@ -957,7 +987,8 @@ extension View {
     }
     
     public func inertia() -> some View {
-        InertiaActionable(content: self)
+        self
+//        InertiaActionable(content: self)
     }
     
     public func inertiaContainer(id: VibeID, hierarchyId: String) -> some View {

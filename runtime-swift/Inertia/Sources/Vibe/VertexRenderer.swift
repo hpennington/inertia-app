@@ -81,9 +81,9 @@ public final class VertexRenderer: MTKView, MTKViewDelegate {
         super.init(frame: frame, device: device)
         
         self.delegate = self
-        self.backgroundColor = .clear
-        self.isOpaque = false
-        self.isUserInteractionEnabled = false
+//        self.backgroundColor = .clear
+//        self.isOpaque = false
+//        self.isUserInteractionEnabled = false
     }
     
     required init(coder: NSCoder) {
