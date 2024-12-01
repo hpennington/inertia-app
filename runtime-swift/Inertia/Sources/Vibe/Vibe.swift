@@ -337,8 +337,10 @@ public struct InertiaContainer<Content: View>: View {
                     .environment(\.inertiaContainerSize, proxy.size)
                     .environment(\.inertiaContainerId, hierarchyId)
                     .coordinateSpace(.named(hierarchyId))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .border(.green)
         }
     }
 }
@@ -671,7 +673,7 @@ struct InertiaEditable<Content: View>: View {
     var wrappedContent: some View {
         ZStack(alignment: .center) {
             content
-                .modifier(BindableSize(size: $contentSize))
+//                .modifier(BindableSize(size: $contentSize))
         }
         .onTapGesture {
             print("tapped \(content)")
@@ -815,11 +817,6 @@ struct InertiaEditable<Content: View>: View {
                     vm.layerOwner[zIndex]?.removeAll()
                 }
             }
-//            .frame(width: rootProxy.size.width, height: rootProxy.size.height)
-//        }
-        
-    //                Spacer(minLength: .zero)
-//        }
     }
     
     @ViewBuilder
@@ -831,7 +828,7 @@ struct InertiaEditable<Content: View>: View {
         }
         
         let object = vibeDataModel.vibeSchema.objects.first(where: { element in
-            element.id == vibeDataModel.vibeSchema.id
+            element.objectType == .shape
         })
 
         guard let currentViewZIndex = object?.zIndex else {
@@ -848,7 +845,8 @@ struct InertiaEditable<Content: View>: View {
             return AnyView(EmptyView())
         }
         
-        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
+//        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
+        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape})
 
         if !zUnderObjects.isEmpty {
             let uiview = TouchForwardingComponent(interactive: false, component: {
@@ -987,8 +985,7 @@ extension View {
     }
     
     public func inertia() -> some View {
-        self
-//        InertiaActionable(content: self)
+        InertiaActionable(content: self)
     }
     
     public func inertiaContainer(id: VibeID, hierarchyId: String) -> some View {

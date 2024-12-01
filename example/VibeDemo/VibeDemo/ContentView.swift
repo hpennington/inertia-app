@@ -62,6 +62,7 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .inertiaEditable()
     }
 }
