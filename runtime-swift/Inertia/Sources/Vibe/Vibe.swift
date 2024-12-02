@@ -812,7 +812,7 @@ struct InertiaEditable<Content: View>: View {
             }
             .onDisappear {
                 if let zIndex = vibeDataModel?.vibeSchema.objects.first(where: { element in
-                    element.id == hierarchyID
+                    element.objectType == .shape
                 })?.zIndex {
                     vm.layerOwner[zIndex]?.removeAll()
                 }
@@ -823,32 +823,37 @@ struct InertiaEditable<Content: View>: View {
     private var backgroundView: some View {
         let frame = CGRect(origin: .zero, size: inertiaContainerSize)
         let device = vm.device
+        NSLog("enter backgroundView")
         guard let vibeDataModel else {
             return AnyView(EmptyView())
         }
-        
+                
         let object = vibeDataModel.vibeSchema.objects.first(where: { element in
             element.objectType == .shape
         })
-
+        
+        NSLog("enter object")
         guard let currentViewZIndex = object?.zIndex else {
             return AnyView(EmptyView())
         }
-        
+        NSLog("enter currentViewZIndex")
         guard currentViewZIndex != .zero else {
             return AnyView(EmptyView())
         }
         
-        if vm.layerOwner[currentViewZIndex - 1] == nil {
-            vm.layerOwner[currentViewZIndex - 1] = self.hierarchyID
-        } else if vm.layerOwner[currentViewZIndex - 1] != self.hierarchyID {
-            return AnyView(EmptyView())
-        }
+//        if vm.layerOwner[currentViewZIndex - 1] == nil {
+//            NSLog("enter layerOwnder 1")
+//            vm.layerOwner[currentViewZIndex - 1] = object?.id
+//        } else if vm.layerOwner[currentViewZIndex - 1] != object?.id {
+//            NSLog("enter layerOwnder 2")
+//            return AnyView(EmptyView())
+//        }
         
 //        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
         let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape})
 
         if !zUnderObjects.isEmpty {
+            NSLog("enter zUnderObjects")
             let uiview = TouchForwardingComponent(interactive: false, component: {
                 VibeViewRepresentable {
                     let vertices = zUnderObjects.flatMap {
@@ -874,6 +879,7 @@ struct InertiaEditable<Content: View>: View {
                 }
             )
         } else {
+            NSLog("enter EmptyView")
             return AnyView(EmptyView())
         }
     }

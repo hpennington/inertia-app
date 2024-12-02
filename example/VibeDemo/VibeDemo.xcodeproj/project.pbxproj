@@ -14,8 +14,7 @@
 		F86317EE2C66DF05001DEE60 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
 		F86317F02C66DF06001DEE60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
 		F86317F32C66DF06001DEE60 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
-		F8F167622CF50B9300C2113E /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8F167612CF50B9300C2113E /* Inertia */; };
-		F8F167652CF525D000C2113E /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8F167642CF525D000C2113E /* Inertia */; };
+		F8CEB21D2CFCE52D00FB16F3 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8CEB21C2CFCE52D00FB16F3 /* Inertia */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +26,7 @@
 		F86317ED2C66DF05001DEE60 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F86317EF2C66DF06001DEE60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F8CEB2122CFCE29C00FB16F3 /* Inertia */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Inertia; path = "../../runtime-swift/Inertia"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,8 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8F167622CF50B9300C2113E /* Inertia in Frameworks */,
-				F8F167652CF525D000C2113E /* Inertia in Frameworks */,
+				F8CEB21D2CFCE52D00FB16F3 /* Inertia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,6 +48,7 @@
 				F852BF232CE7F9C90099FB2D /* animation2.json */,
 				F852BF252CE7F9C90099FB2D /* animation3.json */,
 				F86317EA2C66DF05001DEE60 /* VibeDemo */,
+				F8CEB2112CFCE28800FB16F3 /* Frameworks */,
 				F86317E92C66DF05001DEE60 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,6 +80,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		F8CEB2112CFCE28800FB16F3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F8CEB2122CFCE29C00FB16F3 /* Inertia */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -99,6 +107,9 @@
 			packageProductDependencies = (
 				F8F167612CF50B9300C2113E /* Inertia */,
 				F8F167642CF525D000C2113E /* Inertia */,
+				F8CEB2142CFCE2A700FB16F3 /* Inertia */,
+				F8CEB2192CFCE42800FB16F3 /* Inertia */,
+				F8CEB21C2CFCE52D00FB16F3 /* Inertia */,
 			);
 			productName = VibeDemo;
 			productReference = F86317E82C66DF05001DEE60 /* VibeDemo.app */;
@@ -129,7 +140,7 @@
 			);
 			mainGroup = F86317DF2C66DF05001DEE60;
 			packageReferences = (
-				F8F167632CF525D000C2113E /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */,
+				F8CEB21B2CFCE52D00FB16F3 /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */,
 			);
 			productRefGroup = F86317E92C66DF05001DEE60 /* Products */;
 			projectDirPath = "";
@@ -379,13 +390,25 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F8F167632CF525D000C2113E /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */ = {
+		F8CEB21B2CFCE52D00FB16F3 /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../../runtime-swift/Inertia";
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F8CEB2142CFCE2A700FB16F3 /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F8CEB2192CFCE42800FB16F3 /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F8CEB21C2CFCE52D00FB16F3 /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
 		F8F167612CF50B9300C2113E /* Inertia */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Inertia;

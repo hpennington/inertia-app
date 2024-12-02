@@ -35,7 +35,7 @@ public final class VertexRenderer: MTKView, MTKViewDelegate {
         
         self.commandQueue = commandQueue
         
-        guard let shaderURL = Bundle.main.url(forResource: "Shaders", withExtension: "metal", subdirectory: "Metal") else {
+        guard let shaderURL = Bundle.module.url(forResource: "Shaders", withExtension: "metal", subdirectory: "Metal") else {
             fatalError("Shader file not found.")
         }
         
@@ -81,9 +81,11 @@ public final class VertexRenderer: MTKView, MTKViewDelegate {
         super.init(frame: frame, device: device)
         
         self.delegate = self
-//        self.backgroundColor = .clear
-//        self.isOpaque = false
-//        self.isUserInteractionEnabled = false
+        #if os(iOS)
+        self.backgroundColor = .clear
+        self.isOpaque = false
+        self.isUserInteractionEnabled = false
+        #endif
     }
     
     required init(coder: NSCoder) {
