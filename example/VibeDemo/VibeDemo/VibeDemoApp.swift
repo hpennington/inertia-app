@@ -14,7 +14,6 @@ struct VibeDemoApp: App {
         WindowGroup {
             InertiaContainer(id: "animation1", hierarchyId: "animation1") {
                 ContentView()
-                    .inertiaEditable()
             }
         }
     }
