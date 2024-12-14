@@ -635,8 +635,7 @@ struct InertiaEditable<Content: View>: View {
     @State private var animation: VibeAnimationSchema? = nil
     @State private var contentSize: CGSize = .zero
     @State private var vm = VibeViewModel()
-    @State private var myHierarchyId: String? = nil
-    @State private var hasBeenInitialized = false
+    @State private var hierarchyId: String!
     
     let id: String
     let content: Content
@@ -644,23 +643,17 @@ struct InertiaEditable<Content: View>: View {
     init(_ id: String, content: Content) {
         self.id = id
         self.content = content
-        
-//        if !hasBeenInitialized {
-//            let index = nextIndex(id)
-//            self.myHierarchyId = id + "--\(index)"
-//        }
-//        
-//        self.hasBeenInitialized = true
+        self._hierarchyId = State(wrappedValue: self.id + "--\(retrieveNextIndex(id))")
     }
     
     private func retrieveNextIndex(_ id: String) -> Int {
-        if let index = hierarchyIdIndexMap[id] {
-            hierarchyIdIndexMap[id] = index + 1
-            return index + 1
-        } else {
+        guard let index = hierarchyIdIndexMap[id] else {
             hierarchyIdIndexMap[id] = .zero
             return .zero
         }
+        
+        hierarchyIdIndexMap[id] = index + 1
+        return index
     }
     
     @Environment(\.vibeDataModel) var vibeDataModel
@@ -669,25 +662,11 @@ struct InertiaEditable<Content: View>: View {
     @Environment(\.isInertiaContainer) var isInertiaContainer
     @Environment(\.inertiaContainerSize) var inertiaContainerSize: CGSize
     
-    var hierarchyId: String? {
-        guard let myHierarchyId else {
-            let value = self.id + "--\(retrieveNextIndex(id))"
-            self.myHierarchyId = value
-            return self.myHierarchyId
-        }
-        
-        return self.myHierarchyId
-    }
-    
     var showSelectedBorder: Bool {
         guard let vibeDataModel else {
             return false
         }
         
-        guard let hierarchyId else {
-            return false
-        }
-
         return vibeDataModel.actionableIds.contains(hierarchyId)
     }
     
@@ -718,10 +697,6 @@ struct InertiaEditable<Content: View>: View {
             }
             
             guard vibeDataModel.isActionable else {
-                return
-            }
-            
-            guard let hierarchyId else {
                 return
             }
 
@@ -847,15 +822,9 @@ struct InertiaEditable<Content: View>: View {
                     .onChange(of: self.hierarchyId) { _, _ in
                         self.animation = getAnimation
                     }
-                    .onChange(of: self.hasBeenInitialized) { _, _ in
-                        self.animation = getAnimation
-                    }
             } else {
                 wrappedContent
                     .onChange(of: self.hierarchyId) { _, _ in
-                        self.animation = getAnimation
-                    }
-                    .onChange(of: self.hasBeenInitialized) { _, _ in
                         self.animation = getAnimation
                     }
             }
@@ -897,19 +866,35 @@ struct InertiaEditable<Content: View>: View {
                 }
             }
         })
+//        .onChange(of: self.hierarchyId, { oldValue, newValue in
+//            print("onAppear: \(hierarchyId)")
+//            NSLog("[INERTIA_LOG]:  adding relationship: hierarchyId: \(hierarchyId) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
+//            
+//            vibeDataModel?.tree.addRelationship(id: hierarchyId, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
+//            if let tree = vibeDataModel?.tree {
+//                for node in tree.nodeMap.values {
+//                    node.tree = tree
+//                    node.link()
+//                }
+//            }
+//            
+//            if let ip = getHostIPAddressFromResolvConf() {
+//                let uri = URL(string: "ws://\(ip):8060")!
+//    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+//                
+//                NSLog("[INERTIA_LOG]: Starting to send data 2...")
+//                
+//                if !manager.isConnected {
+//                    manager.connect(uri: uri)
+//                }
+//                
+//                if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
+//                    let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
+//                    manager.sendMessage(message)
+//                }
+//            }
+//        })
         .onAppear {
-            guard let hierarchyId else {
-                NSLog("onAppear hierarchyId is nil")
-                return
-            }
-            //
-            print("onAppear: \(hierarchyId)")
-        }
-        .onChange(of: self.hierarchyId, { oldValue, newValue in
-            guard let hierarchyId = newValue else {
-                return
-            }
-            
             print("onAppear: \(hierarchyId)")
             NSLog("[INERTIA_LOG]:  adding relationship: hierarchyId: \(hierarchyId) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
             
@@ -936,7 +921,7 @@ struct InertiaEditable<Content: View>: View {
                     manager.sendMessage(message)
                 }
             }
-        })
+        }
         .onDisappear {
             if let zIndex = vibeDataModel?.vibeSchema.objects.first(where: { element in
                 element.objectType == .shape
@@ -949,11 +934,6 @@ struct InertiaEditable<Content: View>: View {
     var getAnimation: VibeAnimationSchema? {
         guard let vibeDataModel else {
             NSLog("[INERTIA_LOG]:  vibeDataModel is nil")
-            return nil
-        }
-        
-        guard let hierarchyId else {
-            NSLog("[INERTIA_LOG]:  getAnimation hierarchyId is nil")
             return nil
         }
 
