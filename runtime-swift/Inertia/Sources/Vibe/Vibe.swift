@@ -819,7 +819,7 @@ struct InertiaEditable<Content: View>: View {
     var body: some View {
         //        GeometryReader { rootProxy in
         Group {
-            if let animation = animation {
+            if let animation = animation ?? getAnimation {
                 wrappedContent
                     .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
                         contentView
@@ -836,10 +836,7 @@ struct InertiaEditable<Content: View>: View {
                         }
                     })
             } else {
-                wrappedContent
-                    .onAppear {
-                        self.animation = getAnimation
-                    }
+                wrappedContent                    
             }
         }
     //            .frame(minWidth: contentSize.width, minHeight: contentSize.height)
@@ -960,6 +957,7 @@ struct InertiaEditable<Content: View>: View {
     }
     
     func handleMessage(selectedIds: Set<String>) {
+        NSLog("[INERTIA_LOG]: handleMessage(selectedIds) \(selectedIds)")
         vibeDataModel?.actionableIds = selectedIds
     }
     
@@ -968,7 +966,7 @@ struct InertiaEditable<Content: View>: View {
             if schemaWrapper.container.containerId == vibeDataModel?.containerId {
                 vibeDataModel?.vibeSchema = schemaWrapper.schema
                 vibeDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId
-                NSLog("[INERTIA_LOG]:  animationId: \(schemaWrapper.animationId)")
+                NSLog("[INERTIA_LOG]:  animationId: \(schemaWrapper.animationId) actionableId: \(schemaWrapper.actionableId)")
             }
         }
     }
@@ -1164,5 +1162,3 @@ func decodeVibeSchema(json: Data) -> VibeSchema? {
         return nil
     }
 }
-
-
