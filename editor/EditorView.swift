@@ -14,13 +14,16 @@ import Foundation
 import Network
 
 @Observable
-class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertible {
+final class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertible {
+    public let id = UUID()
     static func == (lhs: TreePacket, rhs: TreePacket) -> Bool {
-        lhs.tree == rhs.tree && lhs.actionableIds == rhs.actionableIds
+        lhs.id == rhs.id && lhs.tree == rhs.tree && lhs.actionableIds == rhs.actionableIds
     }
     
     func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
         hasher.combine(tree)
+        hasher.combine(actionableIds)
     }
     
     var description: String {
@@ -37,10 +40,14 @@ class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertible {
 }
 
 @Observable
-class WebSocketServer {
+final class WebSocketServer {
     let listener: NWListener
     var clients: [UUID: NWConnection] = [:]
-    var treePackets: [TreePacket] = []
+    var treePackets: [TreePacket] = [] {
+        didSet {
+            print("DIDSET TREEPACKETS: \(treePackets)")
+        }
+    }
     var treePacketsLUT: [String: Int] = [:]
     let clientId = UUID()
     
@@ -645,7 +652,7 @@ struct EditorView: View {
     
     @ViewBuilder
     var treeView: some View {
-        TreeViewContainer(server: server)
+        TreeViewContainer(server: $server)
             .disabled(!isFocused)
     }
     

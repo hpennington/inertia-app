@@ -340,7 +340,6 @@ public struct InertiaContainer<Content: View>: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .border(.green)
         }
     }
 }

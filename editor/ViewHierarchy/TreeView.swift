@@ -8,7 +8,17 @@
 import SwiftUI
 import Inertia
 
-struct TreeItem: Identifiable {
+class TreeItem: Identifiable, Equatable, Hashable {
+    static func == (lhs: TreeItem, rhs: TreeItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(children)
+    }
+    
+    
     let id: String
     let displayName: String
     let children: [TreeItem]?
@@ -22,35 +32,48 @@ struct TreeItem: Identifiable {
 
 struct TreeNode: View {
     let item: TreeItem
-    let isExpanded: Binding<Set<String>>
-    let isSelected: Binding<Set<String>>
+    @Binding var isExpanded: Set<String>
+    @Binding var isSelected: Set<String>
 
-    var isDescendantSelected: Bool {
-        _isDescendantSelected(node: item)
+    @State private var isDescendantSelected: Bool = false
+    
+    init(item: TreeItem, isExpanded: Binding<Set<String>>, isSelected: Binding<Set<String>>) {
+        self.item = item
+        self._isExpanded = isExpanded
+        self._isSelected = isSelected
+        self._isDescendantSelected = State(wrappedValue: _isDescendantSelected(node: item))
     }
+    
     
     func _isDescendantSelected(node: TreeItem) -> Bool {
         if let children = node.children {
-            for child in children {
-                if isSelected.wrappedValue.contains(child.id) {
-                    return true
-                }
-            }
-            
-            for child in children {
-                return _isDescendantSelected(node: child)
-            }
+            return children.contains { isSelected.contains($0.id) || _isDescendantSelected(node: $0) }
         }
-        
         return false
     }
+//
+//    func _isDescendantSelected(node: TreeItem) -> Bool {
+//        if let children = node.children {
+//            for child in children {
+//                if isSelected.contains(child.id) {
+//                    return true
+//                }
+//            }
+//            
+//            for child in children {
+//                return _isDescendantSelected(node: child)
+//            }
+//        }
+//        
+//        return false
+//    }
     
     var isNodeExpanded: Bool {
-        isExpanded.wrappedValue.contains(item.id) || isDescendantSelected
+        isExpanded.contains(item.id) || isNodeSelected || isDescendantSelected
     }
     
     var isNodeSelected: Bool {
-        isSelected.wrappedValue.contains(item.id)
+        isSelected.contains(item.id)
     }
     
     var isLeafNode: Bool {
@@ -59,17 +82,17 @@ struct TreeNode: View {
     
     func toggleExpanded() {
         if isNodeExpanded {
-            isExpanded.wrappedValue.remove(item.id)
+            isExpanded.remove(item.id)
         } else {
-            isExpanded.wrappedValue.insert(item.id)
+            isExpanded.insert(item.id)
         }
     }
     
     func toggleSelected() {
         if isNodeSelected {
-            isSelected.wrappedValue.remove(item.id)
+            isSelected.remove(item.id)
         } else {
-            isSelected.wrappedValue.insert(item.id)
+            isSelected.insert(item.id)
         }
     }
     
@@ -104,24 +127,29 @@ struct TreeNode: View {
                 toggleSelected()
             }
 
-            let expanded = isNodeExpanded == true
-            if let children = item.children, expanded {
-                ForEach(children, id: \.id) { child in
-                    TreeNode(item: child, isExpanded: isExpanded, isSelected: isSelected)
+            if let children = item.children {
+                ForEach(children, id: \.hashValue) { child in
+                    Group {
+                        if isNodeExpanded {
+                            TreeNode(item: child, isExpanded: $isExpanded, isSelected: $isSelected)
+                        }
+                    }
+                    
                         .padding(.leading, 16)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .onAppear {
+                            print(item.id)
+                            print(isSelected)
+                            isDescendantSelected = self._isDescendantSelected(node: item)
+                        }
                 }
             }
         }
         .onAppear {
-            if isDescendantSelected {
-                isExpanded.wrappedValue.insert(item.id)
-            }
-        }
-        .onChange(of: isDescendantSelected) { _, newValue in
-            if newValue {
-                isExpanded.wrappedValue.insert(item.id)
-            }
+            print(item.id)
+            print(isSelected)
+            isDescendantSelected = self._isDescendantSelected(node: item)
+    
         }
     }
 }
@@ -130,7 +158,7 @@ struct TreeView: View {
     let id: String
     let displayName: String
     let rootItem: TreeItem
-    let isSelected: Binding<Set<String>>
+    @Binding var isSelected: Set<String>
     
     @State private var isExpanded: Set<String> = Set()
     
@@ -139,7 +167,10 @@ struct TreeView: View {
             Text("View Hierarchy")
                 .foregroundStyle(.gray)
             Divider()
-            TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: isSelected)
+            TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: $isSelected)
+        }
+        .onChange(of: isSelected) { oldValue, newValue in
+            print(isSelected)
         }
     }
 }
@@ -147,11 +178,22 @@ struct TreeView: View {
 struct TreeViewContainer: View {
     @Environment(\.isEnabled) var isEnabled
     
-    let server: WebSocketServer
+    let server: Binding<WebSocketServer>
     
     func convertTreeToTreeItem(tree: Tree) -> TreeItem {
         guard let rootNode = tree.rootNode else { fatalError("rootNode is nil") }
         return convertNodeToTreeItem(node: rootNode)
+    }
+    
+    private func convertNodeToTreeItem(treeItem: TreeItem) -> TreeItem {
+        let children = treeItem.children?.map { convertNodeToTreeItem(treeItem: $0) } ?? []
+        return TreeItem(
+            id: treeItem.id,
+            displayName: treeItem.id, // Use `id` directly as `displayName`
+            children: children.isEmpty ? nil : children.map {
+                return convertNodeToTreeItem(treeItem: $0)
+            }
+        )
     }
 
     private func convertNodeToTreeItem(node: Node) -> TreeItem {
@@ -159,24 +201,28 @@ struct TreeViewContainer: View {
         return TreeItem(
             id: node.id,
             displayName: node.id, // Use `id` directly as `displayName`
-            children: children.isEmpty ? nil : children
+            children: children.isEmpty ? nil : children.map {
+                return convertNodeToTreeItem(treeItem: $0)
+            }
         )
     }
     var body: some View {
         ScrollView {
             VStack {
-                ForEach(server.treePackets, id: \.id) { treePacket in
+                ForEach(Array(server.treePackets.enumerated()), id: \.element.wrappedValue.hashValue) { (index, treePacket) in
                     TreeView(
                         id: treePacket.tree.id,
-                        displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,
-                        rootItem: convertTreeToTreeItem(tree: treePacket.tree),
+                        displayName: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue).displayName,
+                        rootItem: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue),
+//                        isSelected: server.projectedValue.treePackets[index].actionableIds
                         isSelected: Binding(
                             get: {
-                                treePacket.actionableIds
+//                                print(treePacket.actionableIds)
+                                return treePacket.wrappedValue.actionableIds
                             },
                             set: {
-                                treePacket.actionableIds = $0
-                                server.sendSelectedIds($0)
+                                treePacket.wrappedValue.actionableIds = $0
+                                server.wrappedValue.sendSelectedIds($0)
                             }
                         )
                     )
