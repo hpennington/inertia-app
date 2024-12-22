@@ -196,10 +196,14 @@ func appendVibeModifier(of fileURL: URL) throws {
                 let appendedClosure = rewriter.visit(newTrailingClosure)
                 let newNode = node.with(\.trailingClosure, ClosureExprSyntax(appendedClosure))
                 return ExprSyntax(newNode)
-            } else {
+            } else if let rp = node.rightParen {
                 let randomId = UUID().uuidString
+//                let rewriter = SyntaxFunctionCallRewriter()
+//                let appendedClosure = rewriter.visit(node)
                 let newNode = node.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
                 return ExprSyntax(newNode)
+            } else {
+                return ExprSyntax(node)
             }
         }
     }
