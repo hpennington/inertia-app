@@ -50,8 +50,10 @@ struct ContentView: View {
                 .foregroundStyle(.tint)
 
             
-            ForEach(0..<4) { index in
-                ViewA(text: "some text \(index)")
+            VStack {
+                ForEach(0..<4) { index in
+                    ViewA(text: "some text \(index)")
+                }
             }
             
             HStack {
@@ -74,8 +76,8 @@ struct ContentView: View {
                 .foregroundStyle(.tint)
             Spacer()
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .padding()
+//        .frame(maxWidth: .infinity, maxHeight: .infinity).inertiaEditable("E21AFA7E-A2C1-4E67-8F3B-E97D4BC25B89")
     }
 }
 

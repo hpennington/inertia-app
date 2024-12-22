@@ -112,7 +112,7 @@ struct TreeNode: View {
                     .disabled(isDescendantSelected)
                 }
                 
-                Text(item.displayName)
+                Text(String(item.displayName.reversed()).prefix(8))
                     .padding(.leading, item.children == nil ? 8 : .zero)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .frame(height: 24)

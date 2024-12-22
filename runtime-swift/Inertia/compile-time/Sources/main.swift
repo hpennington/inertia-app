@@ -154,14 +154,9 @@ func appendVibeModifier(of fileURL: URL) throws {
             }
             
             for codeBlockElement in codeBlockItemList {
-                if codeBlockElement.item.syntaxNodeType == FunctionCallExprSyntax.self {
-                    guard let trailingClosure = FunctionCallExprSyntax(codeBlockElement.item)?.trailingClosure else {
-                        return DeclSyntax(node)
-                    }
-                    
-                    print(trailingClosure)
-                    
-                }
+//                if codeBlockElement.item.syntaxNodeType == ClosureExprSyntax.self {
+                    print("codeBlockElement: \(codeBlockElement)")
+//                }
             }
             
             if accessors.description.contains(".inertiaEditable(") {
@@ -174,7 +169,10 @@ func appendVibeModifier(of fileURL: URL) throws {
             let rewriter = SyntaxFunctionCallRewriter()
             let source = rewriter.visit(accessors)
             
-            let newAccessors = source.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
+            let closureRewriter = SyntaxClosureExprRewriter()
+            let closureSource = closureRewriter.visit(source)
+            
+            let newAccessors = closureSource.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
             let newAccessorBlock = accessorBlock.with(\.accessors, newAccessors)
             let newBinding = binding.with(\.accessorBlock, newAccessorBlock)
             let newBindings = PatternBindingListSyntax(arrayLiteral: newBinding)
@@ -196,15 +194,35 @@ func appendVibeModifier(of fileURL: URL) throws {
                 let appendedClosure = rewriter.visit(newTrailingClosure)
                 let newNode = node.with(\.trailingClosure, ClosureExprSyntax(appendedClosure))
                 return ExprSyntax(newNode)
-            } else if let rp = node.rightParen {
+            } else  {
                 let randomId = UUID().uuidString
 //                let rewriter = SyntaxFunctionCallRewriter()
 //                let appendedClosure = rewriter.visit(node)
                 let newNode = node.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
                 return ExprSyntax(newNode)
-            } else {
-                return ExprSyntax(node)
             }
+        }
+    }
+    
+    class SyntaxClosureExprRewriter: SyntaxRewriter {
+        override func visit(_ node: ClosureExprSyntax) -> ExprSyntax {
+            if node.signature?.returnClause?.type.description == "View" {
+                let rewriter = SyntaxFunctionCallRewriter()
+                let source = rewriter.visit(node)
+                
+                let closureRewriter = SyntaxClosureExprRewriter()
+                let closureSource = closureRewriter.visit(source)
+                
+                return closureSource
+                
+//                let newAccessors = closureSource.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
+//                let newAccessorBlock = accessorBlock.with(\.accessors, newAccessors)
+//                let newBinding = binding.with(\.accessorBlock, newAccessorBlock)
+//                let newBindings = PatternBindingListSyntax(arrayLiteral: newBinding)
+                
+//                return ExprSyntax(node.with(\.bindings, newBindings))
+            }
+            return ExprSyntax(node)
         }
     }
 
