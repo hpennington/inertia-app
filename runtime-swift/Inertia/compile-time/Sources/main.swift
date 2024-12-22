@@ -185,20 +185,22 @@ func appendVibeModifier(of fileURL: URL) throws {
     
     class SyntaxFunctionCallRewriter: SyntaxRewriter {
         override func visit(_ node: FunctionCallExprSyntax) -> ExprSyntax {
-            guard let trailingClosure = node.trailingClosure else {
-                return ExprSyntax(node)
+            if let trailingClosure = node.trailingClosure {
+                let randomId = UUID().uuidString
+                let newTrailingClosure = trailingClosure.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
+    //            let newNode = node.with(\.trailingClosure, newTrailingClosure)
+    //            print(newNode)
+    //            return ExprSyntax(newNode)
+                
+                let rewriter = SyntaxFunctionCallRewriter()
+                let appendedClosure = rewriter.visit(newTrailingClosure)
+                let newNode = node.with(\.trailingClosure, ClosureExprSyntax(appendedClosure))
+                return ExprSyntax(newNode)
+            } else {
+                let randomId = UUID().uuidString
+                let newNode = node.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
+                return ExprSyntax(newNode)
             }
-            
-            let randomId = UUID().uuidString
-            let newTrailingClosure = trailingClosure.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaEditable(\"\(randomId)\")")))
-//            let newNode = node.with(\.trailingClosure, newTrailingClosure)
-//            print(newNode)
-//            return ExprSyntax(newNode)
-            
-            let rewriter = SyntaxFunctionCallRewriter()
-            let appendedClosure = rewriter.visit(newTrailingClosure)
-            let newNode = node.with(\.trailingClosure, ClosureExprSyntax(appendedClosure))
-            return ExprSyntax(newNode)
         }
     }
 
