@@ -499,12 +499,12 @@ struct EditorView: View {
                     return actionableIds.map {
                         InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
                     }
-                    .flatMap({$0})
+                    .compactMap({$0})
                 } else {
                     return actionableIds.map {
                         InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
                     }
-                    .flatMap({$0})
+                    .compactMap({$0})
                 }
                 
             })
@@ -544,12 +544,12 @@ struct EditorView: View {
                     return actionableIds.map {
                         InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "body-vibe-id", animationId: element.animationId)
                     }
-                    .flatMap({$0})
+                    .compactMap({$0})
                 } else {
                     return actionableIds.map {
                         InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "body-vibe-id", animationId: element.animationId)
                     }
-                    .flatMap({$0})
+                    .compactMap({$0})
                 }
                 
             })

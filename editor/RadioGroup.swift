@@ -86,14 +86,13 @@ struct RadioGroup<ButtonContent: View, Tag: Hashable>: View {
         }
     }
 }
+typealias PreviewTag = Int
+fileprivate let previewReactTag: PreviewTag = 0
+fileprivate let previewSwiftUITag: PreviewTag = 1
 
 #Preview {
-    typealias Tag = Int
-    let reactTag: Tag = 0
-    let swiftUITag: Tag = 1
-    @State var selectedTag: Tag = reactTag
-    
-    return RadioGroup(selectedTag: $selectedTag) {
+    @Previewable @State var selectedTag: PreviewTag = previewReactTag
+    RadioGroup(selectedTag: $selectedTag) {
         RadioButton(tag: reactTag) {
             RadioButtonContent(title: "React (Web)")
         }
