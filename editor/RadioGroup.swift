@@ -91,8 +91,8 @@ fileprivate let previewReactTag: PreviewTag = 0
 fileprivate let previewSwiftUITag: PreviewTag = 1
 
 #Preview {
-    @Previewable @State var selectedTag: PreviewTag = previewReactTag
-    RadioGroup(selectedTag: $selectedTag) {
+    @State var selectedTag: PreviewTag = previewReactTag
+    return RadioGroup(selectedTag: $selectedTag) {
         RadioButton(tag: reactTag) {
             RadioButtonContent(title: "React (Web)")
         }

@@ -19,6 +19,6 @@ struct FocusIndicator: View {
 }
 
 #Preview {
-    @Previewable @State var isOn = false
-    FocusIndicator(isOn: $isOn)
+    @State var isOn = false
+    return FocusIndicator(isOn: $isOn)
 }

@@ -49,6 +49,12 @@
 		F89C08652C875ABB00F58F9A /* SetupFlowInfoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C08642C875ABB00F58F9A /* SetupFlowInfoScreen.swift */; };
 		F89C08672C875AD700F58F9A /* SetupFlowBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C08662C875AD700F58F9A /* SetupFlowBase.swift */; };
 		F89C08692C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C08682C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift */; };
+		F8ACA5E72D1DFFFE00D0B878 /* PlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ACA5E62D1DFFFE00D0B878 /* PlaybackControls.swift */; };
+		F8ACA5F02D1E015C00D0B878 /* TimelineKeypointIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ACA5EF2D1E015C00D0B878 /* TimelineKeypointIndicator.swift */; };
+		F8ACA5F22D1E016D00D0B878 /* TimelineTransformBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ACA5F12D1E016D00D0B878 /* TimelineTransformBar.swift */; };
+		F8ACA5F42D1E01FA00D0B878 /* TimelineHierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ACA5F32D1E01FA00D0B878 /* TimelineHierarchy.swift */; };
+		F8ACA5F62D1E094600D0B878 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ACA5F52D1E094600D0B878 /* TimelineView.swift */; };
+		F8ACA5F72D1E11AA00D0B878 /* Assets.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AF2C48C85B0006603C /* Assets.xcassets */; };
 		F8B495682C87BBB90076A42C /* VibeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495672C87BBB90076A42C /* VibeTextField.swift */; };
 		F8B4956A2C87BC010076A42C /* VibeTextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495692C87BC010076A42C /* VibeTextContainer.swift */; };
 		F8B4956C2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B4956B2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift */; };
@@ -111,6 +117,11 @@
 		F89C08642C875ABB00F58F9A /* SetupFlowInfoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowInfoScreen.swift; sourceTree = "<group>"; };
 		F89C08662C875AD700F58F9A /* SetupFlowBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowBase.swift; sourceTree = "<group>"; };
 		F89C08682C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowChooseFrameworkScreen.swift; sourceTree = "<group>"; };
+		F8ACA5E62D1DFFFE00D0B878 /* PlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControls.swift; sourceTree = "<group>"; };
+		F8ACA5EF2D1E015C00D0B878 /* TimelineKeypointIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineKeypointIndicator.swift; sourceTree = "<group>"; };
+		F8ACA5F12D1E016D00D0B878 /* TimelineTransformBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineTransformBar.swift; sourceTree = "<group>"; };
+		F8ACA5F32D1E01FA00D0B878 /* TimelineHierarchy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHierarchy.swift; sourceTree = "<group>"; };
+		F8ACA5F52D1E094600D0B878 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		F8B495672C87BBB90076A42C /* VibeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeTextField.swift; sourceTree = "<group>"; };
 		F8B495692C87BC010076A42C /* VibeTextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeTextContainer.swift; sourceTree = "<group>"; };
 		F8B4956B2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowWebConfigurationScreen.swift; sourceTree = "<group>"; };
@@ -201,6 +212,7 @@
 				F89023E12CBC70F1000C9282 /* FocusIndicator.swift */,
 				F89C085D2C8734DB00F58F9A /* SetupTitleView.swift */,
 				F8DD5AB42C7D5B38003A3330 /* LaunchLogo.swift */,
+				F8ACA5E82D1E000300D0B878 /* Playback */,
 				F8067EF42CF4C2B5002E7B89 /* ViewHierarchy */,
 				F89C08632C875AAE00F58F9A /* SetupFlow */,
 				F89BA0AD2C48C85A0006603C /* EditorView.swift */,
@@ -260,6 +272,18 @@
 				F8C4A0252C95E619004386D4 /* SetupFlowProjectLoad.swift */,
 			);
 			path = SetupFlow;
+			sourceTree = "<group>";
+		};
+		F8ACA5E82D1E000300D0B878 /* Playback */ = {
+			isa = PBXGroup;
+			children = (
+				F8ACA5E62D1DFFFE00D0B878 /* PlaybackControls.swift */,
+				F8ACA5F52D1E094600D0B878 /* TimelineView.swift */,
+				F8ACA5EF2D1E015C00D0B878 /* TimelineKeypointIndicator.swift */,
+				F8ACA5F12D1E016D00D0B878 /* TimelineTransformBar.swift */,
+				F8ACA5F32D1E01FA00D0B878 /* TimelineHierarchy.swift */,
+			);
+			path = Playback;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -346,6 +370,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8ACA5F72D1E11AA00D0B878 /* Assets.xcassets in Sources */,
+				F8ACA5F22D1E016D00D0B878 /* TimelineTransformBar.swift in Sources */,
 				F8B4956C2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift in Sources */,
 				F89C08602C8742AA00F58F9A /* NavigationBackButton.swift in Sources */,
 				F8808EE72C86168D00713AAD /* RadioGroup.swift in Sources */,
@@ -358,6 +384,7 @@
 				F89BA0BF2C48CD370006603C /* PanelView.swift in Sources */,
 				F8DD5AB12C7D421F003A3330 /* ProjectsContainerSplitView.swift in Sources */,
 				F87681252CA22AD90065CB6C /* SearchField.swift in Sources */,
+				F8ACA5E72D1DFFFE00D0B878 /* PlaybackControls.swift in Sources */,
 				F8641C442C978AA500E43338 /* VibeAppVM.swift in Sources */,
 				F89C08672C875AD700F58F9A /* SetupFlowBase.swift in Sources */,
 				F8C4A0262C95E619004386D4 /* SetupFlowProjectLoad.swift in Sources */,
@@ -367,12 +394,14 @@
 				F8932C8B2C51D6AF00546975 /* MacRenderView.swift in Sources */,
 				F89BA0BB2C48CA280006603C /* Colors.swift in Sources */,
 				F8C2A87B2CAB75DF0054B165 /* AnimationsAttachedList.swift in Sources */,
+				F8ACA5F02D1E015C00D0B878 /* TimelineKeypointIndicator.swift in Sources */,
 				F8DD5AB32C7D5AD0003A3330 /* ProjectsListView.swift in Sources */,
 				F89BA0BD2C48CBE10006603C /* MainLayout.swift in Sources */,
 				F8DD5AB92C7D5E89003A3330 /* ProjectButton.swift in Sources */,
 				F8B495682C87BBB90076A42C /* VibeTextField.swift in Sources */,
 				F86E02AE2C96DF39005F6254 /* SetupFlowStartScreen.swift in Sources */,
 				F8932C8D2C51D6F800546975 /* VirtualMachineView.swift in Sources */,
+				F8ACA5F42D1E01FA00D0B878 /* TimelineHierarchy.swift in Sources */,
 				F8DD5AB52C7D5B38003A3330 /* LaunchLogo.swift in Sources */,
 				F87582412CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift in Sources */,
 				F89BA0AC2C48C85A0006603C /* Vibe_AnimationApp.swift in Sources */,
@@ -381,6 +410,7 @@
 				F8744E342CDB06D300921BF9 /* AddressBar.swift in Sources */,
 				F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */,
 				F8C2A8792CAB75D50054B165 /* AnimationsList.swift in Sources */,
+				F8ACA5F62D1E094600D0B878 /* TimelineView.swift in Sources */,
 				F89023E22CBC70F1000C9282 /* FocusIndicator.swift in Sources */,
 				F81316DF2CBCE36300266728 /* AttachAnimationButton.swift in Sources */,
 				F899B9CA2C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift in Sources */,

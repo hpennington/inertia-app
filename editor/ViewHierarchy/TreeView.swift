@@ -138,16 +138,12 @@ struct TreeNode: View {
                         .padding(.leading, 16)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .onAppear {
-                            print(item.id)
-                            print(isSelected)
                             isDescendantSelected = self._isDescendantSelected(node: item)
                         }
                 }
             }
         }
         .onAppear {
-            print(item.id)
-            print(isSelected)
             isDescendantSelected = self._isDescendantSelected(node: item)
     
         }
@@ -168,9 +164,6 @@ struct TreeView: View {
                 .foregroundStyle(.gray)
             Divider()
             TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: $isSelected)
-        }
-        .onChange(of: isSelected) { oldValue, newValue in
-            print(isSelected)
         }
     }
 }
@@ -209,7 +202,7 @@ struct TreeViewContainer: View {
     var body: some View {
         ScrollView {
             VStack {
-                ForEach(Array(server.treePackets.enumerated()), id: \.element.wrappedValue.hashValue) { (index, treePacket) in
+                ForEach(server.treePackets, id: \.hashValue) { treePacket in
                     TreeView(
                         id: treePacket.tree.id,
                         displayName: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue).displayName,

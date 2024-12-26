@@ -43,11 +43,7 @@ final class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertib
 final class WebSocketServer {
     let listener: NWListener
     var clients: [UUID: NWConnection] = [:]
-    var treePackets: [TreePacket] = [] {
-        didSet {
-            print("DIDSET TREEPACKETS: \(treePackets)")
-        }
-    }
+    var treePackets: [TreePacket] = []
     var treePacketsLUT: [String: Int] = [:]
     let clientId = UUID()
     
@@ -315,7 +311,7 @@ struct EditorView: View {
     private let hierarchyViewWidth: CGFloat = 300
     private let viewportMinimumSize = CGSize(width: 320, height: 180)
     private let propertiesViewWidth: CGFloat = 300
-    private let timelineViewHeight: CGFloat = 200
+    private let timelineViewHeight: CGFloat = 300
     private let renderViewportCornerRadius: CGFloat = 4
     private let segmentedPickerWidth: CGFloat = 250
     private let spacing: CGFloat = 3
@@ -687,6 +683,14 @@ struct EditorView: View {
         }
     }
     
+    var timelineView: some View {
+        PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
+            .frame(height: timelineViewHeight)
+            .overlay {
+                TimelineContainer()
+            }
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
@@ -879,8 +883,7 @@ struct EditorView: View {
                     .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
                 }
             } bottom: {
-                PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
-                    .frame(height: timelineViewHeight)
+                timelineView
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
