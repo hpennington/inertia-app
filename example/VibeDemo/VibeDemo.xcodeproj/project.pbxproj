@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F827B7312D1E496300A8A27A /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
+		F827B7342D1E49D800A8A27A /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
+		F827B7352D1E49D800A8A27A /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
 		F852BF262CE7F9C90099FB2D /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF232CE7F9C90099FB2D /* animation2.json */; };
 		F852BF272CE7F9C90099FB2D /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation1.json */; };
 		F852BF282CE7F9C90099FB2D /* animation3.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF252CE7F9C90099FB2D /* animation3.json */; };
@@ -18,6 +21,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F827B7302D1E496300A8A27A /* CircleImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImage.swift; sourceTree = "<group>"; };
+		F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = landing_image_2.jpeg; sourceTree = "<group>"; };
+		F827B7332D1E49D800A8A27A /* landing_image_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landing_image_1.png; sourceTree = "<group>"; };
 		F852BF232CE7F9C90099FB2D /* animation2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation2.json; path = ../demo.vibe/animations/animation2.json; sourceTree = "<group>"; };
 		F852BF242CE7F9C90099FB2D /* animation1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation1.json; path = ../demo.vibe/animations/animation1.json; sourceTree = "<group>"; };
 		F852BF252CE7F9C90099FB2D /* animation3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation3.json; path = ../demo.vibe/animations/animation3.json; sourceTree = "<group>"; };
@@ -65,7 +71,10 @@
 			children = (
 				F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */,
 				F86317ED2C66DF05001DEE60 /* ContentView.swift */,
+				F827B7302D1E496300A8A27A /* CircleImage.swift */,
 				F86317EF2C66DF06001DEE60 /* Assets.xcassets */,
+				F827B7332D1E49D800A8A27A /* landing_image_1.png */,
+				F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */,
 				F86317F12C66DF06001DEE60 /* Preview Content */,
 			);
 			path = VibeDemo;
@@ -150,8 +159,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F827B7352D1E49D800A8A27A /* landing_image_1.png in Resources */,
 				F852BF272CE7F9C90099FB2D /* animation1.json in Resources */,
 				F86317F32C66DF06001DEE60 /* Preview Assets.xcassets in Resources */,
+				F827B7342D1E49D800A8A27A /* landing_image_2.jpeg in Resources */,
 				F852BF282CE7F9C90099FB2D /* animation3.json in Resources */,
 				F852BF262CE7F9C90099FB2D /* animation2.json in Resources */,
 				F86317F02C66DF06001DEE60 /* Assets.xcassets in Resources */,
@@ -167,6 +178,7 @@
 			files = (
 				F86317EE2C66DF05001DEE60 /* ContentView.swift in Sources */,
 				F86317EC2C66DF05001DEE60 /* VibeDemoApp.swift in Sources */,
+				F827B7312D1E496300A8A27A /* CircleImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
