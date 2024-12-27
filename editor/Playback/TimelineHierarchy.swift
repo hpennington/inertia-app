@@ -31,6 +31,8 @@ struct TimelineHierarchy: View {
 
 struct TimelineHierarchyCell: View {
     @Environment(\.appColors) var colors
+    @Environment(\.colorScheme) var colorScheme
+    
     let id: String
     @Binding var isExpanded: Bool
     
@@ -46,7 +48,7 @@ struct TimelineHierarchyCell: View {
                     .foregroundColor(ColorPalette.gray4)
                 
                 Text(id)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.5))
                     .bold()
                 
                 Spacer(minLength: .zero)
@@ -70,15 +72,17 @@ struct TimelineHierarchyCell: View {
 
 struct TimelineHierarchyTransformCell: View {
     @Environment(\.appColors) var colors
+    @Environment(\.colorScheme) var colorScheme
+    
     let id: String
     
     var body: some View {
         Text(id)
             .padding(.horizontal, 32)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundStyle(Color.white)
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.5))
             .frame(width: 256, height: 32)
-            .background(ColorPalette.gray1.opacity(0.25))
+            .background(ColorPalette.gray1.opacity(colorScheme == .dark ? 0.25 : 0.05))
             .cornerRadius(8)
     }
 }

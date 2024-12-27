@@ -51,9 +51,10 @@ struct Timeline: View {
 }
 
 struct TimelineBarBackground: View {
+    @Environment(\.colorScheme) var colorScheme
     var body: some View {
         RoundedRectangle(cornerRadius: 8)
-            .fill(ColorPalette.gray1)
+            .fill(ColorPalette.gray1.opacity(colorScheme == .dark ? 0.25 : 0.05))
             .frame(maxWidth: .infinity)
     }
 }
