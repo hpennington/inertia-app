@@ -10,6 +10,7 @@
 		F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */; };
 		F8067EF62CF4C2DA002E7B89 /* TreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8067EF52CF4C2DA002E7B89 /* TreeView.swift */; };
 		F810733F2C962A2F0061B761 /* MetaFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F810733E2C962A2F0061B761 /* MetaFile.swift */; };
+		F810C5DC2D1F61B300E70420 /* TimelineRuler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F810C5DB2D1F61B300E70420 /* TimelineRuler.swift */; };
 		F81148212CBEBF7E00326B61 /* animationsRemove.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148202CBEBF7E00326B61 /* animationsRemove.js */; };
 		F81148232CBEC17E00326B61 /* animationsAdd.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148222CBEC17E00326B61 /* animationsAdd.js */; };
 		F81148252CBEC1D900326B61 /* initInvokePlayback.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148242CBEC1D900326B61 /* initInvokePlayback.js */; };
@@ -77,6 +78,7 @@
 		F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSVMInstaller.swift; sourceTree = "<group>"; };
 		F8067EF52CF4C2DA002E7B89 /* TreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeView.swift; sourceTree = "<group>"; };
 		F810733E2C962A2F0061B761 /* MetaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaFile.swift; sourceTree = "<group>"; };
+		F810C5DB2D1F61B300E70420 /* TimelineRuler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineRuler.swift; sourceTree = "<group>"; };
 		F81148202CBEBF7E00326B61 /* animationsRemove.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsRemove.js; sourceTree = "<group>"; };
 		F81148222CBEC17E00326B61 /* animationsAdd.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsAdd.js; sourceTree = "<group>"; };
 		F81148242CBEC1D900326B61 /* initInvokePlayback.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = initInvokePlayback.js; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				F8ACA5EF2D1E015C00D0B878 /* TimelineKeypointIndicator.swift */,
 				F8ACA5F12D1E016D00D0B878 /* TimelineTransformBar.swift */,
 				F8ACA5F32D1E01FA00D0B878 /* TimelineHierarchy.swift */,
+				F810C5DB2D1F61B300E70420 /* TimelineRuler.swift */,
 			);
 			path = Playback;
 			sourceTree = "<group>";
@@ -417,6 +420,7 @@
 				F899B9CC2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift in Sources */,
 				F89BA0C32C48D3880006603C /* RenderView.swift in Sources */,
 				F899B9CE2C88E21700633B83 /* SetupFlowCopyingScreen.swift in Sources */,
+				F810C5DC2D1F61B300E70420 /* TimelineRuler.swift in Sources */,
 				F8DD5AB72C7D5BD7003A3330 /* LaunchLogoTitle.swift in Sources */,
 				F810733F2C962A2F0061B761 /* MetaFile.swift in Sources */,
 				F8067EF62CF4C2DA002E7B89 /* TreeView.swift in Sources */,
