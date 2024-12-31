@@ -609,7 +609,6 @@ struct EditorView: View {
                 let invokeSuccess = await invokePlayback()
             }
         }
-        
     }
     
     private func determineFocused(newValue: Bool) async {
@@ -645,6 +644,7 @@ struct EditorView: View {
     @State private var installOpacity = CGFloat.zero
     @State private var isVmLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
+    @State private var isPlaying: Bool = false
     
     @ViewBuilder
     var treeView: some View {
@@ -687,7 +687,12 @@ struct EditorView: View {
         PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
             .frame(height: timelineViewHeight)
             .overlay {
-                TimelineContainer()
+                TimelineContainer(isPlaying: $isPlaying)
+            }
+            .onChange(of: isPlaying) { oldValue, newValue in
+                Task {
+                    await tapPlay()
+                }
             }
     }
     
@@ -836,13 +841,6 @@ struct EditorView: View {
                                         server.sendIsActionable(newValue)
                                     }
                                 Spacer(minLength: .zero)
-                                Button {
-                                    Task {
-                                        await tapPlay()
-                                    }
-                                } label: {
-                                    Image(systemName: "play")
-                                }
                             }
 
                             AnimationsAvailableColumn(
