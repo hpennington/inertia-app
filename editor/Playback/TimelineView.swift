@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+struct TimelineRow: View {
+    let isExpanded: Bool
+    let keypoints: [Double]
+    
+    var body: some View {
+        TimelineBarBackground()
+            .frame(height: 42)
+        
+        if isExpanded {
+            TimelineBarBackground()
+                .frame(height: 32)
+        }
+    }
+}
+
 struct TimelineContainer: View {
     @Environment(\.appColors) var appColors
     @State private var isExpanded: Set<String> = []
@@ -79,13 +94,7 @@ struct TimelineContainer: View {
                         
                         VStack {
                             ForEach(["Shape X", "Shape Y", "Shape Z"], id: \.hashValue) { id in
-                                TimelineBarBackground()
-                                    .frame(height: 42)
-                                
-                                if isExpanded.contains(id) {
-                                    TimelineBarBackground()
-                                        .frame(height: 32)
-                                }
+                                TimelineRow(isExpanded: isExpanded.contains(id))
                             }
                         }
                         
