@@ -9,14 +9,39 @@ import SwiftUI
 
 struct TimelineRow: View {
     let isExpanded: Bool
-    let keypoints: [Double]
+    let keypoints: [Int]
+    
+    let insertKeypoint: (_ millis: Int) -> Void
+    
+    @State private var proxyWidth: CGFloat? = nil
     
     var body: some View {
-        TimelineBarBackground()
-            .frame(height: 42)
+        TimelineBarBackground { locationX in
+            if let proxyWidth {
+                insertKeypoint(Int((locationX * 1000 * 3) / proxyWidth))
+            }
+        }
+        .frame(height: 42)
+        .overlay {
+            GeometryReader { proxy in
+                ZStack() {
+                    ForEach(0..<keypoints.count, id: \.self) { index in
+                        let value = keypoints[index]
+                        let x = CGFloat(Int((CGFloat(value) / 1000 / 3) * proxy.size.width))
+                        TimelineKeypointIndicator()
+                            .position(x: x, y: 21)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .onAppear {
+                    proxyWidth = proxy.size.width
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
         
         if isExpanded {
-            TimelineBarBackground()
+            TimelineBarTransformBackground()
                 .frame(height: 32)
         }
     }
@@ -25,6 +50,13 @@ struct TimelineRow: View {
 struct TimelineContainer: View {
     @Environment(\.appColors) var appColors
     @State private var isExpanded: Set<String> = []
+    
+    @State private var rowData: [String: [Int]] = [
+        "Shape W": [220, 600, 100],
+        "Shape X": [120, 750, 1300],
+        "Shape Y": [200, 940, 1100],
+        "Shape Z": [300, 480, 2500],
+    ]
     
     @Binding var isPlaying: Bool
     
@@ -50,7 +82,7 @@ struct TimelineContainer: View {
                 }
                 .frame(maxHeight: .infinity)
                 HStack(alignment: .bottom) {
-                    TimelineHierarchy(ids: ["Shape X", "Shape Y", "Shape Z"], isExpanded: $isExpanded)
+                    TimelineHierarchy(ids: rowData.map {$0.0}, isExpanded: $isExpanded)
 //                        .padding(.top, 32)
                 
                     Timeline {
@@ -93,8 +125,10 @@ struct TimelineContainer: View {
                             .padding(.bottom, 8)
                         
                         VStack {
-                            ForEach(["Shape X", "Shape Y", "Shape Z"], id: \.hashValue) { id in
-                                TimelineRow(isExpanded: isExpanded.contains(id))
+                            ForEach(Array(rowData.keys.map {String($0)}), id: \.self) { key in
+                                TimelineRow(isExpanded: isExpanded.contains(key), keypoints: rowData[key] ?? []) { millis in
+                                    rowData[key]?.append(millis)
+                                }
                             }
                         }
                         
@@ -121,12 +155,12 @@ struct Timeline: View {
                 .padding(.horizontal)
             Spacer(minLength: .zero)
         }
-//        .padding()
     }
 }
 
-struct TimelineBarBackground: View {
+struct TimelineBarTransformBackground: View {
     @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         RoundedRectangle(cornerRadius: 8)
             .fill(ColorPalette.gray1.opacity(colorScheme == .dark ? 0.25 : 0.05))
@@ -134,9 +168,41 @@ struct TimelineBarBackground: View {
     }
 }
 
+struct TimelineBarBackground: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    let insertKeypoint: (_ x: CGFloat) -> Void
+    
+    @State private var hoverLocationX: CGFloat? = nil
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(ColorPalette.gray1.opacity(colorScheme == .dark ? 0.25 : 0.05))
+            .frame(maxWidth: .infinity)
+            .overlay {
+                if let hoverLocationX {
+                    Button {
+                        insertKeypoint(hoverLocationX)
+                    } label: {
+                        Image(systemName: "plus.app")
+                    }
+                    .position(x: hoverLocationX)
+                }
+            }
+            .onContinuousHover(coordinateSpace: .local, perform: { phase in
+                switch phase {
+                case .active(let location):
+                    hoverLocationX = location.x
+                case .ended:
+                    hoverLocationX = nil
+                }
+            })
+    }
+}
+
 #Preview {
     Timeline {
-        TimelineBarBackground()
+        TimelineBarTransformBackground()
             .frame(height: 32)
     }
 }

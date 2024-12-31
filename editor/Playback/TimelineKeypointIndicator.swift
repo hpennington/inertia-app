@@ -13,8 +13,8 @@ struct TimelineKeypointIndicator: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 4)
             .fill(appColors.accent)
-            .frame(width: 16)
-            .padding(.vertical, 2)
+            .frame(width: 12)
+            .padding(.vertical, 4)
             .frame(maxHeight: .infinity)
     }
 }
