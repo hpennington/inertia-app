@@ -283,20 +283,20 @@ final class SelectedActionableIDTracker {
 }
 
 @Observable
-final class EditorModel {
-    var containers: [ActionableContainerAssociater] = []
-    var animations: [ActionableAnimationAssociater] = []
+public final class EditorModel {
+    public var containers: [ActionableContainerAssociater] = []
+    public var animations: [ActionableAnimationAssociater] = []
 }
 
-struct ActionableAnimationAssociater: Hashable {
-    let actionableIds: Set<String>
-    let containerId: String
-    let animationId: String
+public struct ActionableAnimationAssociater: Hashable {
+    public let actionableIds: Set<String>
+    public let containerId: String
+    public let animationId: String
 }
 
-struct ActionableContainerAssociater: Hashable {
-    let actionableIds: Set<String>
-    let containerId: String
+public struct ActionableContainerAssociater: Hashable {
+    public let actionableIds: Set<String>
+    public let containerId: String
 }
 
 enum AppMode: Identifiable  {
@@ -645,10 +645,18 @@ struct EditorView: View {
     @State private var isVmLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     @State private var isPlaying: Bool = false
+    @State private var rowData: [String: [Int]] = [:]
     
     @ViewBuilder
     var treeView: some View {
-        TreeViewContainer(appMode: appMode, isFocused: $isFocused, server: $server)
+        TreeViewContainer(appMode: appMode, isFocused: $isFocused, server: $server) { ids in
+            var localRowData: [String: [Int]] = [:]
+            for id in ids {
+                localRowData[id] = [Int]()
+            }
+            
+            self.rowData = localRowData
+        }
     }
     
     func attachAnimation(id: String, actionableIds: Set<String>) {
@@ -686,7 +694,7 @@ struct EditorView: View {
         PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
             .frame(height: timelineViewHeight)
             .overlay {
-                TimelineContainer(isPlaying: $isPlaying)
+                TimelineContainer(isPlaying: $isPlaying, rowData: $rowData)
             }
             .onChange(of: isPlaying) { oldValue, newValue in
                 Task {
@@ -844,7 +852,7 @@ struct EditorView: View {
                         .frame(maxHeight: .infinity)
                         .padding(.horizontal)
                         .modifier(WithPanelBackground())
-                        .frame(minHeight: 500)
+                        .frame(minHeight: 600)
                         .cornerRadius(bottomLeft: cornerRadius)
                         .onChange(of: selectedAnimation) { _, newValue in
                             let containers = self.animations
@@ -864,7 +872,7 @@ struct EditorView: View {
                         }
                         .padding(.horizontal)
                         .modifier(WithPanelBackground())
-                        .frame(minHeight: 300)
+                        .frame(minHeight: 600)
                         .frame(maxHeight: .infinity)
                         .cornerRadius(topLeft: cornerRadius)
                     }

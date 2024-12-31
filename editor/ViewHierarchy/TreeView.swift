@@ -177,6 +177,7 @@ struct TreeViewContainer: View {
     let appMode: AppMode
     let isFocused: Binding<Bool>
     let server: Binding<WebSocketServer>
+    let updateDelegates: (_ ids: Set<String>) -> Void
     
     func convertTreeToTreeItem(tree: Tree) -> TreeItem {
         guard let rootNode = tree.rootNode else { fatalError("rootNode is nil") }
@@ -235,6 +236,7 @@ struct TreeViewContainer: View {
                                     set: {
                                         treePacket.wrappedValue.actionableIds = $0
                                         server.wrappedValue.sendSelectedIds($0)
+                                        self.updateDelegates($0)
                                     }
                                 )
                             )

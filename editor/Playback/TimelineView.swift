@@ -36,6 +36,9 @@ struct TimelineRow: View {
                 .onAppear {
                     proxyWidth = proxy.size.width
                 }
+                .onChange(of: proxy.size.width) { oldValue, newValue in
+                    proxyWidth = newValue
+                }
             }
             .frame(maxWidth: .infinity)
         }
@@ -51,14 +54,8 @@ struct TimelineContainer: View {
     @Environment(\.appColors) var appColors
     @State private var isExpanded: Set<String> = []
     
-    @State private var rowData: [String: [Int]] = [
-        "Shape W": [220, 600, 100],
-        "Shape X": [120, 750, 1300],
-        "Shape Y": [200, 940, 1100],
-        "Shape Z": [300, 480, 2500],
-    ]
-    
     @Binding var isPlaying: Bool
+    @Binding var rowData: [String: [Int]]
     
     var body: some View {
         ScrollView {
@@ -84,6 +81,7 @@ struct TimelineContainer: View {
                 HStack(alignment: .bottom) {
                     TimelineHierarchy(ids: rowData.map {$0.0}, isExpanded: $isExpanded)
 //                        .padding(.top, 32)
+                        .frame(minWidth: 256 + 32)
                 
                     Timeline {
                         HStack {
