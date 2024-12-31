@@ -151,6 +151,7 @@ struct TreeNode: View {
 }
 
 struct TreeView: View {
+    @Environment(\.isEnabled) var isEnabled
     let id: String
     let displayName: String
     let rootItem: TreeItem
@@ -159,18 +160,22 @@ struct TreeView: View {
     @State private var isExpanded: Set<String> = Set()
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("View Hierarchy")
-                .foregroundStyle(.gray)
-            Divider()
-            TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: $isSelected)
-        }
+        TreeNode(item: rootItem, isExpanded: $isExpanded, isSelected: $isSelected)
+            .foregroundColor(!isEnabled ? .gray : nil)
+            .overlay {
+                if !isEnabled {
+                    Color.gray.opacity(0.0125)
+                        .cornerRadius(8)
+                }
+            }
     }
 }
 
 struct TreeViewContainer: View {
     @Environment(\.isEnabled) var isEnabled
     
+    let appMode: AppMode
+    let isFocused: Binding<Bool>
     let server: Binding<WebSocketServer>
     
     func convertTreeToTreeItem(tree: Tree) -> TreeItem {
@@ -203,22 +208,40 @@ struct TreeViewContainer: View {
         ScrollView {
             VStack {
                 ForEach(server.treePackets, id: \.hashValue) { treePacket in
-                    TreeView(
-                        id: treePacket.tree.id,
-                        displayName: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue).displayName,
-                        rootItem: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue),
-//                        isSelected: server.projectedValue.treePackets[index].actionableIds
-                        isSelected: Binding(
-                            get: {
-//                                print(treePacket.actionableIds)
-                                return treePacket.wrappedValue.actionableIds
-                            },
-                            set: {
-                                treePacket.wrappedValue.actionableIds = $0
-                                server.wrappedValue.sendSelectedIds($0)
-                            }
-                        )
-                    )
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text("View Hierarchy")
+                                .foregroundStyle(.gray)
+                            Spacer(minLength: .zero)
+                            FocusIndicator(isOn: isFocused)
+                                .disabled(appMode != .animate)
+                                .onChange(of: isFocused.wrappedValue) { _, newValue in
+                                    self.server.wrappedValue.sendIsActionable(newValue)
+                                }
+                        }
+                        
+                        Divider()
+                        VStack {
+                            TreeView(
+                                id: treePacket.tree.id,
+                                displayName: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue).displayName,
+                                rootItem: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue),
+        //                        isSelected: server.projectedValue.treePackets[index].actionableIds
+                                isSelected: Binding(
+                                    get: {
+        //                                print(treePacket.actionableIds)
+                                        return treePacket.wrappedValue.actionableIds
+                                    },
+                                    set: {
+                                        treePacket.wrappedValue.actionableIds = $0
+                                        server.wrappedValue.sendSelectedIds($0)
+                                    }
+                                )
+                            )
+                            .disabled(!isFocused.wrappedValue && server.treePackets.count > .zero)
+                        }
+                        
+                    }
                     .padding(.vertical, 42)
                     .padding(.horizontal, 24)
                 }
@@ -230,13 +253,6 @@ struct TreeViewContainer: View {
         }
         .padding(.vertical, 42)
         .padding(.horizontal, 24)
-        .foregroundColor(!isEnabled ? .gray : nil)
-        .overlay {
-            if !isEnabled && server.treePackets.count > .zero {
-                Color.gray.opacity(0.0125)
-                    .cornerRadius(8)
-            }
-        }
     }
 }
 

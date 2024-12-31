@@ -186,7 +186,7 @@ final class WebSocketServer {
         }
     }
     
-    func sendIsActionable(_ isActionable: Bool) {
+    public func sendIsActionable(_ isActionable: Bool) {
         guard let connection = clients[clientId] else {
             print("No connection")
             return
@@ -299,6 +299,13 @@ struct ActionableContainerAssociater: Hashable {
     let containerId: String
 }
 
+enum AppMode: Identifiable  {
+    case design
+    case animate
+    
+    var id: Self { self }
+}
+
 @MainActor
 struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -316,13 +323,6 @@ struct EditorView: View {
     private let segmentedPickerWidth: CGFloat = 250
     private let spacing: CGFloat = 3
     private let cornerRadius: CGFloat = 4
-    
-    enum AppMode: Identifiable  {
-        case design
-        case animate
-        
-        var id: Self { self }
-    }
     
     init(
         url: Binding<String>,
@@ -648,8 +648,7 @@ struct EditorView: View {
     
     @ViewBuilder
     var treeView: some View {
-        TreeViewContainer(server: $server)
-            .disabled(!isFocused)
+        TreeViewContainer(appMode: appMode, isFocused: $isFocused, server: $server)
     }
     
     func attachAnimation(id: String, actionableIds: Set<String>) {
@@ -833,15 +832,6 @@ struct EditorView: View {
                             }
                             .pickerStyle(.segmented)
                             .padding(.vertical)
-                            
-                            HStack() {
-                                FocusIndicator(isOn: $isFocused)
-                                    .disabled(appMode != .animate)
-                                    .onChange(of: isFocused) { _, newValue in
-                                        server.sendIsActionable(newValue)
-                                    }
-                                Spacer(minLength: .zero)
-                            }
 
                             AnimationsAvailableColumn(
                                 animations: animationsAvailableContents,

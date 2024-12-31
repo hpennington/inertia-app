@@ -15,26 +15,28 @@ struct TimelineContainer: View {
     
     var body: some View {
         ScrollView {
-            Grid {
-                GridRow {
+            VStack(spacing: .zero) {
+                HStack(alignment: .bottom) {
                     Button {
                         Task {
                             isPlaying.toggle()
                         }
                     } label: {
-                        Image(systemName: "play")
+                        Image(systemName: "play.fill")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundStyle(appColors.accent)
-                            .frame(width: 24, height: 24)
+                            .frame(width: 16, height: 16)
                     }
                     .buttonStyle(.plain)
-                    .padding(12)
+                    .padding([.leading, .trailing, .top])
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    Spacer(minLength: .zero)
                 }
-                GridRow {
+                .frame(maxHeight: .infinity)
+                HStack(alignment: .bottom) {
                     TimelineHierarchy(ids: ["Shape X", "Shape Y", "Shape Z"], isExpanded: $isExpanded)
-    //                        .padding(.top, 36)
+//                        .padding(.top, 32)
                 
                     Timeline {
                         HStack {
@@ -73,18 +75,25 @@ struct TimelineContainer: View {
                         .frame(maxWidth: .infinity)
                         
                         TimelineRuler()
+                            .padding(.bottom, 8)
                         
-                        ForEach(["Shape X", "Shape Y", "Shape Z"], id: \.hashValue) { id in
-                            TimelineBarBackground()
-                                .frame(height: 42)
-                            
-                            if isExpanded.contains(id) {
+                        VStack {
+                            ForEach(["Shape X", "Shape Y", "Shape Z"], id: \.hashValue) { id in
                                 TimelineBarBackground()
-                                    .frame(height: 32)
+                                    .frame(height: 42)
+                                
+                                if isExpanded.contains(id) {
+                                    TimelineBarBackground()
+                                        .frame(height: 32)
+                                }
                             }
                         }
+                        
                     }
-                }   
+                    
+                    Spacer(minLength: .zero)
+                }
+                .frame(maxHeight: .infinity)
             }
         }
     }
@@ -98,12 +107,12 @@ struct Timeline: View {
     }
     
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: .zero) {
             AnyView(rows())
                 .padding(.horizontal)
             Spacer(minLength: .zero)
         }
-        .padding()
+//        .padding()
     }
 }
 

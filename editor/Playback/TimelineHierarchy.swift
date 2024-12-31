@@ -25,7 +25,7 @@ struct TimelineHierarchy: View {
                 }) )
             }
         }
-        .padding()
+        .padding(.horizontal)
     }
 }
 
