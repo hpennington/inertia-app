@@ -174,6 +174,8 @@ struct TreeView: View {
 struct TreeViewContainer: View {
     @Environment(\.isEnabled) var isEnabled
     
+    @State private var oldActionableIds: Set<String> = []
+    
     let appMode: AppMode
     let isFocused: Binding<Bool>
     let server: Binding<WebSocketServer>
@@ -231,12 +233,20 @@ struct TreeViewContainer: View {
                                 isSelected: Binding(
                                     get: {
         //                                print(treePacket.actionableIds)
+                                        if oldActionableIds != treePacket.wrappedValue.actionableIds {
+                                            DispatchQueue.main.async {
+                                                oldActionableIds = treePacket.wrappedValue.actionableIds
+                                                self.updateDelegates(oldActionableIds)
+                                            }
+                                        }
                                         return treePacket.wrappedValue.actionableIds
                                     },
                                     set: {
                                         treePacket.wrappedValue.actionableIds = $0
                                         server.wrappedValue.sendSelectedIds($0)
-                                        self.updateDelegates($0)
+                                        if $0 != treePacket.wrappedValue.actionableIds {
+                                            self.updateDelegates(treePacket.wrappedValue.actionableIds)
+                                        }
                                     }
                                 )
                             )

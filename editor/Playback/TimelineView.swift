@@ -81,7 +81,7 @@ struct TimelineContainer: View {
                 HStack(alignment: .bottom) {
                     TimelineHierarchy(ids: rowData.map {$0.0}, isExpanded: $isExpanded)
 //                        .padding(.top, 32)
-                        .frame(minWidth: 256 + 32)
+                        .frame(minWidth: 256 + 16)
                 
                     Timeline {
                         HStack {

@@ -14,6 +14,7 @@ struct FocusIndicator: View {
 
     var body: some View {
         Toggle("Focus", systemImage: "scope", isOn: $isOn)
+            .font(.title2)
             .labelStyle(.iconOnly)
             .toggleStyle(.button)
             .buttonStyle(.plain)
