@@ -835,11 +835,11 @@ struct EditorView: View {
                     VStack {
                         VStack(alignment: .leading) {
                             Picker(selection: $framework) {
-                                Text("React")
+                                Text("Web")
                                     .tag(SetupFlowFramework.react)
-                                Text("SwiftUI")
+                                Text("iOS")
                                     .tag(SetupFlowFramework.swiftUI)
-                                Text("Compose")
+                                Text("Android")
                                     .tag(SetupFlowFramework.compose)
                             } label: {
                                 EmptyView()
