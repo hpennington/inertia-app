@@ -811,6 +811,9 @@ struct EditorView: View {
                             
                             Spacer(minLength: .zero)
                         }
+                        
+                    case .jetpackCompose:
+                        Text("Coming soon")
                     }
                 }
                 .padding()
@@ -840,6 +843,15 @@ struct EditorView: View {
                             }
                             .pickerStyle(.segmented)
                             .padding(.vertical)
+                            
+                            HStack() {
+                                FocusIndicator(isOn: $isFocused)
+                                    .disabled(appMode != .animate)
+                                    .onChange(of: isFocused) { _, newValue in
+                                        server.sendIsActionable(newValue)
+                                    }
+                                Spacer(minLength: .zero)
+                            }
 
                             AnimationsAvailableColumn(
                                 animations: animationsAvailableContents,

@@ -10,7 +10,7 @@ import SwiftUI
 import Inertia
 
 enum SetupFlowFramework: String, RawRepresentable {
-    case react, swiftUI
+    case react, swiftUI, jetpackCompose
 }
 
 final class SetupFlowManager: ObservableObject {
@@ -33,6 +33,7 @@ final class SetupFlowManager: ObservableObject {
 typealias Tag = SetupFlowFramework
 let reactTag = SetupFlowFramework.react
 let swiftUITag = SetupFlowFramework.swiftUI
+let jetpackComposeTag = SetupFlowFramework.jetpackCompose
 
 struct SetupFlowStartScreen: View {
     @Environment(\.appColors) var appColors: Colors

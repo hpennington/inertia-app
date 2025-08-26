@@ -11,14 +11,11 @@ function App() {
         <h1 className="title">Inertia Pro </h1>
         <VibeContainer id={"animation3"} baseURL={"http://localhost:8000"}>
           <div className="gear-cancel-container">
-            {/*<Vibeable id={"gear"}>*/}
+            <Vibeable id={"gear"}>
               <div className="icon-container">
                 <img src={gearIcon} className="App-logo" alt="Gear" />
               </div>
-            {/*</Vibeable>*/}
-          
-            {/*<Vibeable id={"loading-text"}>*/}
-            {/*</Vibeable>*/}
+            </Vibeable>
             <button
               className="App-link"
               onClick={e => {}}
@@ -27,7 +24,6 @@ function App() {
             </button>
           </div>
         </VibeContainer>
-         
       </header>
     </div>
   );

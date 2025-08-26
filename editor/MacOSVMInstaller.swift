@@ -149,6 +149,9 @@ class MacOSVMInstaller {
                 fatalError(error.localizedDescription)
             } else {
                 NSLog("Installation succeeded.")
+                DispatchQueue.main.async {
+                    self.progressCallback(1.0)
+                }
             }
         })
 

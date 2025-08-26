@@ -12,10 +12,10 @@ enum SetupFlowState: Hashable {
     case chooseFramework
     case projectInfoReact
     case projectInfoIOS
-    case configurationReact
+//    case configurationReact
     case compilationMode
     case xcodeCheck
-    case configurationSwiftUI
+//    case configurationSwiftUI
     case swiftUICopying
     case swiftUICompile
     case projectLoad
@@ -59,15 +59,15 @@ class SetupFlowStateMachine: ObservableObject {
         case (.chooseFramework, .continueSetupReact):
             transition(to: .projectInfoReact)
         case (.projectInfoReact, .continueSetupReact):
-            transition(to: .configurationReact)
-        case (.configurationReact, .continueSetupReact):
+            transition(to: .complete)
+//        case (.configurationReact, .continueSetupReact):
             transition(to: .complete)
         case (.chooseFramework, .continueSetupSwiftUI):
             transition(to: .projectInfoIOS)
         case (.projectInfoIOS, .continueSetupSwiftUI):
-            transition(to: .configurationSwiftUI)
-        case (.configurationSwiftUI, .continueSetupSwiftUI):
-            transition(to: .compilationMode)
+            transition(to: .complete)
+//        case (.configurationSwiftUI, .continueSetupSwiftUI):
+//            transition(to: .complete)
         case (.compilationMode, .continueSetupSwiftUI):
             transition(to: .xcodeCheck)
         case (.xcodeCheck, .continueSetupSwiftUI):

@@ -22,6 +22,10 @@ struct SetupFlowChooseFrameworkScreen: View {
                     RadioButton(tag: swiftUITag) {
                         RadioButtonContent(title: "iOS (SwiftUI)")
                     }
+                    RadioButton(tag: jetpackComposeTag) {
+                        RadioButtonContent(title: "Android (Compose)")
+                    }
+
                 }
                 
                 Spacer()
