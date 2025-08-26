@@ -27,7 +27,11 @@ struct VirtualMachineView: NSViewRepresentable {
         let view = VZVirtualMachineView(frame: .zero)
         view.automaticallyReconfiguresDisplay = true
         view.virtualMachine = virtualMachine
-        context.coordinator.startVirtualMachine()
+        
+        if virtualMachine.state != .running {
+            context.coordinator.startVirtualMachine()
+        }
+        
         return view
     }
 

@@ -299,12 +299,13 @@ public struct ActionableContainerAssociater: Hashable {
     public let containerId: String
 }
 
-enum AppMode: Identifiable  {
-    case design
-    case animate
-    
-    var id: Self { self }
-}
+//enum AppMode: Identifiable  {
+//    case swiftUI
+//    case react
+//    case compose
+//    
+//    var id: Self { self }
+//}
 
 @MainActor
 struct EditorView: View {
@@ -326,7 +327,7 @@ struct EditorView: View {
     
     init(
         url: Binding<String>,
-        framework: SetupFlowFramework,
+        framework: Binding<SetupFlowFramework>,
         animations: [VibeSchema],
         webView: WKWebView,
         contentController: WKUserContentController,
@@ -334,7 +335,7 @@ struct EditorView: View {
         delegate: AppDelegate
     ) {
         self._url = url
-        self.framework = framework
+        self._framework = framework
         self.animations = animations
         self.webView = webView
         self.contentController = contentController
@@ -342,7 +343,7 @@ struct EditorView: View {
         self.delegate = delegate
     }
     
-    @State private var appMode: AppMode = .animate
+//    @State private var appMode: AppMode = .react
     @State private var editorModel = EditorModel()
     @State private var isFocused = false
     @State private var frameSize: CGSize? = nil
@@ -359,7 +360,7 @@ struct EditorView: View {
     
     let paths = VirtualMachinePaths()
     @Binding var url: String
-    let framework: SetupFlowFramework
+    @Binding var framework: SetupFlowFramework
     let animations: [VibeSchema]
     let webView: WKWebView
     let contentController: WKUserContentController
@@ -612,7 +613,7 @@ struct EditorView: View {
     }
     
     private func determineFocused(newValue: Bool) async {
-        if newValue && appMode == .animate {
+        if newValue {
             await initializeAndActionablesAdd()
         } else {
             await actionablesRemove()
@@ -649,7 +650,7 @@ struct EditorView: View {
     
     @ViewBuilder
     var treeView: some View {
-        TreeViewContainer(appMode: appMode, isFocused: $isFocused, server: $server) { ids in
+        TreeViewContainer(appMode: framework, isFocused: $isFocused, server: $server) { ids in
             var localRowData: [String: [Int]] = [:]
             for id in ids {
                 localRowData[id] = [Int]()
@@ -833,11 +834,13 @@ struct EditorView: View {
                 ScrollView {
                     VStack {
                         VStack(alignment: .leading) {
-                            Picker(selection: $appMode) {
-                                Text("Animate")
-                                    .tag(AppMode.animate)
-                                Text("Design")
-                                    .tag(AppMode.design)
+                            Picker(selection: $framework) {
+                                Text("React")
+                                    .tag(SetupFlowFramework.react)
+                                Text("SwiftUI")
+                                    .tag(SetupFlowFramework.swiftUI)
+                                Text("Compose")
+                                    .tag(SetupFlowFramework.compose)
                             } label: {
                                 EmptyView()
                             }
@@ -846,7 +849,6 @@ struct EditorView: View {
                             
                             HStack() {
                                 FocusIndicator(isOn: $isFocused)
-                                    .disabled(appMode != .animate)
                                     .onChange(of: isFocused) { _, newValue in
                                         server.sendIsActionable(newValue)
                                     }

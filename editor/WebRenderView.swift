@@ -18,6 +18,8 @@ struct WKWebViewWrapper: NSViewRepresentable {
     
     func makeNSView(context: Context) -> WKWebView {
         webView.isInspectable = true
+        
+        webView.configuration.userContentController.removeAllScriptMessageHandlers()
         webView.configuration.userContentController.add(context.coordinator, name: "vibeMessageBusHandler")
         return webView
     }

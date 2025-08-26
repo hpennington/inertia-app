@@ -176,7 +176,7 @@ struct TreeViewContainer: View {
     
     @State private var oldActionableIds: Set<String> = []
     
-    let appMode: AppMode
+    let appMode: SetupFlowFramework
     let isFocused: Binding<Bool>
     let server: Binding<WebSocketServer>
     let updateDelegates: (_ ids: Set<String>) -> Void
@@ -217,7 +217,6 @@ struct TreeViewContainer: View {
                                 .foregroundStyle(.gray)
                             Spacer(minLength: .zero)
                             FocusIndicator(isOn: isFocused)
-                                .disabled(appMode != .animate)
                                 .onChange(of: isFocused.wrappedValue) { _, newValue in
                                     self.server.wrappedValue.sendIsActionable(newValue)
                                 }
