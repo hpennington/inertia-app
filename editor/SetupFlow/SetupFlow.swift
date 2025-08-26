@@ -9,28 +9,28 @@ import SwiftUI
 
 enum SetupFlowState: Hashable {
     case start
-    case chooseFramework
-    case projectInfoReact
-    case projectInfoIOS
+//    case chooseFramework
+    case projectInfo
 //    case configurationReact
-    case projectInfoAndroid
-    case compilationMode
-    case xcodeCheck
+//    case projectInfoAndroid
+//    case compilationMode
+//    case xcodeCheck
 //    case configurationSwiftUI
-    case swiftUICopying
-    case swiftUICompile
+//    case swiftUICopying
+//    case swiftUICompile
     case projectLoad
     case browsingProject
     case complete
-    case swiftUIInstallImage
+//    case swiftUIInstallImage
 }
 
 enum SetupFlowEvent {
     case newProject
     case openProject
-    case continueSetupReact
-    case continueSetupSwiftUI
-    case continueSetupCompose
+//    case continueSetupReact
+//    case continueSetupSwiftUI
+//    case continueSetupCompose
+    case continueSetup
     case asyncJobFinished
     case filePicked
     case cancelSetup
@@ -56,36 +56,28 @@ class SetupFlowStateMachine: ObservableObject {
         case (.projectLoad, .asyncJobFinished):
             transition(to: .complete)
         case (.start, .newProject):
-            transition(to: .chooseFramework)
+            transition(to: .projectInfo)
         // New project flow
-        case (.chooseFramework, .continueSetupReact):
-            transition(to: .projectInfoReact)
-        case (.projectInfoReact, .continueSetupReact):
+        case (.projectInfo, .continueSetup):
             transition(to: .complete)
-        case (.chooseFramework, .continueSetupSwiftUI):
-            transition(to: .projectInfoIOS)
-        case (.projectInfoIOS, .continueSetupSwiftUI):
-            transition(to: .complete)
-        case (.chooseFramework, .continueSetupCompose):
-            transition(to: .projectInfoAndroid)
-        case (.projectInfoAndroid, .continueSetupCompose):
-            transition(to: .complete)
-        case (.compilationMode, .continueSetupSwiftUI):
-            transition(to: .xcodeCheck)
-        case (.xcodeCheck, .continueSetupSwiftUI):
-            transition(to: .swiftUICopying)
-        case (.swiftUICopying, .asyncJobFinished):
-            transition(to: .swiftUICompile)
-        case (.swiftUICompile, .asyncJobFinished):
-            transition(to: .swiftUIInstallImage)
-        case (.swiftUIInstallImage, .asyncJobFinished):
-            transition(to: .complete)
-        case (.swiftUIInstallImage, .cancelSetup):
-            transition(to: .start)
-        case (.swiftUICopying, .cancelSetup):
-            transition(to: .start)
-        case (.swiftUICompile, .cancelSetup):
-            transition(to: .start)
+//        case (.projectInfoAndroid, .continueSetupCompose):
+//            transition(to: .complete)
+//        case (.compilationMode, .continueSetupSwiftUI):
+//            transition(to: .xcodeCheck)
+//        case (.xcodeCheck, .continueSetupSwiftUI):
+//            transition(to: .swiftUICopying)
+//        case (.swiftUICopying, .asyncJobFinished):
+//            transition(to: .swiftUICompile)
+//        case (.swiftUICompile, .asyncJobFinished):
+//            transition(to: .swiftUIInstallImage)
+//        case (.swiftUIInstallImage, .asyncJobFinished):
+//            transition(to: .complete)
+//        case (.swiftUIInstallImage, .cancelSetup):
+//            transition(to: .start)
+//        case (.swiftUICopying, .cancelSetup):
+//            transition(to: .start)
+//        case (.swiftUICompile, .cancelSetup):
+//            transition(to: .start)
         // Shared flow
         case (_, .back):
             if let backState = stateHistory.popLast() {

@@ -139,34 +139,8 @@ struct SetupFlowContainerScreen: View {
                                     allowFileBrowserOpen = true
                                 }
                             }
-                    case .chooseFramework:
-                        SetupFlowChooseFrameworkScreen { event in
-                            if event == .continueSetupReact {
-                                self.framework.wrappedValue = .react
-                            } else if event == .continueSetupSwiftUI {
-                                self.framework.wrappedValue = .swiftUI
-                            } else if event == .continueSetupCompose {
-                                self.framework.wrappedValue = .compose
-                            }
-                            
-                            actionHandler(event: event)
-                        }
-                    case .projectInfoReact:
-                        SetupFlowInfoScreenReact(action: actionHandler)
-                    case .projectInfoIOS:
-                        SetupFlowInfoScreenSwiftUI(action: actionHandler)
-                    case .projectInfoAndroid:
-                        SetupFlowInfoScreenCompose(action: actionHandler)
-                    case .compilationMode:
-                        SetupFlowCompilationModeScreen(action: actionHandler)
-                    case .xcodeCheck:
-                        SetupFlowInstallXcodeScreen(action: actionHandler)
-                    case .swiftUICopying:
-                        SetupFlowCopyingScreen(action: actionHandler)
-                    case .swiftUICompile:
-                        SetupFlowCompilingScreen(action: actionHandler)
-                    case .swiftUIInstallImage:
-                        SetupFlowInstallImageScreen(action: actionHandler)
+                    case .projectInfo:
+                        SetupFlowInfoScreen(action: actionHandler)
                     case .projectLoad:
                         SetupFlowProjectLoad(action: actionHandler)
                     case .complete:
