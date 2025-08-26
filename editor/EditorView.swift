@@ -812,7 +812,7 @@ struct EditorView: View {
                             Spacer(minLength: .zero)
                         }
                         
-                    case .jetpackCompose:
+                    case .compose:
                         Text("Coming soon")
                     }
                 }

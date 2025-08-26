@@ -110,7 +110,7 @@ struct SetupFlowContainerScreen: View {
                                             let result = openProjectFiles(url: url)
                                             switch result.1 {
                                             case .success(let meta):
-                                                self.framework.wrappedValue = meta.framework == reactTag.rawValue ? .react : .swiftUI
+                                                self.framework.wrappedValue = SetupFlowFramework(rawValue: meta.framework)!
                                                 
                                                 switch result.0 {
                                                 case .success(let animations):
@@ -145,6 +145,8 @@ struct SetupFlowContainerScreen: View {
                                 self.framework.wrappedValue = .react
                             } else if event == .continueSetupSwiftUI {
                                 self.framework.wrappedValue = .swiftUI
+                            } else if event == .continueSetupCompose {
+                                self.framework.wrappedValue = .compose
                             }
                             
                             actionHandler(event: event)
@@ -153,6 +155,8 @@ struct SetupFlowContainerScreen: View {
                         SetupFlowInfoScreenReact(action: actionHandler)
                     case .projectInfoIOS:
                         SetupFlowInfoScreenSwiftUI(action: actionHandler)
+                    case .projectInfoAndroid:
+                        SetupFlowInfoScreenCompose(action: actionHandler)
 //                    case .configurationReact:
 //                        SetupFlowWebConfigurationScreen(action: actionHandler)
                     case .compilationMode:
