@@ -157,14 +157,10 @@ struct SetupFlowContainerScreen: View {
                         SetupFlowInfoScreenSwiftUI(action: actionHandler)
                     case .projectInfoAndroid:
                         SetupFlowInfoScreenCompose(action: actionHandler)
-//                    case .configurationReact:
-//                        SetupFlowWebConfigurationScreen(action: actionHandler)
                     case .compilationMode:
                         SetupFlowCompilationModeScreen(action: actionHandler)
                     case .xcodeCheck:
                         SetupFlowInstallXcodeScreen(action: actionHandler)
-//                    case .configurationSwiftUI:
-//                        SetupFlowSwiftUIConfigurationScreen(action: actionHandler)
                     case .swiftUICopying:
                         SetupFlowCopyingScreen(action: actionHandler)
                     case .swiftUICompile:
