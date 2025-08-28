@@ -19,7 +19,8 @@ let package = Package(
             name: "Inertia",
             resources: [
                 .copy("Metal/")
-            ]),
+            ],
+            swiftSettings: [SwiftSetting.define("INERTIA_EDITOR_RUNTIME")]),
         .testTarget(
             name: "InertiaTests",
             dependencies: ["Inertia"]),

@@ -14,7 +14,7 @@ struct BarView : View {
     var body: some View {
         RoundedRectangle(cornerRadius: 2)
             .fill(Color.accentColor)
-            .frame(width: 16, height: value * 100).inertiaEditable("FDBAC660-968D-46BA-AE17-B13427C47930")
+            .frame(width: 16, height: value * 100)
     }
 }
 
@@ -34,7 +34,7 @@ struct BarChart: View {
         }
         .padding()
         .background(Color.gray.opacity(0.1))
-        .cornerRadius(8).inertiaEditable("8788C6A2-B4AB-4791-B95B-8ACA15DD0786")
+        .cornerRadius(8)
     }
 }
 
@@ -50,33 +50,33 @@ struct ContentView: View {
                 }
                 .padding()
                 
-                .padding(.horizontal).inertiaEditable("BCEC0509-8614-4D19-971F-4FDC214FCE8C")
-                Spacer(minLength: 40).inertiaEditable("653A2C62-FB73-4EFD-A047-C4CB2F7238A2")
+                .padding(.horizontal)
+                Spacer(minLength: 40)
                 ZStack {
                     Circle()
                         .stroke(Color.black.opacity(0.5))
-                        .frame(width: 64, height: 64).inertiaEditable("C032F1B8-9927-45BA-B87F-A457137BF355")
+                        .frame(width: 64, height: 64)
                     Rectangle()
                         .fill(Color.black.opacity(0.75))
                         .frame(width: 2, height: 64)
-                        .rotationEffect(Angle(degrees: 30)).inertiaEditable("C0C04443-1F75-4CA5-9148-31299D203ABF")
-                }.inertiaEditable("03E4057A-B6E4-426E-ACA1-A4583198F7D7")
+                        .rotationEffect(Angle(degrees: 30))
+                }
                 
-                Spacer(minLength: 40).inertiaEditable("FDA3975F-C12B-4E4D-A936-35274482A831")
+                Spacer(minLength: 40)
                 
-                BarChart().inertiaEditable("32CB3AB5-87B1-4899-BDC6-F3B715A17FD3")
-                Spacer(minLength: 40).inertiaEditable("F9B3FA98-FCCA-4136-A065-6A1E7B657395")
+                BarChart()
+                Spacer(minLength: 40)
                 Divider()
-                    .padding(.horizontal).inertiaEditable("D31CE03C-98B4-49E8-8BB6-2BACFFFB752F")
+                    .padding(.horizontal)
                 
                 Text("App")
                     .font(.largeTitle)
-                    .fontWeight(.light).inertiaEditable("49A7ADCB-06CF-4E35-8855-6370B0346341")
+                    .fontWeight(.light)
                 
                 Image("landing_image_1")
                     .resizable()
-                    .aspectRatio(contentMode: .fit).inertiaEditable("B227038D-E54D-4504-8806-94133AA756A9")
-                Spacer(minLength: 40).inertiaEditable("EBEFBE01-10A1-43BD-AF15-E71A2585DEB1")
+                    .aspectRatio(contentMode: .fit)
+                Spacer(minLength: 40)
                 Button {
                     
                 } label: {
@@ -86,9 +86,9 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                         .cornerRadius(8)
                 }
-                .buttonStyle(.plain).inertiaEditable("4A71BA5D-1E3D-4694-A5F8-646E4168FB89")
-            }.inertiaEditable("7AA9D95E-3C43-42B2-8784-8825E8379C3D")
-        }.inertiaEditable("1E9376F4-8A67-48B0-9F9B-71ACA3BD2FB1")
+                .buttonStyle(.plain)
+            }
+        }
     }
 }
 

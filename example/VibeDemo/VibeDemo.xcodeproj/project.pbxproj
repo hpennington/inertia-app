@@ -7,39 +7,59 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F827B7312D1E496300A8A27A /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
-		F827B7342D1E49D800A8A27A /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
-		F827B7352D1E49D800A8A27A /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
-		F852BF262CE7F9C90099FB2D /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF232CE7F9C90099FB2D /* animation2.json */; };
-		F852BF272CE7F9C90099FB2D /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation1.json */; };
-		F852BF282CE7F9C90099FB2D /* animation3.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF252CE7F9C90099FB2D /* animation3.json */; };
-		F86317EC2C66DF05001DEE60 /* VibeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */; };
-		F86317EE2C66DF05001DEE60 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
-		F86317F02C66DF06001DEE60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
-		F86317F32C66DF06001DEE60 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
-		F8F8BAB52D08AEA1006CE7A5 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8F8BAB42D08AEA1006CE7A5 /* Inertia */; };
+		F80DC08A2E607AC600D0F196 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F80DC0882E607AC600D0F196 /* Inertia */; };
+		F80DC08C2E607AC600D0F196 /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
+		F80DC08D2E607AC600D0F196 /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation1.json */; };
+		F80DC08E2E607AC600D0F196 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
+		F80DC08F2E607AC600D0F196 /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
+		F80DC0902E607AC600D0F196 /* animation3.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF252CE7F9C90099FB2D /* animation3.json */; };
+		F80DC0912E607AC600D0F196 /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF232CE7F9C90099FB2D /* animation2.json */; };
+		F80DC0922E607AC600D0F196 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
+		F80DC0942E607AC600D0F196 /* VibeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */; };
+		F80DC0952E607AC600D0F196 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
+		F80DC0962E607AC600D0F196 /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
+		F81FD6232E5FE3CC0017016E /* VibeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */; };
+		F81FD6242E5FE3CC0017016E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
+		F81FD6252E5FE3CC0017016E /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
+		F8DB1C192E5FDA9A00C8E09C /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8DB1C132E5FDA9A00C8E09C /* Inertia */; };
+		F8DB1C1B2E5FDA9A00C8E09C /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
+		F8DB1C1C2E5FDA9A00C8E09C /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation1.json */; };
+		F8DB1C1D2E5FDA9A00C8E09C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
+		F8DB1C1E2E5FDA9A00C8E09C /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
+		F8DB1C1F2E5FDA9A00C8E09C /* animation3.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF252CE7F9C90099FB2D /* animation3.json */; };
+		F8DB1C202E5FDA9A00C8E09C /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF232CE7F9C90099FB2D /* animation2.json */; };
+		F8DB1C212E5FDA9A00C8E09C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F80DC09A2E607AC600D0F196 /* VibeDemo (Inertia).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VibeDemo (Inertia).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F827B7302D1E496300A8A27A /* CircleImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImage.swift; sourceTree = "<group>"; };
 		F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = landing_image_2.jpeg; sourceTree = "<group>"; };
 		F827B7332D1E49D800A8A27A /* landing_image_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landing_image_1.png; sourceTree = "<group>"; };
 		F852BF232CE7F9C90099FB2D /* animation2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation2.json; path = ../demo.vibe/animations/animation2.json; sourceTree = "<group>"; };
 		F852BF242CE7F9C90099FB2D /* animation1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation1.json; path = ../demo.vibe/animations/animation1.json; sourceTree = "<group>"; };
 		F852BF252CE7F9C90099FB2D /* animation3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation3.json; path = ../demo.vibe/animations/animation3.json; sourceTree = "<group>"; };
-		F86317E82C66DF05001DEE60 /* VibeDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VibeDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeDemoApp.swift; sourceTree = "<group>"; };
 		F86317ED2C66DF05001DEE60 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F86317EF2C66DF06001DEE60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F8DB1C252E5FDA9A00C8E09C /* VibeDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VibeDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F86317E52C66DF05001DEE60 /* Frameworks */ = {
+		F80DC0892E607AC600D0F196 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8F8BAB52D08AEA1006CE7A5 /* Inertia in Frameworks */,
+				F80DC08A2E607AC600D0F196 /* Inertia in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8DB1C182E5FDA9A00C8E09C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8DB1C192E5FDA9A00C8E09C /* Inertia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,7 +81,8 @@
 		F86317E92C66DF05001DEE60 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F86317E82C66DF05001DEE60 /* VibeDemo.app */,
+				F8DB1C252E5FDA9A00C8E09C /* VibeDemo.app */,
+				F80DC09A2E607AC600D0F196 /* VibeDemo (Inertia).app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,13 +119,33 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F86317E72C66DF05001DEE60 /* VibeDemo */ = {
+		F80DC0872E607AC600D0F196 /* VibeDemo (Inertia) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F86317F62C66DF06001DEE60 /* Build configuration list for PBXNativeTarget "VibeDemo" */;
+			buildConfigurationList = F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "VibeDemo (Inertia)" */;
 			buildPhases = (
-				F86317E42C66DF05001DEE60 /* Sources */,
-				F86317E52C66DF05001DEE60 /* Frameworks */,
-				F86317E62C66DF05001DEE60 /* Resources */,
+				F80DC0892E607AC600D0F196 /* Frameworks */,
+				F80DC08B2E607AC600D0F196 /* Resources */,
+				F80DC0932E607AC600D0F196 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "VibeDemo (Inertia)";
+			packageProductDependencies = (
+				F80DC0882E607AC600D0F196 /* Inertia */,
+			);
+			productName = VibeDemo;
+			productReference = F80DC09A2E607AC600D0F196 /* VibeDemo (Inertia).app */;
+			productType = "com.apple.product-type.application";
+		};
+		F8DB1C122E5FDA9A00C8E09C /* VibeDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "VibeDemo" */;
+			buildPhases = (
+				F8DB1C182E5FDA9A00C8E09C /* Frameworks */,
+				F8DB1C1A2E5FDA9A00C8E09C /* Resources */,
+				F81FD6222E5FE3C50017016E /* Sources */,
 			);
 			buildRules = (
 			);
@@ -112,10 +153,10 @@
 			);
 			name = VibeDemo;
 			packageProductDependencies = (
-				F8F8BAB42D08AEA1006CE7A5 /* Inertia */,
+				F8DB1C132E5FDA9A00C8E09C /* Inertia */,
 			);
 			productName = VibeDemo;
-			productReference = F86317E82C66DF05001DEE60 /* VibeDemo.app */;
+			productReference = F8DB1C252E5FDA9A00C8E09C /* VibeDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -127,11 +168,6 @@
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1520;
-				TargetAttributes = {
-					F86317E72C66DF05001DEE60 = {
-						CreatedOnToolsVersion = 15.2;
-					};
-				};
 			};
 			buildConfigurationList = F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "VibeDemo" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -149,42 +185,145 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F86317E72C66DF05001DEE60 /* VibeDemo */,
+				F8DB1C122E5FDA9A00C8E09C /* VibeDemo */,
+				F80DC0872E607AC600D0F196 /* VibeDemo (Inertia) */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		F86317E62C66DF05001DEE60 /* Resources */ = {
+		F80DC08B2E607AC600D0F196 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F827B7352D1E49D800A8A27A /* landing_image_1.png in Resources */,
-				F852BF272CE7F9C90099FB2D /* animation1.json in Resources */,
-				F86317F32C66DF06001DEE60 /* Preview Assets.xcassets in Resources */,
-				F827B7342D1E49D800A8A27A /* landing_image_2.jpeg in Resources */,
-				F852BF282CE7F9C90099FB2D /* animation3.json in Resources */,
-				F852BF262CE7F9C90099FB2D /* animation2.json in Resources */,
-				F86317F02C66DF06001DEE60 /* Assets.xcassets in Resources */,
+				F80DC08C2E607AC600D0F196 /* landing_image_1.png in Resources */,
+				F80DC08D2E607AC600D0F196 /* animation1.json in Resources */,
+				F80DC08E2E607AC600D0F196 /* Preview Assets.xcassets in Resources */,
+				F80DC08F2E607AC600D0F196 /* landing_image_2.jpeg in Resources */,
+				F80DC0902E607AC600D0F196 /* animation3.json in Resources */,
+				F80DC0912E607AC600D0F196 /* animation2.json in Resources */,
+				F80DC0922E607AC600D0F196 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8DB1C1A2E5FDA9A00C8E09C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8DB1C1B2E5FDA9A00C8E09C /* landing_image_1.png in Resources */,
+				F8DB1C1C2E5FDA9A00C8E09C /* animation1.json in Resources */,
+				F8DB1C1D2E5FDA9A00C8E09C /* Preview Assets.xcassets in Resources */,
+				F8DB1C1E2E5FDA9A00C8E09C /* landing_image_2.jpeg in Resources */,
+				F8DB1C1F2E5FDA9A00C8E09C /* animation3.json in Resources */,
+				F8DB1C202E5FDA9A00C8E09C /* animation2.json in Resources */,
+				F8DB1C212E5FDA9A00C8E09C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F86317E42C66DF05001DEE60 /* Sources */ = {
+		F80DC0932E607AC600D0F196 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F86317EE2C66DF05001DEE60 /* ContentView.swift in Sources */,
-				F86317EC2C66DF05001DEE60 /* VibeDemoApp.swift in Sources */,
-				F827B7312D1E496300A8A27A /* CircleImage.swift in Sources */,
+				F80DC0942E607AC600D0F196 /* VibeDemoApp.swift in Sources */,
+				F80DC0952E607AC600D0F196 /* ContentView.swift in Sources */,
+				F80DC0962E607AC600D0F196 /* CircleImage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F81FD6222E5FE3C50017016E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F81FD6232E5FE3CC0017016E /* VibeDemoApp.swift in Sources */,
+				F81FD6242E5FE3CC0017016E /* ContentView.swift in Sources */,
+				F81FD6252E5FE3CC0017016E /* CircleImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		F80DC0982E607AC600D0F196 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"VibeDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.VibeDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = "$(inherited) INERTIA_EDITOR";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F80DC0992E607AC600D0F196 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"VibeDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.VibeDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = INERTIA_EDITOR;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		F86317F42C66DF06001DEE60 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -304,7 +443,7 @@
 			};
 			name = Release;
 		};
-		F86317F72C66DF06001DEE60 /* Debug */ = {
+		F8DB1C232E5FDA9A00C8E09C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -316,6 +455,7 @@
 				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -334,13 +474,14 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
-		F86317F82C66DF06001DEE60 /* Release */ = {
+		F8DB1C242E5FDA9A00C8E09C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -352,6 +493,7 @@
 				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -370,6 +512,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -379,6 +522,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "VibeDemo (Inertia)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F80DC0982E607AC600D0F196 /* Debug */,
+				F80DC0992E607AC600D0F196 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "VibeDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -388,11 +540,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F86317F62C66DF06001DEE60 /* Build configuration list for PBXNativeTarget "VibeDemo" */ = {
+		F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "VibeDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F86317F72C66DF06001DEE60 /* Debug */,
-				F86317F82C66DF06001DEE60 /* Release */,
+				F8DB1C232E5FDA9A00C8E09C /* Debug */,
+				F8DB1C242E5FDA9A00C8E09C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -407,7 +559,11 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F8F8BAB42D08AEA1006CE7A5 /* Inertia */ = {
+		F80DC0882E607AC600D0F196 /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F8DB1C132E5FDA9A00C8E09C /* Inertia */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Inertia;
 		};

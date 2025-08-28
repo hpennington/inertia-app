@@ -8,11 +8,23 @@
 import SwiftUI
 import Inertia
 
+struct AppEnvironment {
+    #if INERTIA_EDITOR
+    static let isInertiaEditor = true
+    #else
+    static let isInertiaEditor = false
+    #endif
+}
+
 @main
 struct VibeDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            InertiaContainer(id: "animation1", hierarchyId: "animation1") {
+            InertiaContainer(
+                dev: AppEnvironment.isInertiaEditor,
+                id: "animation1",
+                hierarchyId: "animation1"
+            ) {
                 ContentView()
             }
         }
