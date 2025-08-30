@@ -1095,40 +1095,37 @@ struct EditorView: View {
                     switch framework {
                     case .react:
                         VStack {
-                            if let url = URL(string: url) {
-                                WebRenderView(
-                                    url: url,
-                                    contentController: contentController,
-                                    selectedActionabeIDTracker: selectedActionabeIDTracker,
-                                    webView: webView
-                                )
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .aspectRatio(16 / 10, contentMode: .fit)
-                                .cornerRadius(renderViewportCornerRadius)
-                                .padding(6 / 2)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
-                                }
-                                .background(
-                                    GeometryReader { proxy in
-                                        Color.clear
-                                            .onAppear {
-                                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
-                                            }
-                                            .onChange(of: proxy.size) { oldValue, newValue in
-                                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
-                                            }
+                            GeometryReader { proxy in
+                                if let url = URL(string: url) {
+                                    WebRenderView(
+                                        url: url,
+                                        contentController: contentController,
+                                        selectedActionabeIDTracker: selectedActionabeIDTracker,
+                                        webView: webView
+                                    )
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .aspectRatio(16 / 10, contentMode: .fit)
+                                    .cornerRadius(renderViewportCornerRadius)
+                                    .padding(6 / 2)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                                     }
-                                )
-                                .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
-                                    print(newValue)
+                                    .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
+                                        print(newValue)
+                                    }
+                                    .onAppear {
+                                        frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                                    }
+                                    .onChange(of: proxy.size) { oldValue, newValue in
+                                        frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                                    }
+                                } else {
+                                    Color.black
                                 }
-                            } else {
-                                Color.black
+                                Spacer()
                             }
                             
-                            Spacer()
                         }
                         .background(appColors.backgroundPrimary)
                     case .swiftUI:
