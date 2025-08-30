@@ -12,13 +12,14 @@ let pixelsPerInch = 284
 
 struct VirtualMachineView: NSViewRepresentable {
     typealias NSViewType = VZVirtualMachineView
-    let paths = VirtualMachinePaths()
+    let paths: VirtualMachinePaths
     let virtualMachine: VZVirtualMachine
 
     let size: CGSize
     
-    init(virtualMachine: VZVirtualMachine, size: CGSize) {
+    init(virtualMachine: VZVirtualMachine, paths: VirtualMachinePaths, size: CGSize) {
         self.virtualMachine = virtualMachine
+        self.paths = paths
         self.size = size
     }
     
@@ -141,9 +142,15 @@ struct VirtualMachineView: NSViewRepresentable {
     }
 }
 
+enum VirtualMachineOS: String {
+    case linux, macos
+}
+
 struct VirtualMachinePaths {
+    let system: VirtualMachineOS
+    
     var vmBundlePath: String {
-        return NSHomeDirectory() + "/VM.bundle/"
+        return NSHomeDirectory() + "/VM_\(system.rawValue).bundle/"
     }
 
     var vmBundleURL: URL {
@@ -172,5 +179,9 @@ struct VirtualMachinePaths {
 
     var saveFileURL: URL {
         return vmBundleURL.appendingPathComponent("SaveFile.vzvmsave")
+    }
+    
+    var efiVariableStoreURL: URL {
+        return vmBundleURL.appendingPathComponent("EFIVariableStore")
     }
 }

@@ -10,10 +10,11 @@ import Virtualization
 
 struct MacRenderView: View {
     let virtualMachine: VZVirtualMachine
+    let paths: VirtualMachinePaths
     let size: CGSize
     
     var body: some View {
-        VirtualMachineView(virtualMachine: virtualMachine, size: CGSize(width: size.width, height: size.height))
+        VirtualMachineView(virtualMachine: virtualMachine, paths: paths, size: CGSize(width: size.width, height: size.height))
     }
 }
 

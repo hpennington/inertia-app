@@ -24,7 +24,7 @@ struct MacOSVirtualMachineConfigurationHelper {
     static func createSharedDirectory() -> VZVirtioFileSystemDeviceConfiguration {
         let directoryURL = FileManager.default
             .homeDirectoryForCurrentUser
-            .appending(path: "Inertia", directoryHint: .isDirectory)
+            .appending(path: "InertiaStorage", directoryHint: .isDirectory)
         let sharedDirectory = VZSharedDirectory(url: directoryURL, readOnly: false)
         let singleDirectoryShare = VZSingleDirectoryShare(directory: sharedDirectory)
 

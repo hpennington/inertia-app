@@ -30,7 +30,7 @@ struct SetupFlowInstallImageScreen: View {
             .padding(.bottom, 48)
         }
         .task {
-            let paths = VirtualMachinePaths()
+            let paths = VirtualMachinePaths(system: .macos)
             let downloader = MacOSVMDownloader(paths: paths) { value in
                 isDownloadingStep = true
                 progress = value

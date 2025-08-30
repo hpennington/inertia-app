@@ -589,12 +589,13 @@ struct EditorView: View {
     @State private var downloadingMacOS: Bool = true
     @State private var restoreImageDownloadProgress: Double = .zero
     @State private var installationProgress: Double = .zero
-    @State private var virtualMachine: VZVirtualMachine? = nil
-    @State private var installerFatory: MacOSVMInstalledFactory? = nil
+    @State private var virtualMachineMacOS: VZVirtualMachine? = nil
+    @State private var virtualMachineLinux: VZVirtualMachine? = nil
+//    @State private var installerFatory: MacOSVMInstalledFactory? = nil
+    @State private var installerFactoryLinux: LinuxVMFactory? = nil
     
     @State private var server = try! WebSocketServer(port: 8060)
     
-    let paths = VirtualMachinePaths()
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
     let animations: [VibeSchema]
@@ -879,7 +880,8 @@ struct EditorView: View {
     }
     
     @State private var installOpacity = CGFloat.zero
-    @State private var isVmLoaded = false
+    @State private var isMacOSVMLoaded = false
+    @State private var isLinuxVMLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     @State private var isPlaying: Bool = false
     @State private var rowData: [String: [Int]] = [:]
@@ -968,6 +970,116 @@ struct EditorView: View {
         }
     }
     
+    @ViewBuilder
+    var composeView: some View {
+        if self.isLinuxVMLoaded {
+            if let virtualMachineLinux {
+                GeometryReader { proxy in
+                    MacRenderView(virtualMachine: virtualMachineLinux, paths: VirtualMachinePaths(system: .linux), size: viewportMinimumSize)
+                        .onAppear {
+                            frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                        }
+                        .onChange(of: proxy.size) { oldValue, newValue in
+                            frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                        }
+                    }
+                    .aspectRatio(16 / 10, contentMode: .fit)
+                    .cornerRadius(renderViewportCornerRadius)
+                    .padding(6 / 2)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
+                    }
+                    .task {
+                        server.start()
+                    
+                        // Keep the server running
+//                                            RunLoop.main.run()
+                    }
+            }
+        } else {
+            ProgressView()
+                .onAppear {
+                    let paths = VirtualMachinePaths(system: .linux)
+                    self.installerFactoryLinux = LinuxVMFactory(size: viewportMinimumSize, paths: paths)
+                    
+                    if FileManager.default.fileExists(atPath: paths.diskImageURL.path) {
+                        // Linux is already installed, boot normally
+                        self.virtualMachineLinux = self.installerFactoryLinux?.createVMForBoot()
+                    } else {
+                        // Linux not installed, boot from ISO for installation
+                        self.virtualMachineLinux = self.installerFactoryLinux?.createVMForInstallation(isoURL: URL("/Users/haydenpennington/Downloads/ubuntu-25.04-desktop-arm64.iso")!)
+                    }
+                    
+                    self.delegate.paths = paths
+                    self.delegate.virtualMachine = self.virtualMachineLinux
+                    
+                    self.virtualMachineLinux?.start { result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success:
+                                self.isLinuxVMLoaded = true
+                            case .failure(let error):
+                                print("Failed to start VM: \(error)")
+                            }
+                        }
+                    }
+                }   
+        }
+        
+    }
+    
+    var macOSView: some View {
+        VStack {
+            if isMacOSVMLoaded {
+                if let virtualMachineMacOS {
+                    GeometryReader { proxy in
+                        MacRenderView(virtualMachine: virtualMachineMacOS, paths: VirtualMachinePaths(system: .macos), size: viewportMinimumSize)
+                            .onAppear {
+                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                            }
+                            .onChange(of: proxy.size) { oldValue, newValue in
+                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                            }
+                        }
+                        .aspectRatio(16 / 10, contentMode: .fit)
+                        .cornerRadius(renderViewportCornerRadius)
+                        .padding(6 / 2)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
+                        }
+                        .task {
+                            server.start()
+                        
+                            // Keep the server running
+//                                            RunLoop.main.run()
+                        }
+                }
+            } else {
+                ProgressView()
+                    .onAppear {
+                        let paths = VirtualMachinePaths(system: .macos)
+                        let downloader = MacOSVMDownloader(paths: paths) { value in
+//                                    progress = value
+                        }
+                        
+                        self.installerFactory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
+//                                    self.progress = progress
+                        }
+                        self.installerFactory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
+                            self.virtualMachineMacOS = vm
+                            self.delegate.paths = paths
+                            self.delegate.virtualMachine = vm
+                            self.isMacOSVMLoaded = true
+                        })
+                    }
+            }
+            
+            Spacer(minLength: .zero)
+        }
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
@@ -1028,57 +1140,9 @@ struct EditorView: View {
                         }
                         .background(appColors.backgroundPrimary)
                     case .swiftUI:
-                        VStack {
-                            if isVmLoaded {
-                                if let virtualMachine {
-                                    GeometryReader { proxy in
-                                        MacRenderView(virtualMachine: virtualMachine, size: viewportMinimumSize)
-                                            .onAppear {
-                                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
-                                            }
-                                            .onChange(of: proxy.size) { oldValue, newValue in
-                                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
-                                            }
-                                        }
-                                        .aspectRatio(16 / 10, contentMode: .fit)
-                                        .cornerRadius(renderViewportCornerRadius)
-                                        .padding(6 / 2)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 4)
-                                                .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
-                                        }
-                                        .task {
-                                            server.start()
-                                        
-                                            // Keep the server running
-//                                            RunLoop.main.run()
-                                        }
-                                }
-                            } else {
-                                ProgressView()
-                                    .onAppear {
-                                        let paths = VirtualMachinePaths()
-                                        let downloader = MacOSVMDownloader(paths: paths) { value in
-        //                                    progress = value
-                                        }
-                                        
-                                        self.installerFactory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
-        //                                    self.progress = progress
-                                        }
-                                        self.installerFactory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
-                                            self.virtualMachine = vm
-                                            self.delegate.paths = paths
-                                            self.delegate.virtualMachine = vm
-                                            self.isVmLoaded = true
-                                        })
-                                    }
-                            }
-                            
-                            Spacer(minLength: .zero)
-                        }
-                        
+                        macOSView
                     case .compose:
-                        Text("Coming soon")
+                        composeView
                     }
                 }
                 .padding()

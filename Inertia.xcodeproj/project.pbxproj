@@ -10,6 +10,7 @@
 		F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */; };
 		F8067EF62CF4C2DA002E7B89 /* TreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8067EF52CF4C2DA002E7B89 /* TreeView.swift */; };
 		F80DC09C2E631F5C00D0F196 /* SettingsIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80DC09B2E631F5C00D0F196 /* SettingsIconButton.swift */; };
+		F80DC09E2E6357F300D0F196 /* LinuxVMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80DC09D2E6357F300D0F196 /* LinuxVMInstaller.swift */; };
 		F810733F2C962A2F0061B761 /* MetaFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F810733E2C962A2F0061B761 /* MetaFile.swift */; };
 		F810C5DC2D1F61B300E70420 /* TimelineRuler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F810C5DB2D1F61B300E70420 /* TimelineRuler.swift */; };
 		F81148212CBEBF7E00326B61 /* animationsRemove.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148202CBEBF7E00326B61 /* animationsRemove.js */; };
@@ -79,6 +80,7 @@
 		F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSVMInstaller.swift; sourceTree = "<group>"; };
 		F8067EF52CF4C2DA002E7B89 /* TreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeView.swift; sourceTree = "<group>"; };
 		F80DC09B2E631F5C00D0F196 /* SettingsIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsIconButton.swift; sourceTree = "<group>"; };
+		F80DC09D2E6357F300D0F196 /* LinuxVMInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxVMInstaller.swift; sourceTree = "<group>"; };
 		F810733E2C962A2F0061B761 /* MetaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaFile.swift; sourceTree = "<group>"; };
 		F810C5DB2D1F61B300E70420 /* TimelineRuler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineRuler.swift; sourceTree = "<group>"; };
 		F81148202CBEBF7E00326B61 /* animationsRemove.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsRemove.js; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 				F8932C8A2C51D6AF00546975 /* MacRenderView.swift */,
 				F8932C8C2C51D6F800546975 /* VirtualMachineView.swift */,
 				F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */,
+				F80DC09D2E6357F300D0F196 /* LinuxVMInstaller.swift */,
 				F80DC09B2E631F5C00D0F196 /* SettingsIconButton.swift */,
 				F89BA0C22C48D3880006603C /* RenderView.swift */,
 				F89BA0BC2C48CBE10006603C /* MainLayout.swift */,
@@ -418,6 +421,7 @@
 				F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */,
 				F8C2A8792CAB75D50054B165 /* AnimationsList.swift in Sources */,
 				F8ACA5F62D1E094600D0B878 /* TimelineView.swift in Sources */,
+				F80DC09E2E6357F300D0F196 /* LinuxVMInstaller.swift in Sources */,
 				F89023E22CBC70F1000C9282 /* FocusIndicator.swift in Sources */,
 				F81316DF2CBCE36300266728 /* AttachAnimationButton.swift in Sources */,
 				F899B9CA2C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift in Sources */,
