@@ -31,7 +31,7 @@ struct Vibe_AnimationApp: App {
         WindowGroup {
             switch vm.stateMachine.currentState {
             case .complete:
-                let editorViewMinimumSize = CGSize(width: 1200, height: 860)
+                let editorViewMinimumSize = CGSize(width: 1512, height: 860)
                 EditorView(url: $vm.setupFlowManager.reactProjectPath, framework: $vm.framework, animations: vm.animations, webView: vm.webView, contentController: vm.contentController, configuration: vm.configuration, delegate: delegate)
                     .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
                     .task {
@@ -62,7 +62,7 @@ struct Vibe_AnimationApp: App {
         .windowToolbarStyle(.unifiedCompact)
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
-        .defaultSize(width: 1800, height: 900)
+        .defaultSize(width: 1512, height: 900)
         
     }
 }

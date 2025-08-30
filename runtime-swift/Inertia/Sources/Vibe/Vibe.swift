@@ -891,6 +891,7 @@ struct InertiaEditable<Content: View>: View {
     var wrappedContent: some View {
         ZStack(alignment: .center) {
             content
+                .disabled(vibeDataModel?.isActionable ?? false)
 //                .modifier(BindableSize(size: $contentSize))
         }
         .onTapGesture {

@@ -88,6 +88,7 @@ struct ContentView: View {
                         .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
+                .inertia("homeCard")
             }
         }
     }

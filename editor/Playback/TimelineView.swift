@@ -137,7 +137,9 @@ struct TimelineContainer: View {
                 .frame(maxHeight: .infinity)
             }
         }
+        .background(appColors.backgroundPrimary)
     }
+    
 }
 
 struct Timeline: View {
