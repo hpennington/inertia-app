@@ -13,6 +13,242 @@ import Virtualization
 import Foundation
 import Network
 
+var fakeDB = """
+{
+    "id": "animation1",
+    "objects": [
+        {
+            "id": "triangle0",
+            "containerId": "animation1",
+            "width": 400,
+            "height": 400,
+            "position": [-0.15, 0.1],
+            "color": [0.3, 0.5, 1.0, 0.75],
+            "shape": "triangle",
+            "objectType": "shape",
+            "zIndex": 0,
+            "animation": {
+                "id": "triangle0",
+                "initialValues": {
+                    "opacity": 1.0,
+                    "rotate": 0.0,
+                    "rotateCenter": 0.0,
+                    "scale": 1.0,
+                    "translate": [0.0, 0.0]
+                },
+                "invokeType": "auto",
+                "keyframes": [
+                    {
+                        "id": "1",
+                        "duration": 1,
+                        "values": {
+                            "scale": 0.25,
+                            "translate": [0.0, 0.0],
+                            "rotate": 0.0,
+                            "rotateCenter": 45.0,
+                            "opacity": 1.0
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "duration": 1,
+                        "values": {
+                            "scale": 0.5,
+                            "translate": [0.0, 0.0],
+                            "rotate": 0.0,
+                            "rotateCenter": 90.0,
+                            "opacity": 1.0
+                        }
+                    },
+                    {
+                        "id": "3",
+                        "duration": 1,
+                        "values": {
+                            "scale": 0.75,
+                            "translate": [0.0, 0.0],
+                            "rotate": 90,
+                            "rotateCenter": 180.0,
+                            "opacity": 1.0
+                        }
+                    },
+                    {
+                        "id": "4",
+                        "duration": 1,
+                        "values": {
+                            "scale": 1.0,
+                            "translate": [0.0, 0.0],
+                            "rotate": 180.0,
+                            "rotateCenter": 360.0,
+                            "opacity": 1.0
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": "homeCard",
+            "containerId": "animation1",
+            "width": 100,
+            "height": 100,
+            "position": [0.1, 0.1],
+            "color": [1.0, 0.5, 0.5, 0.75],
+            "shape": "triangle",
+            "objectType": "animation",
+            "zIndex": 1,
+            "animation": {
+                "id": "homeCard",
+                "initialValues": {
+                    "opacity": 1.0,
+                    "rotate": 0.0,
+                    "rotateCenter": 0.0,
+                    "scale": 1.0,
+                    "translate": [0.0, 0.0]
+                },
+                "invokeType": "auto",
+                "keyframes": [
+                    {
+                        "id": "1",
+                        "duration": 1,
+                        "values": {
+                            "scale": 1.0,
+                            "translate": [0.0, 0.0],
+                            "rotate": 0.0,
+                            "rotateCenter": -45.0,
+                            "opacity": 1.0
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "duration": 1,
+                        "values": {
+                            "scale": 0.5,
+                            "translate": [0.1, 0.01],
+                            "rotate": 0.0,
+                            "rotateCenter": -90.0,
+                            "opacity": 1.0
+                        }
+                    },
+                    {
+                        "id": "3",
+                        "duration": 1,
+                        "values": {
+                            "scale": 0.75,
+                            "translate": [0.0, 0.0],
+                            "rotate": -90,
+                            "rotateCenter": -180.0,
+                            "opacity": 1.0
+                        }
+                    },
+                    {
+                        "id": "4",
+                        "duration": 1,
+                        "values": {
+                            "scale": 0.25,
+                            "translate": [-1.0, 0.0],
+                            "rotate": -180.0,
+                            "rotateCenter": -360.0,
+                            "opacity": 1.0
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": "bird",
+            "containerId": "animation1",
+            "width": 150,
+            "height": 150,
+            "position": [0.7, -0.1],
+            "color": [0.5, 0.5, 1.0, 0.8],
+            "shape": "triangle",
+            "objectType": "animation",
+            "zIndex": 1,
+            "animation": {
+                "id": "bird",
+                "initialValues": {
+                    "opacity": 1.0,
+                    "rotate": 0.0,
+                    "rotateCenter": 0.0,
+                    "scale": 1.0,
+                    "translate": [0.0, 0.0]
+                },
+                "invokeType": "auto",
+                "keyframes": [
+                    {
+                        "id": "1",
+                        "duration": 0.5,
+                        "values": {
+                            "scale": 1.2,
+                            "translate": [1.0, 1.0],
+                            "rotate": 30.0,
+                            "rotateCenter": 60.0,
+                            "opacity": 0.9
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "duration": 0.5,
+                        "values": {
+                            "scale": 1.1,
+                            "translate": [1.0, 1.0],
+                            "rotate": 45.0,
+                            "rotateCenter": 90.0,
+                            "opacity": 0.8
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": "car",
+            "containerId": "animation1",
+            "width": 250,
+            "height": 250,
+            "position": [0.1, 0.1],
+            "color": [1.0, 0.3, 0.3, 0.6],
+            "shape": "triangle",
+            "objectType": "animation",
+            "zIndex": 1,
+            "animation": {
+                "id": "car",
+                "initialValues": {
+                    "opacity": 1.0,
+                    "rotate": 0.0,
+                    "rotateCenter": 0.0,
+                    "scale": 1.0,
+                    "translate": [0.0, 0.0]
+                },
+                "invokeType": "trigger",
+                "keyframes": [
+                    {
+                        "id": "1",
+                        "duration": 3,
+                        "values": {
+                            "scale": 1.0,
+                            "translate": [1.0, 0.5],
+                            "rotate": 15.0,
+                            "rotateCenter": 30.0,
+                            "opacity": 0.95
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "duration": 3,
+                        "values": {
+                            "scale": 1.3,
+                            "translate": [1.0, 1.0],
+                            "rotate": 30.0,
+                            "rotateCenter": 60.0,
+                            "opacity": 0.85
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
+"""
+
 @Observable
 final class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertible {
     public let id = UUID()
@@ -704,6 +940,34 @@ struct EditorView: View {
             }
     }
     
+    func showExportPanel() {
+        let panel = NSSavePanel()
+        panel.title = "Export animation file"
+        panel.nameFieldStringValue = "animation.json"
+        panel.isExtensionHidden = false
+        panel.allowedContentTypes = [.json]
+        panel.canCreateDirectories = true
+        
+        panel.begin { response in
+            if response == .OK, let url = panel.url {
+                exportAnimationFile(url: url)
+            }
+        }
+    }
+    
+    func exportAnimationFile(url: URL) {
+        let fakeDBText = fakeDB
+        _exportAnimationFile(text: fakeDBText, url: url)
+    }
+        
+    func _exportAnimationFile(text: String, url: URL) {
+        do {
+            try text.write(to: url, atomically: true, encoding: .utf8)
+        } catch {
+            print("Error saving file: \(error)")
+        }
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
@@ -853,6 +1117,9 @@ struct EditorView: View {
                                         server.sendIsActionable(newValue)
                                     }
                                 Spacer(minLength: .zero)
+                                SettingsIconButton {
+                                    showExportPanel()
+                                }
                             }
 
                             AnimationsAvailableColumn(
