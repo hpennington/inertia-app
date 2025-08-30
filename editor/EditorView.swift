@@ -972,16 +972,17 @@ struct EditorView: View {
     
     @ViewBuilder
     var composeView: some View {
-        if self.isLinuxVMLoaded {
-            if let virtualMachineLinux {
-                GeometryReader { proxy in
-                    MacRenderView(virtualMachine: virtualMachineLinux, paths: VirtualMachinePaths(system: .linux), size: viewportMinimumSize)
-                        .onAppear {
-                            frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
-                        }
-                        .onChange(of: proxy.size) { oldValue, newValue in
-                            frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
-                        }
+        VStack {
+            if self.isLinuxVMLoaded {
+                if let virtualMachineLinux {
+                    GeometryReader { proxy in
+                        MacRenderView(virtualMachine: virtualMachineLinux, paths: VirtualMachinePaths(system: .linux), size: viewportMinimumSize)
+                            .onAppear {
+                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                            }
+                            .onChange(of: proxy.size) { oldValue, newValue in
+                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                            }
                     }
                     .aspectRatio(16 / 10, contentMode: .fit)
                     .cornerRadius(renderViewportCornerRadius)
@@ -992,39 +993,40 @@ struct EditorView: View {
                     }
                     .task {
                         server.start()
-                    
+                        
                         // Keep the server running
-//                                            RunLoop.main.run()
+                        //                                            RunLoop.main.run()
                     }
-            }
-        } else {
-            ProgressView()
-                .onAppear {
-                    let paths = VirtualMachinePaths(system: .linux)
-                    self.installerFactoryLinux = LinuxVMFactory(size: viewportMinimumSize, paths: paths)
-                    
-                    if FileManager.default.fileExists(atPath: paths.diskImageURL.path) {
-                        // Linux is already installed, boot normally
-                        self.virtualMachineLinux = self.installerFactoryLinux?.createVMForBoot()
-                    } else {
-                        // Linux not installed, boot from ISO for installation
-                        self.virtualMachineLinux = self.installerFactoryLinux?.createVMForInstallation(isoURL: URL("/Users/haydenpennington/Downloads/ubuntu-25.04-desktop-arm64.iso")!)
-                    }
-                    
-                    self.delegate.paths = paths
-                    self.delegate.virtualMachine = self.virtualMachineLinux
-                    
-                    self.virtualMachineLinux?.start { result in
-                        DispatchQueue.main.async {
-                            switch result {
-                            case .success:
-                                self.isLinuxVMLoaded = true
-                            case .failure(let error):
-                                print("Failed to start VM: \(error)")
+                }
+            } else {
+                ProgressView()
+                    .onAppear {
+                        let paths = VirtualMachinePaths(system: .linux)
+                        self.installerFactoryLinux = LinuxVMFactory(size: viewportMinimumSize, paths: paths)
+                        
+                        if FileManager.default.fileExists(atPath: paths.diskImageURL.path) {
+                            // Linux is already installed, boot normally
+                            self.virtualMachineLinux = self.installerFactoryLinux?.createVMForBoot()
+                        } else {
+                            // Linux not installed, boot from ISO for installation
+                            self.virtualMachineLinux = self.installerFactoryLinux?.createVMForInstallation(isoURL: URL("/Users/haydenpennington/Downloads/ubuntu-25.04-desktop-arm64.iso")!)
+                        }
+                        self.delegate.vmShutdownManagers.append(VirtualMachineShutdownManager(virtualMachine: self.virtualMachineLinux, paths: paths))
+                        
+                        self.virtualMachineLinux?.start { result in
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success:
+                                    self.isLinuxVMLoaded = true
+                                case .failure(let error):
+                                    print("Failed to start VM: \(error)")
+                                }
                             }
                         }
                     }
-                }   
+            }
+            
+            Spacer(minLength: .zero)
         }
         
     }
@@ -1069,8 +1071,7 @@ struct EditorView: View {
                         }
                         self.installerFactory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
                             self.virtualMachineMacOS = vm
-                            self.delegate.paths = paths
-                            self.delegate.virtualMachine = vm
+                            self.delegate.vmShutdownManagers.append(VirtualMachineShutdownManager(virtualMachine: vm, paths: paths))
                             self.isMacOSVMLoaded = true
                         })
                     }
@@ -1094,11 +1095,6 @@ struct EditorView: View {
                     switch framework {
                     case .react:
                         VStack {
-                            AddressBar(path: url) { newURL in
-                                self.url = newURL
-                            }
-                            .frame(maxWidth: frameSize?.width)
-                            
                             if let url = URL(string: url) {
                                 WebRenderView(
                                     url: url,
@@ -1108,11 +1104,7 @@ struct EditorView: View {
                                 )
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .aspectRatio(16 / 10, contentMode: .fit)
-                                
-                                
                                 .cornerRadius(renderViewportCornerRadius)
-//                                .frame(maxWidth: (frameSize?.height ?? viewportMinimumSize.height) * (16 / 9))
-//                                .frame(maxHeight: (frameSize?.width ?? viewportMinimumSize.width) / (16 / 9))
                                 .padding(6 / 2)
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 4)
@@ -1184,6 +1176,14 @@ struct EditorView: View {
                                 SettingsIconButton {
                                     showExportPanel()
                                 }
+                            }
+                            
+                            if framework == .react {
+                                AddressBar(path: url) { newURL in
+                                    self.url = newURL
+                                }
+                                .frame(maxWidth: frameSize?.width)
+                                .padding(.top, 24)
                             }
 
                             AnimationsAvailableColumn(

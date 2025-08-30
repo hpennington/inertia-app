@@ -88,16 +88,10 @@ extension EnvironmentValues {
 }
 import Virtualization
 
-class AppDelegate: NSObject, NSApplicationDelegate {
-    var paths: VirtualMachinePaths? = nil
+struct VirtualMachineShutdownManager {
     var virtualMachine: VZVirtualMachine? = nil
+    var paths: VirtualMachinePaths? = nil
 
-    // MARK: Save the virtual machine when the app exits.
-
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        return true
-    }
-    
 #if arch(arm64)
     @available(macOS 14.0, *)
     func saveVirtualMachine(completionHandler: @escaping () -> Void) {
@@ -124,20 +118,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
     }
 #endif
-
-    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+    
+    func shutdownVM(app: NSApplication) {
 #if arch(arm64)
         if #available(macOS 14.0, *) {
             if virtualMachine?.state == .running {
                 pauseAndSaveVirtualMachine(completionHandler: {
-                    sender.reply(toApplicationShouldTerminate: true)
+                    app.reply(toApplicationShouldTerminate: true)
                 })
-                
-                return .terminateLater
             }
         }
 #endif
 
-        return .terminateNow
+    }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    var vmShutdownManagers: [VirtualMachineShutdownManager] = []
+    // MARK: Save the virtual machine when the app exits.
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+    
+
+
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        for vmShutdownManager in vmShutdownManagers {
+            vmShutdownManager.shutdownVM(app: sender)
+        }
+        return .terminateLater
     }
 }
