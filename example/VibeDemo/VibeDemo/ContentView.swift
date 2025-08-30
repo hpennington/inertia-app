@@ -61,6 +61,7 @@ struct ContentView: View {
                         .frame(width: 2, height: 64)
                         .rotationEffect(Angle(degrees: 30))
                 }
+                .inertia("car")
                 
                 Spacer(minLength: 40)
                 

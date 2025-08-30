@@ -102,7 +102,7 @@
 		F899B9C92C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowInstallXcodeScreen.swift; sourceTree = "<group>"; };
 		F899B9CB2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowSwiftUIConfigurationScreen.swift; sourceTree = "<group>"; };
 		F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCopyingScreen.swift; sourceTree = "<group>"; };
-		F89BA0A82C48C85A0006603C /* Inertia Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Inertia Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F89BA0A82C48C85A0006603C /* Inertia App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Inertia App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F89BA0AB2C48C85A0006603C /* Vibe_AnimationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vibe_AnimationApp.swift; sourceTree = "<group>"; };
 		F89BA0AD2C48C85A0006603C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		F89BA0AF2C48C85B0006603C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -195,7 +195,7 @@
 		F89BA0A92C48C85A0006603C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F89BA0A82C48C85A0006603C /* Inertia Pro.app */,
+				F89BA0A82C48C85A0006603C /* Inertia App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -292,9 +292,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F89BA0A72C48C85A0006603C /* Inertia Pro */ = {
+		F89BA0A72C48C85A0006603C /* Inertia App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F89BA0B72C48C85B0006603C /* Build configuration list for PBXNativeTarget "Inertia Pro" */;
+			buildConfigurationList = F89BA0B72C48C85B0006603C /* Build configuration list for PBXNativeTarget "Inertia App" */;
 			buildPhases = (
 				F89BA0A42C48C85A0006603C /* Sources */,
 				F89BA0A52C48C85A0006603C /* Frameworks */,
@@ -304,14 +304,14 @@
 			);
 			dependencies = (
 			);
-			name = "Inertia Pro";
+			name = "Inertia App";
 			packageProductDependencies = (
 				F8EB6FCC2CD9D7CB001D978C /* Inertia */,
 				F8EB6FCF2CD9D7F3001D978C /* Inertia */,
 				F84A605A2CE3D3D900070036 /* Inertia */,
 			);
 			productName = "Vibe Animation";
-			productReference = F89BA0A82C48C85A0006603C /* Inertia Pro.app */;
+			productReference = F89BA0A82C48C85A0006603C /* Inertia App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -345,7 +345,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F89BA0A72C48C85A0006603C /* Inertia Pro */,
+				F89BA0A72C48C85A0006603C /* Inertia App */,
 			);
 		};
 /* End PBXProject section */
@@ -625,7 +625,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F89BA0B72C48C85B0006603C /* Build configuration list for PBXNativeTarget "Inertia Pro" */ = {
+		F89BA0B72C48C85B0006603C /* Build configuration list for PBXNativeTarget "Inertia App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F89BA0B82C48C85B0006603C /* Debug */,
