@@ -40,6 +40,45 @@ const useVibeDataModel = () => {
     return vibeDataModel
 }
 
+const VibeParentIdContext = React.createContext<string|undefined>(undefined)
+
+
+const useVibeParentId = () => {
+    const vibeParentId = React.useContent(VibeParentIdContext)
+
+    if (!vibeParentId) {
+        throw new Error('useVibeParentId must be used within a VibeContext.Provider')
+    }
+
+    return vibeParentId
+}
+
+const VibeContainerIdContext = React.createContext<string|undefined>(undefined)
+
+
+const useVibeContainerId = () => {
+    const vibeContainerId = React.useContent(VibeContainerIdContext)
+
+    if (!vibeContainerId) {
+        throw new Error('useVibeContainerId must be used within a VibeContainerIdContext.Provider')
+    }
+
+    return vibeContainerId
+}
+
+const VibeIsContainerContext = React.createContext<boolean>(false)
+
+
+const useVibeIsContainer = () => {
+    const vibeIsContainer = React.useContent(VibeIsContainerContext)
+
+    if (!vibeIsContainer) {
+        throw new Error('useVibeIsContainer must be used within a VibeIsContainerContext.Provider')
+    }
+
+    return vibeIsContainer
+}
+
 export const VibeContainer = ({children, id, baseURL}: VibeContainerProps): React.ReactElement => {
     const [vibeDataModel, setVibeDataModel] = React.useState<VibeDataModel|undefined>(new VibeDataModel(id, baseURL))
     const [bounds, setBounds] = React.useState<VibeCanvasSize | null>(null)
@@ -60,7 +99,13 @@ export const VibeContainer = ({children, id, baseURL}: VibeContainerProps): Reac
         <VibeCanvasSizeContext.Provider value={bounds}>
             <div data-vibe-container-id={id} ref={ref}>
                 <VibeContext.Provider value={vibeDataModel}>
-                    {children}
+                    <VibeParentIdContext.Provider value={id}>
+                        <VibeContainerIdContext.Provider value={id}>
+                            <VibeIsContainerContext.Provider value={true}>
+                                {children}
+                            </VibeIsContainerContext.Provider> 
+                        </VibeContainerIdContext.Provider> 
+                    </VibeParentIdContext.Provider> 
                 </VibeContext.Provider> 
             </div>
         </VibeCanvasSizeContext.Provider>
@@ -71,6 +116,9 @@ const VibeCanvasSizeContext = React.createContext<VibeCanvasSize | null>(null)
 
 export const Vibeable = ({children, id}: VibeableProps): React.ReactElement => {
     const vibeDataModel = useVibeDataModel()
+    const vibeParentId = useVibeParentId()
+    const vibeContainerId = useVibeContainerId()
+    const vibeIsContainer = useVibeIsContainer()
     const vibeCanvasSize = React.useContext<VibeCanvasSize | null>(VibeCanvasSizeContext)
 
     async function init() {
@@ -139,7 +187,11 @@ export const Vibeable = ({children, id}: VibeableProps): React.ReactElement => {
 
     return (
         <div data-vibe-id={id}>
-            {children}
+            <VibeParentIdContext.Provider value={id}>
+                <VibeIsContainerContext.Provider value={false}>
+                    {children}
+                </VibeIsContainerContext.Provider> 
+            </VibeParentIdContext.Provider> 
         </div>   
     )
 }

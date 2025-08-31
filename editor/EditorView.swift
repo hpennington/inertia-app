@@ -403,7 +403,7 @@ final class WebSocketServer {
                             if !foundOldSet {
                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
                                weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
-                           }
+                            }
                         } else {
                             if let id = msg.tree.rootNode?.id {
                                 weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
