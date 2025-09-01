@@ -105,6 +105,7 @@ export class VibeDataModel {
     private containerId: string;
     public objects: Map<string, VibeObjectSchema> | null = null;
     public tree: Tree
+    public selectedIds: Array<string> = new Array()
     private states: Map<string, VibeAnimationState> | null = null;
     private canvasSizes: Map<string, VibeCanvasSize> | null = null;
 

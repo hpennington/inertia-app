@@ -9,7 +9,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1 className="title">Inertia Pro </h1>
-        <VibeContainer id={"animation1"} baseURL={"http://localhost:8000"}>
+        <VibeContainer id={"animation1"} baseURL={"http://localhost:8000"} dev={true}>
           <div className="gear-cancel-container">
             <Vibeable hierarchyIdPrefix={"homeCard"}>
               <div className="icon-container">

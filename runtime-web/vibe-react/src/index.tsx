@@ -5,6 +5,7 @@ export type VibeContainerProps = {
     children: React.ReactElement,
     id: string,
     baseURL: string,
+    dev: boolean,
 }
 
 export type VibeableProps = {
@@ -394,12 +395,11 @@ export class VibeWebSocket {
 
     constructor(private url: string) {}
 
-    connect(tree: Tree) {
+    connect(onOpen: () => void) {
         this.ws = new WebSocket(this.url);
         this.ws.binaryType = "arraybuffer";
 
-        // this.ws.onopen = () => console.log("WebSocket connected");
-        this.ws.onopen = () => this.sendActionables(tree, ["homeCard"])
+        this.ws.onopen = onOpen
         this.ws.onclose = () => console.log("WebSocket disconnected");
         this.ws.onerror = (err) => console.error("WebSocket error", err);
         this.ws.onmessage = (event) => this.handleMessage(event);
@@ -634,7 +634,7 @@ class SharedIndexManager {
     public objectIdSet: Set<string> = new Set();
 }
 
-export const VibeContainer = ({children, id, baseURL}: VibeContainerProps): React.ReactElement => {
+export const VibeContainer = ({children, id, baseURL, dev}: VibeContainerProps): React.ReactElement => {
     const [vibeDataModel] = React.useState(() => new VibeDataModel(id, baseURL, new Tree(id)));
     const [bounds, setBounds] = React.useState<VibeCanvasSize | null>(null);
     const ref = React.useRef(null);
@@ -645,8 +645,11 @@ export const VibeContainer = ({children, id, baseURL}: VibeContainerProps): Reac
         if (!wsRef.current) {
             const ws = new VibeWebSocket("ws://127.0.0.1:8060");
 
-            // Connect to the server
-            ws.connect(vibeDataModel?.tree);
+            const onOpen = () => {
+                ws.sendActionables(vibeDataModel?.tree, vibeDataModel?.selectedIds)
+            }
+
+            ws.connect(onOpen)
 
             // Handle actionable messages
             ws.onMessageActionable = (msg) => {
@@ -676,8 +679,6 @@ export const VibeContainer = ({children, id, baseURL}: VibeContainerProps): Reac
             wsRef.current = ws;
         }
     }, [baseURL, vibeDataModel]);
-
-
 
     return (
         <VibeCanvasSizeContext.Provider value={bounds}>

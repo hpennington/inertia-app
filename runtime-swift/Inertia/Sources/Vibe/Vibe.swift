@@ -326,27 +326,27 @@ public struct InertiaContainer<Content: View>: View {
         self.content = content
         
         // TODO: - Solve error handling when file is missing or schema is wrong
-        if let url = bundle.url(forResource: id, withExtension: "json") {
-            let schemaText = try! String(contentsOf: url, encoding: .utf8)
-            if let data = schemaText.data(using: .utf8),
-               let schema = decodeVibeSchema(json: data) {
-                NSLog("[INERTIA_LOG]: InertiaDataModel instantiated for container: \(id)")
-                self._vibeDataModel = State(
-                    wrappedValue: InertiaDataModel(containerId: id, vibeSchema: schema, tree: Tree(id: id), actionableIds: Set())
-                )
-                
+        if dev {
+            self._vibeDataModel = State(
+                wrappedValue: InertiaDataModel(containerId: id, vibeSchema: VibeSchema(id: id, objects: []), tree: Tree(id: id), actionableIds: Set())
+            )
+        } else {
+            if let url = bundle.url(forResource: id, withExtension: "json") {
+                let schemaText = try! String(contentsOf: url, encoding: .utf8)
+                if let data = schemaText.data(using: .utf8),
+                   let schema = decodeVibeSchema(json: data) {
+                    NSLog("[INERTIA_LOG]: InertiaDataModel instantiated for container: \(id)")
+                    self._vibeDataModel = State(
+                        wrappedValue: InertiaDataModel(containerId: id, vibeSchema: schema, tree: Tree(id: id), actionableIds: Set())
+                    )
+                } else {
+                    NSLog("[INERTIA_LOG]:  Failed to decode the vibe schema")
+                    fatalError()
+                }
             } else {
+                NSLog("[INERTIA_LOG]:  Failed to parse the vibe file")
                 fatalError()
             }
-//            else {
-//                print("Failed to parse the schema")
-//                fatalError()
-////                self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
-//            }
-        } else {
-            NSLog("[INERTIA_LOG]:  Failed to parse the vibe file")
-            fatalError()
-//            self._vibeDataModel = State(wrappedValue: VibeDataModel(containerId: id))
         }
     }
     
