@@ -112,7 +112,8 @@ struct TreeNode: View {
                     .disabled(isDescendantSelected)
                 }
                 
-                Text(String(item.displayName.reversed()).prefix(8))
+//                Text(String(item.displayName.reversed()).prefix(8))
+                Text(String(item.displayName))
                     .padding(.leading, item.children == nil ? 8 : .zero)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .frame(height: 24)
@@ -218,7 +219,9 @@ struct TreeViewContainer: View {
                             Spacer(minLength: .zero)
                             FocusIndicator(isOn: isFocused)
                                 .onChange(of: isFocused.wrappedValue) { _, newValue in
-                                    self.server.wrappedValue.sendIsActionable(newValue)
+                                    for id in self.server.clients.wrappedValue.keys {
+                                        self.server.wrappedValue.sendIsActionable(newValue, to: id)
+                                    }
                                 }
                         }
                         
@@ -242,7 +245,11 @@ struct TreeViewContainer: View {
                                     },
                                     set: {
                                         treePacket.wrappedValue.actionableIds = $0
-                                        server.wrappedValue.sendSelectedIds($0)
+                                        for id in server.clients.wrappedValue.keys {
+                                            server.wrappedValue.sendSelectedIds($0, to: id)
+                                        }
+                                        
+                                        
                                         if $0 != treePacket.wrappedValue.actionableIds {
                                             self.updateDelegates(treePacket.wrappedValue.actionableIds)
                                         }

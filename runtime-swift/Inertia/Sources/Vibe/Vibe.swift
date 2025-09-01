@@ -386,13 +386,13 @@ public class WebSocketClient {
         isConnected = true
     }
     
-    public enum MessageType: Codable {
+    public enum MessageType: String, Codable {
         case actionable
         case actionables
         case selected
         case schema
     }
-    
+
     public struct MessageWrapper: Codable {
         public let type: MessageType
         public let payload: Data
@@ -535,7 +535,6 @@ public class WebSocketClient {
             case .success(let message):
                 switch message {
                 case .data(let data):
-                    
                     guard let messageWrapper = try? JSONDecoder().decode(WebSocketClient.MessageWrapper.self, from: data) else {
                         return
                     }
@@ -549,7 +548,9 @@ public class WebSocketClient {
                         NSLog("[INERTIA_LOG]:  Received message (data): \(actionableMessage)")
                         self.messageReceivedIsActionable?(actionableMessage.isActionable)
                     case .actionables:
-                        fatalError()
+                        print(try! JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload))
+//                        fatalError()
+                        break
                     case .schema:
                         guard let schemaMessage = try? JSONDecoder().decode(WebSocketClient.MessageSchema.self, from: messageWrapper.payload) else {
                             return

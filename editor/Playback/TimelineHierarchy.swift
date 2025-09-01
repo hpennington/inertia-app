@@ -47,7 +47,8 @@ struct TimelineHierarchyCell: View {
                     .contentShape(Rectangle())
                     .foregroundColor(ColorPalette.gray4)
                 
-                Text(String(id.reversed()).prefix(8))
+                Text(String(id))
+//                Text(String(id.reversed()).prefix(8))
                     .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.5))
                     .bold()
                 

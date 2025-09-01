@@ -274,6 +274,226 @@ final class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertib
         self.actionableIds = actionableIds
     }
 }
+//
+//@Observable
+//final class WebSocketServer {
+//    let listener: NWListener
+//    var clients: [UUID: NWConnection] = [:]
+//    var treePackets: [TreePacket] = []
+//    var treePacketsLUT: [String: Int] = [:]
+//    let clientId = UUID()
+//    
+//    init(port: UInt16) throws {
+//        let parameters = NWParameters.tcp
+//        parameters.allowLocalEndpointReuse = true
+//        
+//        // Configure WebSocket options
+//        let wsOptions = NWProtocolWebSocket.Options()
+//        wsOptions.autoReplyPing = true  // Automatically respond to ping messages
+//        parameters.defaultProtocolStack.applicationProtocols.append(wsOptions)
+//
+//        listener = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
+//        
+//        listener.newConnectionHandler = { [weak self] newConnection in
+//            self?.handleNewConnection(newConnection)
+//        }
+//    }
+//
+//    func start() {
+//        print("WebSocket server starting on port \(listener.port!.rawValue)")
+//        listener.start(queue: .main)
+//    }
+//
+//    private func handleNewConnection(_ connection: NWConnection) {
+//        clients[clientId] = connection
+//
+//        connection.start(queue: .main)
+//        print("Accepted new client: \(clientId)")
+//
+//        receiveMessage(on: connection, clientId: clientId)
+//    }
+//    
+//    private func retrieveAllIds(tree: Tree) -> [String]? {
+//        guard let root = tree.rootNode else {
+//            return nil
+//        }
+//        
+//        return retrieveAllIds(treeItem: root)
+//    }
+//
+//    private func retrieveAllIds(treeItem: Node) -> [String]? {
+//        var ids: [String] = [treeItem.id]
+//        
+//        if let children = treeItem.children {
+//            for child in children {
+//                if let childIds = retrieveAllIds(treeItem: child) {
+//                    ids.append(contentsOf: childIds)
+//                }
+//            }
+//        }
+//        
+//        return ids
+//    }
+//
+//    private func receiveMessage(on connection: NWConnection, clientId: UUID) {
+//        connection.receiveMessage { [weak self] (data, context, isComplete, error) in
+//            if let error = error {
+//                print("Error receiving message: \(error)")
+//                self?.clients.removeValue(forKey: clientId)
+//                return
+//            }
+//
+//            if let data = data, !data.isEmpty {
+//                guard let messageWrapper = try? JSONDecoder().decode(WebSocketClient.MessageWrapper.self, from: data) else {
+//                    return
+//                }
+//                
+//                switch messageWrapper.type {
+//                case .actionable:
+//                    break
+//                case .actionables:
+//                    guard let msg = try? JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload) else {
+//                        return
+//                    }
+//                    
+//                    if let weakSelf = self {
+//                        if !weakSelf.treePackets.isEmpty {
+//                            guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
+//                                return
+//                            }
+//
+//                            var foundOldSet = false
+//
+//                            treePacketIterator: for treePacket in weakSelf.treePackets {
+//                                let values = treePacket.tree.nodeMap.values
+//                                for node in values {
+//                                    node.tree = treePacket.tree
+//                                    node.link()
+//                                }
+//
+//                                guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
+//                                    return
+//                                }
+//
+//                                let newSet = Set(newTreeIds)
+//                                let oldSet = Set(oldTreeIds)
+//
+//                                var lookupId: String? = nil
+//
+//                                newSetSearch: for id in oldSet {
+//                                    if newSet.contains(id) {
+//                                        foundOldSet = true
+//
+//                                        for oldId in oldSet {
+//                                            if weakSelf.treePacketsLUT.keys.contains(oldId) {
+//                                                lookupId = oldId
+//                                                break newSetSearch
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//
+//                                if foundOldSet {
+//                                    if let lookupId, let offset = weakSelf.treePacketsLUT[lookupId] {
+//                                        weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
+//                                    }
+//                                }
+//                            }
+//
+//                            if !foundOldSet {
+//                               weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+//                               weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
+//                            }
+//                        } else {
+//                            if let id = msg.tree.rootNode?.id {
+//                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+//                                weakSelf.treePacketsLUT[id] = weakSelf.treePackets.count - 1
+//                            }
+//                        }
+//                    }
+//                case .selected:
+//                    break
+//                case .schema:
+//                    break
+//                }
+//            }
+//
+//            self?.receiveMessage(on: connection, clientId: clientId)
+//        }
+//    }
+//    
+//    public func sendIsActionable(_ isActionable: Bool) {
+//        guard let connection = clients[clientId] else {
+//            print("No connection")
+//            return
+//        }
+//        
+//        let messageItem = WebSocketClient.MessageActionable(isActionable: isActionable)
+//        guard let data = try? JSONEncoder().encode(messageItem) else {
+//            return
+//        }
+//        
+//        let messageWrapper = WebSocketClient.MessageWrapper(type: .actionable, payload: data)
+//        
+//        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
+//            return
+//        }
+//        sendMessage(wrapperData, to: connection)
+//    }
+//    
+//    func sendSelectedIds(_ ids: Set<String>) {
+//        guard let connection = clients[clientId] else {
+//            print("No connection")
+//            return
+//        }
+//        
+//        let messageItem = WebSocketClient.MessageSelected(selectedIds: ids)
+//        guard let data = try? JSONEncoder().encode(messageItem) else {
+//            return
+//        }
+//        
+//        let messageWrapper = WebSocketClient.MessageWrapper(type: .selected, payload: data)
+//        
+//        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
+//            return
+//        }
+//        sendMessage(wrapperData, to: connection)
+//    }
+//    
+//    func sendSchema(_ schemaWrappers: [VibeSchemaWrapper]) {
+//        guard let connection = clients[clientId] else {
+//            print("No connection")
+//            return
+//        }
+//    
+//        let message = WebSocketClient.MessageSchema(schemaWrappers: schemaWrappers)
+//        
+//        guard let data = try? JSONEncoder().encode(message) else {
+//            return
+//        }
+//        
+//        let messageWrapper = WebSocketClient.MessageWrapper(type: .schema, payload: data)
+//        
+//        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
+//            return
+//        }
+//        sendMessage(wrapperData, to: connection)
+//    }
+//
+//    private func sendMessage(_ messageData: Data, to connection: NWConnection) {
+//        let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .binary)])
+//        
+//        connection.send(content: messageData, contentContext: context, isComplete: true, completion: .contentProcessed { error in
+//            if let error = error {
+//                print("Error sending message: \(error)")
+//            } else {
+//                print("Sent message to client: \(messageData)")
+//            }
+//        })
+//    }
+//}
+import Network
+import Observation
 
 @Observable
 final class WebSocketServer {
@@ -281,215 +501,194 @@ final class WebSocketServer {
     var clients: [UUID: NWConnection] = [:]
     var treePackets: [TreePacket] = []
     var treePacketsLUT: [String: Int] = [:]
-    let clientId = UUID()
-    
+
     init(port: UInt16) throws {
+        // Configure WebSocket over TCP
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
         
-        // Configure WebSocket options
         let wsOptions = NWProtocolWebSocket.Options()
-        wsOptions.autoReplyPing = true  // Automatically respond to ping messages
-        parameters.defaultProtocolStack.applicationProtocols.append(wsOptions)
+        wsOptions.autoReplyPing = true
+        parameters.defaultProtocolStack.applicationProtocols.insert(wsOptions, at: 0)
 
         listener = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
         
-        listener.newConnectionHandler = { [weak self] newConnection in
-            self?.handleNewConnection(newConnection)
+        listener.newConnectionHandler = { [weak self] connection in
+            self?.handleNewConnection(connection)
         }
     }
 
     func start() {
-        print("WebSocket server starting on port \(listener.port!.rawValue)")
+        print("✅ WebSocket server listening on port \(listener.port!.rawValue)")
         listener.start(queue: .main)
     }
 
     private func handleNewConnection(_ connection: NWConnection) {
+        let clientId = UUID()
         clients[clientId] = connection
 
-        connection.start(queue: .main)
-        print("Accepted new client: \(clientId)")
-
-        receiveMessage(on: connection, clientId: clientId)
-    }
-    
-    private func retrieveAllIds(tree: Tree) -> [String]? {
-        guard let root = tree.rootNode else {
-            return nil
-        }
-        
-        return retrieveAllIds(treeItem: root)
-    }
-
-    private func retrieveAllIds(treeItem: Node) -> [String]? {
-        var ids: [String] = [treeItem.id]
-        
-        if let children = treeItem.children {
-            for child in children {
-                if let childIds = retrieveAllIds(treeItem: child) {
-                    ids.append(contentsOf: childIds)
-                }
+        connection.stateUpdateHandler = { state in
+            switch state {
+            case .ready:
+                print("✅ Client connected: \(clientId)")
+                self.receiveNextMessage(on: connection, clientId: clientId)
+            case .failed(let error):
+                print("❌ Connection failed: \(error)")
+                self.clients.removeValue(forKey: clientId)
+            case .cancelled:
+                print("⚠️ Connection cancelled: \(clientId)")
+                self.clients.removeValue(forKey: clientId)
+            default:
+                break
             }
         }
-        
-        return ids
+
+        connection.start(queue: .main)
     }
 
-    private func receiveMessage(on connection: NWConnection, clientId: UUID) {
-        connection.receiveMessage { [weak self] (data, context, isComplete, error) in
+    private func receiveNextMessage(on connection: NWConnection, clientId: UUID) {
+        connection.receiveMessage { [weak self] data, context, _, error in
+            defer {
+                if error == nil {
+                    self?.receiveNextMessage(on: connection, clientId: clientId)
+                }
+            }
+
             if let error = error {
-                print("Error receiving message: \(error)")
+                print("❌ Receive error: \(error)")
                 self?.clients.removeValue(forKey: clientId)
                 return
             }
 
-            if let data = data, !data.isEmpty {
-                guard let messageWrapper = try? JSONDecoder().decode(WebSocketClient.MessageWrapper.self, from: data) else {
+            guard let context = context else { return }
+            if let wsMetadata = context.protocolMetadata(definition: NWProtocolWebSocket.definition) as? NWProtocolWebSocket.Metadata {
+                switch wsMetadata.opcode {
+                case .close:
+                    print("🔌 Client closed connection: \(clientId)")
+                    self?.clients.removeValue(forKey: clientId)
                     return
-                }
-                
-                switch messageWrapper.type {
-                case .actionable:
-                    break
-                case .actionables:
-                    guard let msg = try? JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload) else {
-                        return
-                    }
-                    
-                    if let weakSelf = self {
-                        if !weakSelf.treePackets.isEmpty {
-                            guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
-                                return
-                            }
-
-                            var foundOldSet = false
-
-                            treePacketIterator: for treePacket in weakSelf.treePackets {
-                                let values = treePacket.tree.nodeMap.values
-                                for node in values {
-                                    node.tree = treePacket.tree
-                                    node.link()
-                                }
-
-                                guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
-                                    return
-                                }
-
-                                let newSet = Set(newTreeIds)
-                                let oldSet = Set(oldTreeIds)
-
-                                var lookupId: String? = nil
-
-                                newSetSearch: for id in oldSet {
-                                    if newSet.contains(id) {
-                                        foundOldSet = true
-
-                                        for oldId in oldSet {
-                                            if weakSelf.treePacketsLUT.keys.contains(oldId) {
-                                                lookupId = oldId
-                                                break newSetSearch
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if foundOldSet {
-                                    if let lookupId, let offset = weakSelf.treePacketsLUT[lookupId] {
-                                        weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
-                                    }
-                                }
-                            }
-
-                            if !foundOldSet {
-                               weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-                               weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
-                            }
-                        } else {
-                            if let id = msg.tree.rootNode?.id {
-                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-                                weakSelf.treePacketsLUT[id] = weakSelf.treePackets.count - 1
-                            }
-                        }
-                    }
-                case .selected:
-                    break
-                case .schema:
+                case .ping, .pong:
+                    return // Auto-replied
+                default:
                     break
                 }
             }
 
-            self?.receiveMessage(on: connection, clientId: clientId)
-        }
-    }
-    
-    public func sendIsActionable(_ isActionable: Bool) {
-        guard let connection = clients[clientId] else {
-            print("No connection")
-            return
-        }
-        
-        let messageItem = WebSocketClient.MessageActionable(isActionable: isActionable)
-        guard let data = try? JSONEncoder().encode(messageItem) else {
-            return
-        }
-        
-        let messageWrapper = WebSocketClient.MessageWrapper(type: .actionable, payload: data)
-        
-        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
-            return
-        }
-        sendMessage(wrapperData, to: connection)
-    }
-    
-    func sendSelectedIds(_ ids: Set<String>) {
-        guard let connection = clients[clientId] else {
-            print("No connection")
-            return
-        }
-        
-        let messageItem = WebSocketClient.MessageSelected(selectedIds: ids)
-        guard let data = try? JSONEncoder().encode(messageItem) else {
-            return
-        }
-        
-        let messageWrapper = WebSocketClient.MessageWrapper(type: .selected, payload: data)
-        
-        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
-            return
-        }
-        sendMessage(wrapperData, to: connection)
-    }
-    
-    func sendSchema(_ schemaWrappers: [VibeSchemaWrapper]) {
-        guard let connection = clients[clientId] else {
-            print("No connection")
-            return
-        }
-    
-        let message = WebSocketClient.MessageSchema(schemaWrappers: schemaWrappers)
-        
-        guard let data = try? JSONEncoder().encode(message) else {
-            return
-        }
-        
-        let messageWrapper = WebSocketClient.MessageWrapper(type: .schema, payload: data)
-        
-        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
-            return
-        }
-        sendMessage(wrapperData, to: connection)
-    }
+            guard let data = data else { return }
 
-    private func sendMessage(_ messageData: Data, to connection: NWConnection) {
-        let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .binary)])
-        
-        connection.send(content: messageData, contentContext: context, isComplete: true, completion: .contentProcessed { error in
-            if let error = error {
-                print("Error sending message: \(error)")
+            if let wsMetadata = context.protocolMetadata(definition: NWProtocolWebSocket.definition) as? NWProtocolWebSocket.Metadata,
+               wsMetadata.opcode == .text {
+                if let text = String(data: data, encoding: .utf8) {
+                    print("📥 Received text: \(text)")
+                }
             } else {
-                print("Sent message to client: \(messageData)")
+                print("📥 Received binary: \(data.count) bytes")
             }
-        })
+
+            do {
+                let messageWrapper = try JSONDecoder().decode(WebSocketClient.MessageWrapper.self, from: data)
+                self?.handleMessage(messageWrapper, from: clientId)
+            } catch let error {
+                print("❌ Receive decode error: \(error)")
+            }
+        }
+    }
+
+    private func handleMessage(_ messageWrapper: WebSocketClient.MessageWrapper, from clientId: UUID) {
+        switch messageWrapper.type {
+        case .actionable:
+            break
+        case .actionables:
+            let msg = try! JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload)
+            updateTreePackets(with: msg)
+        case .selected:
+            break
+        case .schema:
+            break
+        }
+    }
+
+    private func updateTreePackets(with msg: WebSocketClient.MessageActionables) {
+        guard let rootId = msg.tree.rootNode?.id else { return }
+
+        if treePackets.isEmpty {
+            treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+            treePacketsLUT[rootId] = treePackets.count - 1
+            return
+        }
+
+        guard let newTreeIds = retrieveAllIds(tree: msg.tree) else { return }
+        let newSet = Set(newTreeIds)
+
+        var foundOldSet = false
+
+        for treePacket in treePackets {
+            guard let oldTreeIds = retrieveAllIds(tree: treePacket.tree) else { continue }
+            let oldSet = Set(oldTreeIds)
+
+            if !oldSet.isDisjoint(with: newSet) {
+                foundOldSet = true
+                if let lookupId = oldSet.first(where: { treePacketsLUT[$0] != nil }),
+                   let offset = treePacketsLUT[lookupId] {
+                    treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
+                }
+            }
+        }
+
+        if !foundOldSet {
+            treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
+            treePacketsLUT[rootId] = treePackets.count - 1
+        }
+    }
+
+    private func retrieveAllIds(tree: Tree) -> [String]? {
+        guard let root = tree.rootNode else { return nil }
+        return retrieveAllIds(treeItem: root)
+    }
+
+    private func retrieveAllIds(treeItem: Node) -> [String] {
+        var ids: [String] = [treeItem.id]
+        if let children = treeItem.children {
+            for child in children {
+                ids.append(contentsOf: retrieveAllIds(treeItem: child))
+            }
+        }
+        return ids
+    }
+
+    // MARK: - Send Methods
+    public func sendIsActionable(_ isActionable: Bool, to clientId: UUID) {
+        send(type: .actionable, payload: WebSocketClient.MessageActionable(isActionable: isActionable), to: clientId)
+    }
+
+    func sendSelectedIds(_ ids: Set<String>, to clientId: UUID) {
+        send(type: .selected, payload: WebSocketClient.MessageSelected(selectedIds: ids), to: clientId)
+    }
+
+    func sendSchema(_ schemaWrappers: [VibeSchemaWrapper], to clientId: UUID) {
+        send(type: .schema, payload: WebSocketClient.MessageSchema(schemaWrappers: schemaWrappers), to: clientId)
+    }
+
+    private func send<T: Encodable>(type: WebSocketClient.MessageType, payload: T, to clientId: UUID) {
+        guard let connection = clients[clientId] else { return }
+
+        guard
+            let payloadData = try? JSONEncoder().encode(payload),
+            let wrapperData = try? JSONEncoder().encode(WebSocketClient.MessageWrapper(type: type, payload: payloadData))
+        else { return }
+
+        // Use text frames if you want compatibility with browser WebSockets
+        let opcode: NWProtocolWebSocket.Opcode = .binary
+        let metadata = NWProtocolWebSocket.Metadata(opcode: opcode)
+        let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [metadata])
+
+        connection.send(content: wrapperData, contentContext: context, isComplete: true, completion: .contentProcessed({ error in
+            if let error = error {
+                print("❌ Send error: \(error)")
+            } else {
+                print("✅ Sent message")
+            }
+        }))
     }
 }
 
@@ -663,7 +862,10 @@ struct EditorView: View {
     }
     
     func executeVibeSwiftWebsocketFunction(schemaWrappers: [VibeSchemaWrapper]) async -> Result<Int, VibeSwiftWebsocketError> {
-        server.sendSchema(schemaWrappers)
+        for id in server.clients.keys {
+            server.sendSchema(schemaWrappers, to: id)
+        }
+        
         return .success(1)
     }
     
@@ -1027,8 +1229,7 @@ struct EditorView: View {
             }
             
             Spacer(minLength: .zero)
-        }
-        
+        }   
     }
     
     var macOSView: some View {
@@ -1081,6 +1282,42 @@ struct EditorView: View {
         }
     }
     
+    var reactView: some View {
+        VStack {
+            GeometryReader { proxy in
+                if let url = URL(string: url) {
+                    WebRenderView(
+                        url: url,
+                        contentController: contentController,
+                        selectedActionabeIDTracker: selectedActionabeIDTracker,
+                        webView: webView
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .aspectRatio(16 / 10, contentMode: .fit)
+                    .cornerRadius(renderViewportCornerRadius)
+                    .padding(6 / 2)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
+                    }
+                    .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
+                        print(newValue)
+                    }
+                    .onAppear {
+                        frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
+                    }
+                    .onChange(of: proxy.size) { oldValue, newValue in
+                        frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                    }
+                } else {
+                    Color.black
+                }
+                Spacer()
+            }
+        }
+        .background(appColors.backgroundPrimary)
+    }
+    
     var body: some View {
         VStack {
             MainLayout {
@@ -1094,40 +1331,7 @@ struct EditorView: View {
                 Group {
                     switch framework {
                     case .react:
-                        VStack {
-                            GeometryReader { proxy in
-                                if let url = URL(string: url) {
-                                    WebRenderView(
-                                        url: url,
-                                        contentController: contentController,
-                                        selectedActionabeIDTracker: selectedActionabeIDTracker,
-                                        webView: webView
-                                    )
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .aspectRatio(16 / 10, contentMode: .fit)
-                                    .cornerRadius(renderViewportCornerRadius)
-                                    .padding(6 / 2)
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
-                                    }
-                                    .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
-                                        print(newValue)
-                                    }
-                                    .onAppear {
-                                        frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
-                                    }
-                                    .onChange(of: proxy.size) { oldValue, newValue in
-                                        frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
-                                    }
-                                } else {
-                                    Color.black
-                                }
-                                Spacer()
-                            }
-                            
-                        }
-                        .background(appColors.backgroundPrimary)
+                        reactView
                     case .swiftUI:
                         macOSView
                     case .compose:
@@ -1167,7 +1371,9 @@ struct EditorView: View {
                             HStack() {
                                 FocusIndicator(isOn: $isFocused)
                                     .onChange(of: isFocused) { _, newValue in
-                                        server.sendIsActionable(newValue)
+                                        for id in server.clients.keys {
+                                            server.sendIsActionable(newValue, to: id)
+                                        }
                                     }
                                 Spacer(minLength: .zero)
                                 SettingsIconButton {

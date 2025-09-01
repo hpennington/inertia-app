@@ -13,7 +13,8 @@
     "moduleResolution": "node",              // TypeScript will look for modules in Node.js-style
     "resolveJsonModule": true,               // Include modules imported with .json extensions
     "allowSyntheticDefaultImports": true,    // Allow default imports from modules with no default export
-    "lib": ["es2017", "DOM"]                 // Specify a set of bundled library declaration files
+    "lib": ["es2017", "DOM"],                // Specify a set of bundled library declaration files
+    "types": ["node"]
   },
   "include": ["src"],                        // Specify the input directory (source files)
   "exclude": ["node_modules", "dist"]        // Exclude node_modules and dist folders from compilation
