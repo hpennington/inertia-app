@@ -41,6 +41,6 @@ struct ColorsDark: Colors {
 struct ColorsLight: Colors {
     let accent = ColorPalette.accentTheme
     let accentLite = ColorPalette.accentLiteTheme
-    let backgroundPrimary = ColorPalette.gray4_5
+    let backgroundPrimary = ColorPalette.gray5
     let backgroundSecondary = ColorPalette.gray3
 }
