@@ -1016,14 +1016,9 @@ struct InertiaEditable<Content: View>: View {
             if !manager.isConnected {
                 if let ip = getHostIPAddressFromResolvConf() {
                     let uri = URL(string: "ws://\(ip):8060")!
-                    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                    
                     NSLog("[INERTIA_LOG]: Starting to send data 2 (setup)...")
-                    
-                    
                     manager.connect(uri: uri)
-                    
-                    
+
                     manager.messageReceived = handleMessage
                     manager.messageReceivedSchema = handleMessageSchema
                     manager.messageReceivedIsActionable = handleMessageActionable
@@ -1058,9 +1053,7 @@ struct InertiaEditable<Content: View>: View {
             }
             
             if let ip = getHostIPAddressFromResolvConf() {
-                let uri = URL(string: "ws://\(ip):8060")!
-    //                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
-                
+                let uri = URL(string: "ws://\(ip):8060")!                
                 NSLog("[INERTIA_LOG]: Starting to send data 2...")
                 
                 if !manager.isConnected {

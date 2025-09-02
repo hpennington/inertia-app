@@ -471,6 +471,7 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
 
     React.useEffect(() => {
         if (!hierarchyId || !vibeDataModel || !vibeCanvasSize) return;
+        if (!vibeDataModel.actionableIds.has(hierarchyId)) return;
 
         const animationId = vibeDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
         if (!animationId) {
@@ -525,7 +526,7 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
 
     // Click handler
     const handleClick = () => {
-        if (!hierarchyId) return;
+        if (!hierarchyId || !vibeDataModel.isActionable) return;
         setVibeDataModel(prev => {
             const newTree = vibeDataModel.tree
             var newActionableIds = vibeDataModel.actionableIds
@@ -534,12 +535,8 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
             } else {
                 newActionableIds.add(hierarchyId);
             }    
-            var newModel = new VibeDataModel(
-                prev.containerId,
-                prev.vibeSchema,
-                prev.tree,
-                new Set(newActionableIds)  // also ensure actionableIds is a Set
-            );
+
+            const newModel = {...prev, actionableIds: new Set(newActionableIds)}
 
             const tree = vibeDataModel.tree
             const actionableIds = vibeDataModel.actionableIds

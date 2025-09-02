@@ -74,7 +74,7 @@ export class VibeDataModel {
     public actionableIds: Set<string>;
     public states: Map<string, VibeAnimationState>;
     public actionableIdToAnimationIdMap: Map<string, string>;
-    public isActionable: boolean;
+    public isActionable: boolean = false
 
     constructor(containerId: string, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<string>) {
         this.containerId = containerId;
@@ -83,7 +83,6 @@ export class VibeDataModel {
         this.actionableIds = actionableIds;
         this.states = new Map<string, VibeAnimationState>();
         this.actionableIdToAnimationIdMap = new Map<string, string>();
-        this.isActionable = false;
     }
 }
 
@@ -384,6 +383,7 @@ export class WebSocketClient {
                 case MessageType.actionable:
                     const actionableMessage: MessageActionable = payload;
                     console.log("[INERTIA_LOG]: Received actionable:", actionableMessage);
+                    this.messageReceivedIsActionable?.(actionableMessage.isActionable);
                     break;
 
                 case MessageType.actionables:
