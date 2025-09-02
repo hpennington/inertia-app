@@ -17,12 +17,12 @@ function App() {
               </div>
             </Vibeable>
             <Vibeable hierarchyIdPrefix={"car"}>
-            <button
-              className="App-link"
-              onClick={e => {}}
-            >
-              Cancel
-            </button>
+              <button
+                className="App-link"
+                onClick={e => {}}
+              >
+                Cancel
+              </button>
             </Vibeable>
           </div>
         </VibeContainer>

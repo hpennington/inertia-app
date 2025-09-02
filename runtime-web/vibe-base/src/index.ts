@@ -1,6 +1,6 @@
 export interface VibeSchema {
     id: string;
-    objects: Array<VibeObjectSchema> | null;
+    objects: Array<VibeShape>;
 }
 
 export type VibeCanvasSize = {
@@ -8,49 +8,60 @@ export type VibeCanvasSize = {
     height: number;
 }
 
-export class VibeEditorSchema implements VibeSchema {
-    id: string;
-    objects: Array<VibeObjectSchema> | null;
-    isSelected: Map<string, boolean>;
-    actionableIds: Array<string>;
-    pointerEvents: Map<string, any>;
-    webKitUserSelect: Map<string, string | null>;
-    onWindowResize: Function | null;
-    animations: Map<string, any>;
-    isPlaying: boolean;
-
-    constructor(
-        id: string,
-        objects: Array<VibeObjectSchema> | null,
-        isSelected: Map<string, boolean> = new Map(),
-        actionableIds: Array<string> = [],
-        pointerEvents: Map<string, any> = new Map(),
-        webKitUserSelect: Map<string, string | null> = new Map(),
-        onWindowResize: Function | null = null,
-        animations: Map<string, any> = new Map(),
-        isPlaying: boolean = false
-    ) {
-        this.id = id;
-        this.objects = objects;
-        this.isSelected = isSelected;
-        this.actionableIds = actionableIds;
-        this.pointerEvents = pointerEvents;
-        this.webKitUserSelect = webKitUserSelect;
-        this.onWindowResize = onWindowResize;
-        this.animations = animations;
-        this.isPlaying = isPlaying;
-    }
+export enum MessageType {
+    actionable = "actionable",
+    actionables = "actionables",
+    schema = "schema",
 }
 
-export class VibeRuntimeSchema implements VibeSchema {
-    id: string;
-    objects: Array<VibeObjectSchema> | null;
-
-    constructor(id: string, objects: Array<VibeObjectSchema> | null = null) {
-        this.id = id;
-        this.objects = objects;
-    }
+export interface MessageWrapper<T = any> {
+    type: MessageType;
+    payload: T;
 }
+
+// export class VibeEditorSchema implements VibeSchema {
+//     id: string;
+//     objects: Array<VibeShape> | null;
+//     isSelected: Map<string, boolean>;
+//     actionableIds: Array<string>;
+//     pointerEvents: Map<string, any>;
+//     webKitUserSelect: Map<string, string | null>;
+//     onWindowResize: Function | null;
+//     animations: Map<string, any>;
+//     isPlaying: boolean;
+
+//     constructor(
+//         id: string,
+//         objects: Array<VibeShape> | null,
+//         isSelected: Map<string, boolean> = new Map(),
+//         actionableIds: Array<string> = [],
+//         pointerEvents: Map<string, any> = new Map(),
+//         webKitUserSelect: Map<string, string | null> = new Map(),
+//         onWindowResize: Function | null = null,
+//         animations: Map<string, any> = new Map(),
+//         isPlaying: boolean = false
+//     ) {
+//         this.id = id;
+//         this.objects = objects;
+//         this.isSelected = isSelected;
+//         this.actionableIds = actionableIds;
+//         this.pointerEvents = pointerEvents;
+//         this.webKitUserSelect = webKitUserSelect;
+//         this.onWindowResize = onWindowResize;
+//         this.animations = animations;
+//         this.isPlaying = isPlaying;
+//     }
+// }
+
+// export class VibeRuntimeSchema implements VibeSchema {
+//     id: string;
+//     objects: Array<VibeShape> | null;
+
+//     constructor(id: string, objects: Array<VibeShape> | null = null) {
+//         this.id = id;
+//         this.objects = objects;
+//     }
+// }
 
 export type VibeAnimationValues = {
     scale: number;
@@ -82,12 +93,12 @@ export type AnimationContainer = {
     containerId: string;
 }
 
-export type VibeObjectSchema = {
+export type VibeShape = {
     id: string;
     container: AnimationContainer;
     width: number;
     height: number;
-    position: number;
+    position: {x: number, y: number};
     color: Array<number>;
     shape: string;
     zIndex: number;
@@ -101,18 +112,23 @@ export type VibeAnimationState = {
 }
 
 export class VibeDataModel {
-    private baseURL: string;
-    private containerId: string;
-    public objects: Map<string, VibeObjectSchema> | null = null;
+    public baseURL: string;
+    public containerId: string;
+    public objects: Map<string, VibeShape> = new Map()
     public tree: Tree
-    public selectedIds: Array<string> = new Array()
     private states: Map<string, VibeAnimationState> | null = null;
     private canvasSizes: Map<string, VibeCanvasSize> | null = null;
+    public actionableIds: Set<string>
+    public isActionable = false
+    public ws: VibeWebSocket | null = null;
+    public actionableIdToAnimationIdMap: Map<string, string> = new Map()
 
-    constructor(containerId: string, baseURL: string, tree: Tree) {
+
+    constructor(containerId: string, baseURL: string, tree: Tree, actionableIds: Set<string>) {
         this.containerId = containerId;
         this.baseURL = baseURL;
         this.tree = tree;
+        this.actionableIds = actionableIds
     }
 
     public getId(): string {
@@ -135,7 +151,7 @@ export class VibeDataModel {
         const schema = await this.load(`${this.baseURL}/${this.containerId}.json`);
         if (!schema?.objects) return;
 
-        const tmpObjects = new Map<string, VibeObjectSchema>();
+        const tmpObjects = new Map<string, VibeShape>();
         const states = new Map<string, VibeAnimationState>();
 
         for (const obj of schema.objects) {
@@ -212,6 +228,8 @@ export class Tree {
 
     constructor(id: string) {
         this.id = id;
+
+        this.addRelationship = this.addRelationship.bind(this)
     }
 
     addRelationship(id: string, parentId?: string, parentIsContainer: boolean = false) {
@@ -276,5 +294,87 @@ export class Tree {
 
     toString(): string {
         return `treeId: ${this.id}, root: ${this.rootNode}`;
+    }
+}
+
+export class VibeWebSocket {
+    private ws: WebSocket | null = null;
+    public onMessageActionable: ((msg: { isActionable: boolean }) => void) | null = null;
+    public onMessageActionables: ((msg: { tree: Tree; actionableIds: Set<string> }) => void) | null = null;
+    public onMessageSelected: ((msg: { selectedIds: Set<string> }) => void) | null = null;
+    public onMessageSchema: ((msg: { schemaWrappers: VibeShape[] }) => void) | null = null;
+
+    constructor(private url: string) {}
+
+    connect(onOpen: () => void) {
+        this.ws = new WebSocket(this.url);
+        this.ws.binaryType = "arraybuffer";
+
+        this.ws.onopen = onOpen
+        this.ws.onclose = () => console.log("WebSocket disconnected");
+        this.ws.onerror = (err) => console.error("WebSocket error", err);
+        this.ws.onmessage = (event) => this.handleMessage(event);
+    }
+
+    private handleMessage(event: MessageEvent) {
+        try {
+            const jsonStr = typeof event.data === "string"
+                ? event.data
+                : new TextDecoder().decode(event.data); // fallback for binary
+
+            const wrapper: MessageWrapper<any> = JSON.parse(jsonStr);
+
+            // If payload is already an object, don't decode again
+            let payloadObj = wrapper.payload;
+
+            // If the server sends payload as base64 string, decode it
+            if (typeof payloadObj === "string") {
+                const decodedStr = atob(payloadObj);
+                payloadObj = JSON.parse(decodedStr);
+            }
+
+            switch (wrapper.type) {
+                case MessageType.actionable:
+                    this.onMessageActionable?.(payloadObj);
+                    break;
+                case MessageType.actionables:
+                    this.onMessageActionables?.(payloadObj);
+                    break;
+                case MessageType.schema:
+                    this.onMessageSchema?.(payloadObj);
+                    break;
+            }
+        } catch (err) {
+            console.error("Failed to decode WebSocket message:", err);
+        }
+    }
+
+    sendMessage<T extends object>(type: MessageType, payload: T) {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+
+        // 1️⃣ Encode payload as JSON string
+        const payloadStr = JSON.stringify(payload);
+
+        // 2️⃣ Convert to base64
+        const base64Payload = btoa(payloadStr);
+
+        // 3️⃣ Wrap in type wrapper
+        const wrapper = { type, payload: base64Payload };
+
+        // 4️⃣ Send wrapper as JSON string
+        this.ws.send(JSON.stringify(wrapper));
+    }
+
+    // High-level helpers
+    sendActionable(isActionable: boolean) {
+        this.sendMessage(MessageType.actionable, { isActionable });
+    }
+
+    sendActionables(tree: Tree, actionableIds: Set<string>) {
+        this.sendMessage(MessageType.actionables, { tree: tree.toJSON(), actionableIds: Array.from(actionableIds) });
+    }
+
+    sendSchema(schemaWrappers: any[]) {
+        this.sendMessage(MessageType.schema, { schemaWrappers });
     }
 }

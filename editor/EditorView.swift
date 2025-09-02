@@ -274,224 +274,7 @@ final class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertib
         self.actionableIds = actionableIds
     }
 }
-//
-//@Observable
-//final class WebSocketServer {
-//    let listener: NWListener
-//    var clients: [UUID: NWConnection] = [:]
-//    var treePackets: [TreePacket] = []
-//    var treePacketsLUT: [String: Int] = [:]
-//    let clientId = UUID()
-//    
-//    init(port: UInt16) throws {
-//        let parameters = NWParameters.tcp
-//        parameters.allowLocalEndpointReuse = true
-//        
-//        // Configure WebSocket options
-//        let wsOptions = NWProtocolWebSocket.Options()
-//        wsOptions.autoReplyPing = true  // Automatically respond to ping messages
-//        parameters.defaultProtocolStack.applicationProtocols.append(wsOptions)
-//
-//        listener = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
-//        
-//        listener.newConnectionHandler = { [weak self] newConnection in
-//            self?.handleNewConnection(newConnection)
-//        }
-//    }
-//
-//    func start() {
-//        print("WebSocket server starting on port \(listener.port!.rawValue)")
-//        listener.start(queue: .main)
-//    }
-//
-//    private func handleNewConnection(_ connection: NWConnection) {
-//        clients[clientId] = connection
-//
-//        connection.start(queue: .main)
-//        print("Accepted new client: \(clientId)")
-//
-//        receiveMessage(on: connection, clientId: clientId)
-//    }
-//    
-//    private func retrieveAllIds(tree: Tree) -> [String]? {
-//        guard let root = tree.rootNode else {
-//            return nil
-//        }
-//        
-//        return retrieveAllIds(treeItem: root)
-//    }
-//
-//    private func retrieveAllIds(treeItem: Node) -> [String]? {
-//        var ids: [String] = [treeItem.id]
-//        
-//        if let children = treeItem.children {
-//            for child in children {
-//                if let childIds = retrieveAllIds(treeItem: child) {
-//                    ids.append(contentsOf: childIds)
-//                }
-//            }
-//        }
-//        
-//        return ids
-//    }
-//
-//    private func receiveMessage(on connection: NWConnection, clientId: UUID) {
-//        connection.receiveMessage { [weak self] (data, context, isComplete, error) in
-//            if let error = error {
-//                print("Error receiving message: \(error)")
-//                self?.clients.removeValue(forKey: clientId)
-//                return
-//            }
-//
-//            if let data = data, !data.isEmpty {
-//                guard let messageWrapper = try? JSONDecoder().decode(WebSocketClient.MessageWrapper.self, from: data) else {
-//                    return
-//                }
-//                
-//                switch messageWrapper.type {
-//                case .actionable:
-//                    break
-//                case .actionables:
-//                    guard let msg = try? JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload) else {
-//                        return
-//                    }
-//                    
-//                    if let weakSelf = self {
-//                        if !weakSelf.treePackets.isEmpty {
-//                            guard let newTreeIds = weakSelf.retrieveAllIds(tree: msg.tree) else {
-//                                return
-//                            }
-//
-//                            var foundOldSet = false
-//
-//                            treePacketIterator: for treePacket in weakSelf.treePackets {
-//                                let values = treePacket.tree.nodeMap.values
-//                                for node in values {
-//                                    node.tree = treePacket.tree
-//                                    node.link()
-//                                }
-//
-//                                guard let oldTreeIds = weakSelf.retrieveAllIds(tree: treePacket.tree) else {
-//                                    return
-//                                }
-//
-//                                let newSet = Set(newTreeIds)
-//                                let oldSet = Set(oldTreeIds)
-//
-//                                var lookupId: String? = nil
-//
-//                                newSetSearch: for id in oldSet {
-//                                    if newSet.contains(id) {
-//                                        foundOldSet = true
-//
-//                                        for oldId in oldSet {
-//                                            if weakSelf.treePacketsLUT.keys.contains(oldId) {
-//                                                lookupId = oldId
-//                                                break newSetSearch
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//
-//                                if foundOldSet {
-//                                    if let lookupId, let offset = weakSelf.treePacketsLUT[lookupId] {
-//                                        weakSelf.treePackets[offset] = TreePacket(tree: msg.tree, actionableIds: msg.actionableIds)
-//                                    }
-//                                }
-//                            }
-//
-//                            if !foundOldSet {
-//                               weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-//                               weakSelf.treePacketsLUT[msg.tree.rootNode!.id] = weakSelf.treePackets.count - 1
-//                            }
-//                        } else {
-//                            if let id = msg.tree.rootNode?.id {
-//                                weakSelf.treePackets.append(TreePacket(tree: msg.tree, actionableIds: msg.actionableIds))
-//                                weakSelf.treePacketsLUT[id] = weakSelf.treePackets.count - 1
-//                            }
-//                        }
-//                    }
-//                case .selected:
-//                    break
-//                case .schema:
-//                    break
-//                }
-//            }
-//
-//            self?.receiveMessage(on: connection, clientId: clientId)
-//        }
-//    }
-//    
-//    public func sendIsActionable(_ isActionable: Bool) {
-//        guard let connection = clients[clientId] else {
-//            print("No connection")
-//            return
-//        }
-//        
-//        let messageItem = WebSocketClient.MessageActionable(isActionable: isActionable)
-//        guard let data = try? JSONEncoder().encode(messageItem) else {
-//            return
-//        }
-//        
-//        let messageWrapper = WebSocketClient.MessageWrapper(type: .actionable, payload: data)
-//        
-//        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
-//            return
-//        }
-//        sendMessage(wrapperData, to: connection)
-//    }
-//    
-//    func sendSelectedIds(_ ids: Set<String>) {
-//        guard let connection = clients[clientId] else {
-//            print("No connection")
-//            return
-//        }
-//        
-//        let messageItem = WebSocketClient.MessageSelected(selectedIds: ids)
-//        guard let data = try? JSONEncoder().encode(messageItem) else {
-//            return
-//        }
-//        
-//        let messageWrapper = WebSocketClient.MessageWrapper(type: .selected, payload: data)
-//        
-//        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
-//            return
-//        }
-//        sendMessage(wrapperData, to: connection)
-//    }
-//    
-//    func sendSchema(_ schemaWrappers: [VibeSchemaWrapper]) {
-//        guard let connection = clients[clientId] else {
-//            print("No connection")
-//            return
-//        }
-//    
-//        let message = WebSocketClient.MessageSchema(schemaWrappers: schemaWrappers)
-//        
-//        guard let data = try? JSONEncoder().encode(message) else {
-//            return
-//        }
-//        
-//        let messageWrapper = WebSocketClient.MessageWrapper(type: .schema, payload: data)
-//        
-//        guard let wrapperData = try? JSONEncoder().encode(messageWrapper) else {
-//            return
-//        }
-//        sendMessage(wrapperData, to: connection)
-//    }
-//
-//    private func sendMessage(_ messageData: Data, to connection: NWConnection) {
-//        let context = NWConnection.ContentContext(identifier: "WebSocketMessage", metadata: [NWProtocolWebSocket.Metadata(opcode: .binary)])
-//        
-//        connection.send(content: messageData, contentContext: context, isComplete: true, completion: .contentProcessed { error in
-//            if let error = error {
-//                print("Error sending message: \(error)")
-//            } else {
-//                print("Sent message to client: \(messageData)")
-//            }
-//        })
-//    }
-//}
+
 import Network
 import Observation
 
@@ -601,13 +384,11 @@ final class WebSocketServer {
         case .actionables:
             let msg = try! JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload)
             updateTreePackets(with: msg)
-        case .selected:
-            break
         case .schema:
             break
         }
     }
-
+    
     private func updateTreePackets(with msg: WebSocketClient.MessageActionables) {
         guard let rootId = msg.tree.rootNode?.id else { return }
 
@@ -661,8 +442,8 @@ final class WebSocketServer {
         send(type: .actionable, payload: WebSocketClient.MessageActionable(isActionable: isActionable), to: clientId)
     }
 
-    func sendSelectedIds(_ ids: Set<String>, to clientId: UUID) {
-        send(type: .selected, payload: WebSocketClient.MessageSelected(selectedIds: ids), to: clientId)
+    func sendSelectedIds(_ ids: Set<String>, tree: Tree, to clientId: UUID) {
+        send(type: .actionables, payload: WebSocketClient.MessageActionables(tree: tree, actionableIds: ids), to: clientId)
     }
 
     func sendSchema(_ schemaWrappers: [VibeSchemaWrapper], to clientId: UUID) {
@@ -693,10 +474,7 @@ final class WebSocketServer {
 }
 
 enum VibeWebScript: String, RawRepresentable {
-    case initialize = "init"
     case initInvokePlayback = "initInvokePlayback"
-    case actionablesAdd = "actionablesAdd"
-    case actionablesRemove = "actionablesRemove"
     case animationsAdd = "animationsAdd"
     case animationsRemove = "animationsRemove"
 }
@@ -733,14 +511,6 @@ public struct ActionableContainerAssociater: Hashable {
     public let actionableIds: Set<String>
     public let containerId: String
 }
-
-//enum AppMode: Identifiable  {
-//    case swiftUI
-//    case react
-//    case compose
-//    
-//    var id: Self { self }
-//}
 
 @MainActor
 struct EditorView: View {
@@ -869,37 +639,6 @@ struct EditorView: View {
         return .success(1)
     }
     
-    private func attachVibeActionables() async {
-        let actionablesResult = await executeVibeWebScript(script: .actionablesAdd)
-        switch actionablesResult {
-        case .success(let success):
-            print(success)
-        case .failure(let failure):
-            print(failure)
-        }
-    }
-    
-    private func initializeAndActionablesAdd() async {
-        let result = await executeVibeWebScript(script: .initialize)
-        switch result {
-        case .success(let returnCode):
-            print("code: \(returnCode)")
-            await attachVibeActionables()
-        case .failure(let error):
-            print(error)
-        }
-    }
-    
-    private func actionablesRemove() async {
-        let result = await executeVibeWebScript(script: .actionablesRemove)
-        switch result {
-        case .success(let returnCode):
-            print("code: \(returnCode)")
-        case .failure(let error):
-            print(error)
-        }
-    }
-    
     private func cleanAnimations() async -> Bool {
         let result = await executeVibeWebScript(script: .animationsRemove)
         switch result {
@@ -978,12 +717,12 @@ struct EditorView: View {
                     container.containerId == containerId
                 }) {
                     return actionableIds.map {
-                        InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "body-vibe-id", animationId: element.animationId)
+                        InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
                     }
                     .compactMap({$0})
                 } else {
                     return actionableIds.map {
-                        InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "body-vibe-id", animationId: element.animationId)
+                        InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
                     }
                     .compactMap({$0})
                 }
@@ -991,7 +730,7 @@ struct EditorView: View {
             })
             .flatMap({$0}))
             
-            let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> String? in
+            let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> VibeSchemaWrapper? in
                 guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
                     return nil
                 }
@@ -1002,14 +741,10 @@ struct EditorView: View {
                 
                 let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
                 
-                guard let data = try? JSONEncoder().encode(updateSchema) else {
-                    return nil
-                }
-                
-                return String(data: data, encoding: .utf8)
+                return updateSchema
             }
             
-            let result = await executeVibeWebFunction(function: "invokePlayback", args: animationArgs)
+            let result = await executeVibeSwiftWebsocketFunction(schemaWrappers: animationArgs)
             
             switch result {
             case .success(let success):
@@ -1021,42 +756,37 @@ struct EditorView: View {
         }
     }
     
-    private func invokePlayback() async -> Bool {
-        print(await injectAnimations())
-        let result = await executeVibeWebScript(script: .initInvokePlayback)
-        
-        switch result {
-        case .success(let success):
-            if success == 1 {
-                let playbackSuccess = await runInvokePlayback()
-                return playbackSuccess
-            }
-            
-            return false
-        case .failure(let failure):
-            print(failure)
-            return false
-        }
-    }
+//    private func invokePlayback() async -> Bool {
+//        print(await injectAnimations())
+//        
+//        let result = await executeVibeWebScript(script: .initInvokePlayback)
+//        
+//        for id in server.clients.keys {
+//            let schemaWrapper = VibeSchemaWrapper(schema: <#T##VibeSchema#>, actionableId: <#T##String#>, container: <#T##AnimationContainer#>, animationId: <#T##String#>)
+//            server.sendSchema(<#T##schemaWrappers: [VibeSchemaWrapper]##[VibeSchemaWrapper]#>, to: <#T##UUID#>)
+//            server.sendSchema(VibeSchemaWrapper(schema: animations, actionableId: "", container: , animationId: animations.first!.id), to: id)
+//        }
+//        
+//        switch result {
+//        case .success(let success):
+//            if success == 1 {
+//                let playbackSuccess = await runInvokePlayback()
+//                return playbackSuccess
+//            }
+//            
+//            return false
+//        case .failure(let failure):
+//            print(failure)
+//            return false
+//        }
+//    }
     
     private func tapPlay() async {
-        if framework == .swiftUI {
-            print(await runInvokePlayback(swift: true))
-        } else if framework == .react {
-            let removeSuccess = await cleanAnimations()
-            
-            if removeSuccess {
-                let invokeSuccess = await invokePlayback()
-            }
-        }
+        print(await runInvokePlayback(swift: framework == .swiftUI))
     }
     
     private func determineFocused(newValue: Bool) async {
-        if newValue {
-            await initializeAndActionablesAdd()
-        } else {
-            await actionablesRemove()
-        }
+        // TODO: Does this eneed sometings?
     }
     
     var animationsAvailableContents: [String: [String]] {
@@ -1124,8 +854,20 @@ struct EditorView: View {
                     )
                 )
             } else if framework == .react {
-                editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["body-vibe-id"]), containerId: animation.containerId))
-                editorModel.animations.append(ActionableAnimationAssociater(actionableIds: actionableIds, containerId: animation.containerId, animationId: animation.id))
+                editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
+                for treePacket in server.treePackets {
+                    for id in treePacket.actionableIds {
+                        selectedActionabeIDTracker.selectedActionableIds.insert(id)
+                    }
+                }
+                
+                editorModel.animations.append(
+                    ActionableAnimationAssociater(
+                        actionableIds: selectedActionabeIDTracker.selectedActionableIds,
+                        containerId: animation.containerId,
+                        animationId: animation.id
+                    )
+                )
             }
             
         }
@@ -1369,12 +1111,12 @@ struct EditorView: View {
                             .padding(.vertical)
                             
                             HStack() {
-                                FocusIndicator(isOn: $isFocused)
-                                    .onChange(of: isFocused) { _, newValue in
-                                        for id in server.clients.keys {
-                                            server.sendIsActionable(newValue, to: id)
-                                        }
-                                    }
+//                                FocusIndicator(isOn: $isFocused)
+//                                    .onChange(of: isFocused) { _, newValue in
+//                                        for id in server.clients.keys {
+//                                            server.sendIsActionable(newValue, to: id)
+//                                        }
+//                                    }
                                 Spacer(minLength: .zero)
                                 SettingsIconButton {
                                     showExportPanel()

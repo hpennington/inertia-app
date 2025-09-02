@@ -19,9 +19,6 @@
 		F81316DF2CBCE36300266728 /* AttachAnimationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */; };
 		F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */; };
 		F84A605B2CE3D3D900070036 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F84A605A2CE3D3D900070036 /* Inertia */; };
-		F84ABB542CBAB56400CA1933 /* init.js in Resources */ = {isa = PBXBuildFile; fileRef = F84ABB532CBAB56400CA1933 /* init.js */; };
-		F84ABB562CBAD77500CA1933 /* actionablesRemove.js in Resources */ = {isa = PBXBuildFile; fileRef = F84ABB552CBAD77500CA1933 /* actionablesRemove.js */; };
-		F84E8F1D2C65314C00DC20D6 /* actionablesAdd.js in Resources */ = {isa = PBXBuildFile; fileRef = F84E8F1C2C65314B00DC20D6 /* actionablesAdd.js */; };
 		F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */; };
 		F8641C442C978AA500E43338 /* VibeAppVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8641C432C978AA500E43338 /* VibeAppVM.swift */; };
 		F86E02AC2C96DF1B005F6254 /* SetupFlowContainerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */; };
@@ -88,9 +85,6 @@
 		F81148242CBEC1D900326B61 /* initInvokePlayback.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = initInvokePlayback.js; sourceTree = "<group>"; };
 		F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachAnimationButton.swift; sourceTree = "<group>"; };
 		F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlow.swift; sourceTree = "<group>"; };
-		F84ABB532CBAB56400CA1933 /* init.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = init.js; sourceTree = "<group>"; };
-		F84ABB552CBAD77500CA1933 /* actionablesRemove.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = actionablesRemove.js; sourceTree = "<group>"; };
-		F84E8F1C2C65314B00DC20D6 /* actionablesAdd.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = actionablesAdd.js; sourceTree = "<group>"; };
 		F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCompilationModeScreen.swift; sourceTree = "<group>"; };
 		F8641C432C978AA500E43338 /* VibeAppVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeAppVM.swift; sourceTree = "<group>"; };
 		F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupFlowContainerScreen.swift; sourceTree = "<group>"; };
@@ -178,9 +172,6 @@
 		F84E8F1B2C65312C00DC20D6 /* web */ = {
 			isa = PBXGroup;
 			children = (
-				F84E8F1C2C65314B00DC20D6 /* actionablesAdd.js */,
-				F84ABB552CBAD77500CA1933 /* actionablesRemove.js */,
-				F84ABB532CBAB56400CA1933 /* init.js */,
 				F81148242CBEC1D900326B61 /* initInvokePlayback.js */,
 				F81148222CBEC17E00326B61 /* animationsAdd.js */,
 				F81148202CBEBF7E00326B61 /* animationsRemove.js */,
@@ -362,11 +353,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F81148232CBEC17E00326B61 /* animationsAdd.js in Resources */,
-				F84E8F1D2C65314C00DC20D6 /* actionablesAdd.js in Resources */,
 				F81148212CBEBF7E00326B61 /* animationsRemove.js in Resources */,
 				F89BA0B32C48C85B0006603C /* Preview Assets.xcassets in Resources */,
-				F84ABB562CBAD77500CA1933 /* actionablesRemove.js in Resources */,
-				F84ABB542CBAB56400CA1933 /* init.js in Resources */,
 				F89BA0B02C48C85B0006603C /* Assets.xcassets in Resources */,
 				F81148252CBEC1D900326B61 /* initInvokePlayback.js in Resources */,
 			);

@@ -389,7 +389,7 @@ public class WebSocketClient {
     public enum MessageType: String, Codable {
         case actionable
         case actionables
-        case selected
+//        case selected
         case schema
     }
 
@@ -421,14 +421,6 @@ public class WebSocketClient {
         }
     }
     
-    public struct MessageSelected: Codable {
-        public let selectedIds: Set<String>
-        
-        public init(selectedIds: Set<String>) {
-            self.selectedIds = selectedIds
-        }
-    }
-    
     public struct MessageSchema: Codable {
         public let schemaWrappers: [VibeSchemaWrapper]
         
@@ -445,35 +437,6 @@ public class WebSocketClient {
             }
             
             let messageWrapper = MessageWrapper(type: .actionables, payload: jsonData)
-            let messageWrapperData = try JSONEncoder().encode(messageWrapper)
-
-            let messageData = URLSessionWebSocketTask.Message.data(messageWrapperData)
-            task?.send(messageData) { error in
-                if let error = error {
-                    print("Error sending message: \(error)")
-                } else {
-                    print("Message sent: \(messageData)")
-                }
-                
-                // Begin receiving responses
-                if let task = self.task {
-                    self.receiveMessage(task: task)
-                }
-            }
-            
-        } catch {
-            print("Error encoding data: \(error)")
-        }
-    }
-    
-    func sendMessage(_ message: MessageSelected) {
-        do {
-            guard let jsonData = try? JSONEncoder().encode(message) else {
-                print("Error: Could not encode JSON to data")
-                 return
-            }
-            
-            let messageWrapper = MessageWrapper(type: .selected, payload: jsonData)
             let messageWrapperData = try JSONEncoder().encode(messageWrapper)
 
             let messageData = URLSessionWebSocketTask.Message.data(messageWrapperData)
@@ -548,7 +511,8 @@ public class WebSocketClient {
                         NSLog("[INERTIA_LOG]:  Received message (data): \(actionableMessage)")
                         self.messageReceivedIsActionable?(actionableMessage.isActionable)
                     case .actionables:
-                        print(try! JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload))
+                        let msg = try! JSONDecoder().decode(WebSocketClient.MessageActionables.self, from: messageWrapper.payload)
+                        self.messageReceived?(msg.actionableIds)
 //                        fatalError()
                         break
                     case .schema:
@@ -558,13 +522,6 @@ public class WebSocketClient {
                         
                         NSLog("[INERTIA_LOG]:  Received message (data): \(schemaMessage)")
                         self.messageReceivedSchema?(schemaMessage.schemaWrappers)
-                    case .selected:
-                        guard let selectedIdsMessage = try? JSONDecoder().decode(WebSocketClient.MessageSelected.self, from: messageWrapper.payload) else {
-                            return
-                        }
-                        
-                        NSLog("[INERTIA_LOG]:  Received message (data): \(selectedIdsMessage)")
-                        self.messageReceived?(selectedIdsMessage.selectedIds)
                     }
                 case .string(let text):
                     fatalError()
@@ -1165,6 +1122,7 @@ struct InertiaEditable<Content: View>: View {
     func handleMessageSchema(schemaWrappers: [VibeSchemaWrapper]) {
         for schemaWrapper in schemaWrappers {
             if schemaWrapper.container.containerId == vibeDataModel?.containerId {
+                
                 vibeDataModel?.vibeSchema = schemaWrapper.schema
                 vibeDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId
                 NSLog("[INERTIA_LOG]:  animationId: \(schemaWrapper.animationId) actionableId: \(schemaWrapper.actionableId)")
