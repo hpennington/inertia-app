@@ -1,5 +1,5 @@
 import React from 'react'
-import {VibeAnimationInvokeType, VibeWebSocket, VibeDataModel, VibeCanvasSize, MessageType, MessageWrapper, VibeID, VibeShape, Tree, Node, VibeAnimationSchema} from 'vibe-base'
+import {VibeSchema, MessageActionables, MessageActionable, VibeSchemaWrapper, VibeAnimationInvokeType, WebSocketClient, VibeDataModel, VibeCanvasSize, MessageType, MessageWrapper, VibeID, VibeShape, Tree, Node, VibeAnimationSchema} from 'vibe-base'
 
 export type VibeContainerProps = {
     children: React.ReactElement,
@@ -72,16 +72,11 @@ const useVibeIsContainer = () => {
     return vibeIsContainer
 }
 
-export type MessageActionables = {
-    tree: Tree;
-    actionableIds: Set<string>;
-};
-
 // Helper to convert JSON received from WebSocket into MessageActionables
 export function messageActionablesFromJSON(json: any): MessageActionables {
     return {
         tree: Tree.fromJSON(json.tree),                // convert tree JSON to Tree instance
-        actionableIds: new Set<string>(json.actionableIds) // convert array to Set
+        actionableIds: new Array<string>(json.actionableIds) // convert array to Set
     };
 }
 
@@ -92,12 +87,6 @@ export function messageActionablesToJSON(msg: MessageActionables): any {
         actionableIds: Array.from(msg.actionableIds) // convert Set to array
     };
 }
-
-
-// --- MessageActionable ---
-export type MessageActionable = {
-    isActionable: boolean;
-};
 
 export function messageActionableFromJSON(json: any): MessageActionable {
     return {
@@ -206,12 +195,6 @@ export function vibeShapeToJSON(shape: VibeShape): any {
     };
 }
 
-// --- VibeSchema ---
-export type VibeSchema = {
-    id: VibeID;
-    objects: VibeShape[];
-};
-
 export function vibeSchemaFromJSON(json: any): VibeSchema {
     return {
         id: json.id,
@@ -225,14 +208,6 @@ export function vibeSchemaToJSON(schema: VibeSchema): any {
         objects: schema.objects.map(vibeShapeToJSON),
     };
 }
-
-// --- VibeSchemaWrapper ---
-export type VibeSchemaWrapper = {
-    schema: VibeSchema;
-    actionableId: VibeID;
-    container: AnimationContainer;
-    animationId: string;
-};
 
 export function vibeSchemaWrapperFromJSON(json: any): VibeSchemaWrapper {
     return {
@@ -370,84 +345,86 @@ class SharedIndexManager {
     public objectIdSet: Set<string> = new Set();
 }
 
+function handleMessageSchema(
+    schemaWrappers: VibeSchemaWrapper[],
+    vibeDataModel: VibeDataModel | null,
+    setVibeDataModel: React.Dispatch<React.SetStateAction<VibeDataModel>>
+): void {
+    if (!vibeDataModel) return;
+
+    for (const schemaWrapper of schemaWrappers) {
+        if (schemaWrapper.container.containerId === vibeDataModel.containerId) {
+            setVibeDataModel(prev => {
+                const updated = { ...prev };
+
+                // Update schema
+                updated.vibeSchema = schemaWrapper.schema;
+
+                // Update actionableId -> animationId map
+                updated.actionableIdToAnimationIdMap.set(schemaWrapper.actionableId, schemaWrapper.animationId)
+
+                console.log(
+                    `[INERTIA_LOG]: animationId: ${schemaWrapper.animationId} actionableId: ${schemaWrapper.actionableId}`
+                );
+
+                return updated;
+            });
+        }
+    }
+}
+
 export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps): React.ReactElement => {
-    // const [setVibeDataModel, vibeDataModel] = React.useState(() => {
-    //     const model = new VibeDataModel(id, baseURL, new Tree(id), new Set());
-    //     return model;
-    // });
-
-    const [vibeDataModel, setVibeDataModel] = React.useState(new VibeDataModel(id, baseURL, new Tree(id), new Set()))
-
+    const [vibeDataModel, setVibeDataModel] = React.useState(
+        new VibeDataModel(id, { id: id, objects: [] }, new Tree(id), new Set())
+    );
     const [bounds, setBounds] = React.useState<VibeCanvasSize | null>(null);
     const ref = React.useRef<HTMLDivElement | null>(null);
 
     React.useEffect(() => {
-        if (!vibeDataModel.ws) {
-            const ws = new VibeWebSocket("ws://127.0.0.1:8060");
+        if (!ref.current) return;
 
-            const onOpen = () => {
-                ws.sendActionables(vibeDataModel.tree, vibeDataModel.actionableIds);
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                const { width, height } = entry.contentRect;
+                setBounds({ width, height });
+            }
+        });
+
+        observer.observe(ref.current);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []); // only run once
+
+    // ✅ WebSocket logic stays the same
+    React.useEffect(() => {
+        const ws = WebSocketClient.shared;
+        if (!vibeDataModel?.tree) return;
+
+        ws.connect("ws://127.0.0.1:8060", () => {
+            ws.messageReceived = (msg) => {
+                setVibeDataModel(prev => ({ ...prev, actionableIds: msg }));
             };
 
-            ws.connect(onOpen);
-
-            // ✅ Assign WebSocket instance to vibeDataModel
-            vibeDataModel.ws = ws;
-
-            // ✅ Set up event handlers on the model
-            ws.onMessageActionable = (msg) => {
-                console.log("Received actionable:", msg);
-                // vibeDataModel.updateIsActionable?.(msg.isActionable);
+            ws.messageReceivedSchema = (msg) => {
+                handleMessageSchema(msg, vibeDataModel, setVibeDataModel)
             };
 
-            ws.onMessageActionables = (msg) => {
-                console.log("Received actionables:", msg);
-                setVibeDataModel(prev => {
-                    const newTree = Tree.fromJSON(msg.tree); // <-- make sure this is a Tree instance
-                    var newModel = new VibeDataModel(
-                        prev.containerId,
-                        prev.baseURL,
-                        newTree,
-                        new Set(msg.actionableIds)  // also ensure actionableIds is a Set
-                    );
-                    newModel.ws = prev.ws
-                    return newModel
-                });
+            ws.messageReceivedIsActionable = (msg) => {
+                setVibeDataModel(prev => ({ ...prev, isActionable: msg }));
             };
 
-            ws.onMessageSelected = (msg) => {
-                console.log("Received selected:", msg);
-                // vibeDataModel.selectNodes?.(msg.selectedIds);
-                vibeDataModel.actionableIds = msg.selectedIds
-
-            };
-
-            ws.onMessageSchema = (msg) => {
-                console.log("Received schema:", msg);
-
-                setVibeDataModel(prev => {
-                    var newModel = new VibeDataModel(
-                        id,
-                        prev.baseURL,
-                        prev.tree,
-                        prev.actionableIds 
-                    );
-                    newModel.ws = prev.ws
-                    var newObjects: Map<string, VibeShape> = new Map()
-                    for (const schemaWrapper of msg.schemaWrappers) {
-                        newObjects.set(schemaWrapper.id, schemaWrapper)
-                    }
-                    newModel.objects = newObjects
-                    return newModel
-                });
-                // vibeDataModel.updateSchema?.(msg.schemaWrappers);
-            };
-        }
-    }, [baseURL, vibeDataModel]);
+            ws.sendMessageActionables({
+                tree: vibeDataModel.tree,
+                actionableIds: Array.from(vibeDataModel.actionableIds),
+            });
+        });
+    }, [vibeDataModel?.tree]);
 
     return (
         <VibeCanvasSizeContext.Provider value={bounds}>
-            <div data-vibe-container-id={id} ref={ref}>
+            <div data-vibe-container-id={id} ref={ref} style={{ width: "100%", height: "100%" }}>
                 <VibeContext.Provider value={{ vibeDataModel, setVibeDataModel }}>
                     <VibeParentIdContext.Provider value={id}>
                         <VibeContainerIdContext.Provider value={id}>
@@ -462,7 +439,9 @@ export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps
     );
 };
 
+
 const VibeCanvasSizeContext = React.createContext<VibeCanvasSize | null>(null)
+const manager = WebSocketClient.shared
 
 export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.ReactElement => {
     const { vibeDataModel, setVibeDataModel } = useVibeDataModel();
@@ -490,52 +469,88 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
         }
     }, [hierarchyId, vibeParentId, vibeIsContainer]);
 
-    // Attach animations
     React.useEffect(() => {
-        if (!vibeCanvasSize || !hierarchyId) return;
+        if (!hierarchyId || !vibeDataModel || !vibeCanvasSize) return;
 
-        // const object = vibeDataModel.objects?.get?.(hierarchyId) || vibeDataModel.objects?.get(hierarchyId);
-        // if (!object?.animation) return;
-
-        // const { animation } = object;
-
-        const animationId = vibeDataModel.actionableIdToAnimationIdMap.get(hierarchyId)
+        const animationId = vibeDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
         if (!animationId) {
-            return
+            console.log("[INERTIA_LOG]: animationId is null");
+            return;
         }
 
-        const animationShape = vibeDataModel.objects.get(animationId)
+        console.log(`[INERTIA_LOG]: hierarchyId: ${hierarchyId} animationId: ${animationId}`);
 
-        if (!animationShape) {
-            return
+        const animation = vibeDataModel.vibeSchema?.objects?.find(obj => {
+            return obj.animation?.id === animationId;
+        })?.animation;
+
+        if (animation) {
+            console.log("[INERTIA_LOG]: animation found", animation);
+            console.log("[INERTIA_LOG]: animation found", animation);
+            const keyframes = animation.keyframes || [];
+            const allValues = [animation.initialValues, ...keyframes.map(k => k.values)];
+
+            const keyframesWebAPI = allValues.map(values => {
+                const translateX = values.translate[0] * (vibeCanvasSize.width / 2);
+                const translateY = values.translate[1] * (vibeCanvasSize.height / 2);
+                return {
+                    transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
+                    transformOrigin: "center",
+                    opacity: values.opacity,
+                };
+            });
+
+            const totalDuration = keyframes.reduce((acc, k) => acc + k.duration * 1000, 0);
+            containerRef.current?.animate(keyframesWebAPI, {
+                duration: totalDuration || 1000,
+                iterations: Infinity,
+                easing: "ease-in-out",
+            });
+        } else {
+            console.log("[INERTIA_LOG]: animation not found");
         }
+    }, [vibeCanvasSize, hierarchyId, vibeDataModel.vibeSchema]);
 
-        const animation = animationShape.animation
 
-        if (!animation) {
-            return
-        }
+    // React.useEffect(() => {
+    //     if (!hierarchyId || !vibeDataModel || !vibeCanvasSize) return;
 
-        const keyframes = animation.keyframes || [];
-        const allValues = [animation.initialValues, ...keyframes.map(k => k.values)];
+    //     const animationId = vibeDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
+    //     if (!animationId) {
+    //         console.log("[INERTIA_LOG]: animationId is null");
+    //         return;
+    //     }
 
-        const keyframesWebAPI = allValues.map(values => {
-            const translateX = values.translate[0] * (vibeCanvasSize.width / 2);
-            const translateY = values.translate[1] * (vibeCanvasSize.height / 2);
-            return {
-                transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
-                transformOrigin: "center",
-                opacity: values.opacity,
-            };
-        });
+    //     console.log(`[INERTIA_LOG]: hierarchyId: ${hierarchyId} animationId: ${animationId}`);
 
-        const totalDuration = keyframes.reduce((acc, k) => acc + k.duration * 1000, 0);
-        containerRef.current?.animate(keyframesWebAPI, {
-            duration: totalDuration || 1000,
-            iterations: Infinity,
-            easing: "ease-in-out",
-        });
-    }, [vibeCanvasSize, hierarchyId, vibeDataModel.objects]);
+    //     const animation = vibeDataModel.vibeSchema?.objects?.find(obj => obj.animation?.id === animationId)?.animation;
+
+    //     if (animation) {
+    //         console.log("[INERTIA_LOG]: animation found", animation);
+    //         const keyframes = animation.keyframes || [];
+    //         const allValues = [animation.initialValues, ...keyframes.map(k => k.values)];
+
+    //         const keyframesWebAPI = allValues.map(values => {
+    //             const translateX = values.translate[0] * (vibeCanvasSize.width / 2);
+    //             const translateY = values.translate[1] * (vibeCanvasSize.height / 2);
+    //             return {
+    //                 transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
+    //                 transformOrigin: "center",
+    //                 opacity: values.opacity,
+    //             };
+    //         });
+
+    //         const totalDuration = keyframes.reduce((acc, k) => acc + k.duration * 1000, 0);
+    //         containerRef.current?.animate(keyframesWebAPI, {
+    //             duration: totalDuration || 1000,
+    //             iterations: Infinity,
+    //             easing: "ease-in-out",
+    //         });
+    //     } else {
+    //         console.log("[INERTIA_LOG]: animation not found");
+    //     }
+    // }, [vibeCanvasSize, hierarchyId, vibeDataModel.vibeSchema]);
+
 
     React.useEffect(() => {
         if (hierarchyId && vibeDataModel) {
@@ -553,8 +568,8 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
     const handleClick = () => {
         if (!hierarchyId) return;
         setVibeDataModel(prev => {
-            const newTree = prev.tree
-            var newActionableIds = prev.actionableIds
+            const newTree = vibeDataModel.tree
+            var newActionableIds = vibeDataModel.actionableIds
             if (newActionableIds.has(hierarchyId)) {
                 newActionableIds.delete(hierarchyId);
             } else {
@@ -562,15 +577,19 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
             }    
             var newModel = new VibeDataModel(
                 prev.containerId,
-                prev.baseURL,
+                prev.vibeSchema,
                 prev.tree,
                 new Set(newActionableIds)  // also ensure actionableIds is a Set
             );
-            newModel.ws = prev.ws
-            newModel.ws?.sendActionables(newModel.tree, newModel.actionableIds)
-            
+
+            const tree = vibeDataModel.tree
+            const actionableIds = vibeDataModel.actionableIds
+            const message = {tree: tree, actionableIds: Array.from(actionableIds)}
+            manager.sendMessageActionables(message)
+
             return newModel
         });
+           
     };
 
     return (

@@ -376,7 +376,7 @@ final class WebSocketServer {
             }
         }
     }
-
+    
     private func handleMessage(_ messageWrapper: WebSocketClient.MessageWrapper, from clientId: UUID) {
         switch messageWrapper.type {
         case .actionable:
@@ -564,6 +564,7 @@ struct EditorView: View {
     @State private var installerFactoryLinux: LinuxVMFactory? = nil
     
     @State private var server = try! WebSocketServer(port: 8060)
+
     
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
@@ -662,97 +663,50 @@ struct EditorView: View {
         }
     }
     
-    private func runInvokePlayback(swift: Bool? = nil) async -> Bool {
-        if swift == true {
-            let relavantAnimations = Set(editorModel.animations.compactMap({element in
-                let containerId = element.containerId
-                let actionableIds = element.actionableIds
-                
-                if let container = editorModel.containers.first(where: { container in
-                    container.containerId == containerId
-                }) {
-                    return actionableIds.map {
-                        InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
-                    }
-                    .compactMap({$0})
-                } else {
-                    return actionableIds.map {
-                        InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
-                    }
-                    .compactMap({$0})
-                }
-                
-            })
-            .flatMap({$0}))
+    private func runInvokePlayback() async -> Bool {
+        let relavantAnimations = Set(editorModel.animations.compactMap({element in
+            let containerId = element.containerId
+            let actionableIds = element.actionableIds
             
-            let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> VibeSchemaWrapper? in
-                guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
-                    return nil
+            if let container = editorModel.containers.first(where: { container in
+                container.containerId == containerId
+            }) {
+                return actionableIds.map {
+                    InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
                 }
-                
-                guard let container = self.animations.first(where: {$0.id == schema.id}) else {
-                    return nil
+                .compactMap({$0})
+            } else {
+                return actionableIds.map {
+                    InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
                 }
-                
-                let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
-                
-                return updateSchema
+                .compactMap({$0})
             }
             
-            let result = await executeVibeSwiftWebsocketFunction(schemaWrappers: animationArgs)
-            
-            switch result {
-            case .success(let success):
-                return success == 1
-            case .failure(let failure):
-                print(failure)
-                return false
-            }
-        } else {
-            let relavantAnimations = Set(editorModel.animations.compactMap({element in
-                let containerId = element.containerId
-                let actionableIds = element.actionableIds
-                
-                if let container = editorModel.containers.first(where: { container in
-                    container.containerId == containerId
-                }) {
-                    return actionableIds.map {
-                        InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
-                    }
-                    .compactMap({$0})
-                } else {
-                    return actionableIds.map {
-                        InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
-                    }
-                    .compactMap({$0})
-                }
-                
-            })
-            .flatMap({$0}))
-            
-            let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> VibeSchemaWrapper? in
-                guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
-                    return nil
-                }
-                
-                guard let container = self.animations.first(where: {$0.id == schema.id}) else {
-                    return nil
-                }
-                
-                let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
-                
-                return updateSchema
+        })
+        .flatMap({$0}))
+        
+        let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> VibeSchemaWrapper? in
+            guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
+                return nil
             }
             
-            let result = await executeVibeSwiftWebsocketFunction(schemaWrappers: animationArgs)
-            
-            switch result {
-            case .success(let success):
-                return success == 1
-            case .failure(let failure):
-                print(failure)
-                return false
+            guard let container = self.animations.first(where: {$0.id == schema.id}) else {
+                return nil
             }
+            
+            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
+            
+            return updateSchema
+        }
+        
+        let result = await executeVibeSwiftWebsocketFunction(schemaWrappers: animationArgs)
+        
+        switch result {
+        case .success(let success):
+            return success == 1
+        case .failure(let failure):
+            print(failure)
+            return false
         }
     }
     
@@ -782,7 +736,7 @@ struct EditorView: View {
 //    }
     
     private func tapPlay() async {
-        print(await runInvokePlayback(swift: framework == .swiftUI))
+        print(await runInvokePlayback())
     }
     
     private func determineFocused(newValue: Bool) async {
@@ -838,38 +792,20 @@ struct EditorView: View {
             
             editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
         } else if let animation = animations.first(where: { animation in animation.id == id }) {
-            if framework == .swiftUI {
-                editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
-                for treePacket in server.treePackets {
-                    for id in treePacket.actionableIds {
-                        selectedActionabeIDTracker.selectedActionableIds.insert(id)
-                    }
+            editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
+            for treePacket in server.treePackets {
+                for id in treePacket.actionableIds {
+                    selectedActionabeIDTracker.selectedActionableIds.insert(id)
                 }
-                
-                editorModel.animations.append(
-                    ActionableAnimationAssociater(
-                        actionableIds: selectedActionabeIDTracker.selectedActionableIds,
-                        containerId: animation.containerId,
-                        animationId: animation.id
-                    )
-                )
-            } else if framework == .react {
-                editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
-                for treePacket in server.treePackets {
-                    for id in treePacket.actionableIds {
-                        selectedActionabeIDTracker.selectedActionableIds.insert(id)
-                    }
-                }
-                
-                editorModel.animations.append(
-                    ActionableAnimationAssociater(
-                        actionableIds: selectedActionabeIDTracker.selectedActionableIds,
-                        containerId: animation.containerId,
-                        animationId: animation.id
-                    )
-                )
             }
             
+            editorModel.animations.append(
+                ActionableAnimationAssociater(
+                    actionableIds: selectedActionabeIDTracker.selectedActionableIds,
+                    containerId: animation.containerId,
+                    animationId: animation.id
+                )
+            )   
         }
     }
     
@@ -1050,6 +986,12 @@ struct EditorView: View {
                     }
                     .onChange(of: proxy.size) { oldValue, newValue in
                         frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
+                    }
+                    .task {
+                        server.start()
+                    
+                        // Keep the server running
+//                                            RunLoop.main.run()
                     }
                 } else {
                     Color.black

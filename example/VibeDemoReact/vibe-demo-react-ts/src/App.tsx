@@ -6,10 +6,11 @@ import './App.css';
 
 function App() {
   return (
+    <VibeContainer id={"animation1"} baseURL={"http://localhost:8000"} dev={true}>
     <div className="App">
       <header className="App-header">
         <h1 className="title">Inertia Pro </h1>
-        <VibeContainer id={"animation1"} baseURL={"http://localhost:8000"} dev={true}>
+        
           <div className="gear-cancel-container">
             <Vibeable hierarchyIdPrefix={"homeCard"}>
               <div className="icon-container">
@@ -25,9 +26,10 @@ function App() {
               </button>
             </Vibeable>
           </div>
-        </VibeContainer>
+        
       </header>
     </div>
+    </VibeContainer>
   );
 }
 

@@ -19,50 +19,6 @@ export interface MessageWrapper<T = any> {
     payload: T;
 }
 
-// export class VibeEditorSchema implements VibeSchema {
-//     id: string;
-//     objects: Array<VibeShape> | null;
-//     isSelected: Map<string, boolean>;
-//     actionableIds: Array<string>;
-//     pointerEvents: Map<string, any>;
-//     webKitUserSelect: Map<string, string | null>;
-//     onWindowResize: Function | null;
-//     animations: Map<string, any>;
-//     isPlaying: boolean;
-
-//     constructor(
-//         id: string,
-//         objects: Array<VibeShape> | null,
-//         isSelected: Map<string, boolean> = new Map(),
-//         actionableIds: Array<string> = [],
-//         pointerEvents: Map<string, any> = new Map(),
-//         webKitUserSelect: Map<string, string | null> = new Map(),
-//         onWindowResize: Function | null = null,
-//         animations: Map<string, any> = new Map(),
-//         isPlaying: boolean = false
-//     ) {
-//         this.id = id;
-//         this.objects = objects;
-//         this.isSelected = isSelected;
-//         this.actionableIds = actionableIds;
-//         this.pointerEvents = pointerEvents;
-//         this.webKitUserSelect = webKitUserSelect;
-//         this.onWindowResize = onWindowResize;
-//         this.animations = animations;
-//         this.isPlaying = isPlaying;
-//     }
-// }
-
-// export class VibeRuntimeSchema implements VibeSchema {
-//     id: string;
-//     objects: Array<VibeShape> | null;
-
-//     constructor(id: string, objects: Array<VibeShape> | null = null) {
-//         this.id = id;
-//         this.objects = objects;
-//     }
-// }
-
 export type VibeAnimationValues = {
     scale: number;
     translate: [number, number];
@@ -112,59 +68,22 @@ export type VibeAnimationState = {
 }
 
 export class VibeDataModel {
-    public baseURL: string;
     public containerId: string;
-    public objects: Map<string, VibeShape> = new Map()
-    public tree: Tree
-    private states: Map<string, VibeAnimationState> | null = null;
-    private canvasSizes: Map<string, VibeCanvasSize> | null = null;
-    public actionableIds: Set<string>
-    public isActionable = false
-    public ws: VibeWebSocket | null = null;
-    public actionableIdToAnimationIdMap: Map<string, string> = new Map()
+    public vibeSchema: VibeSchema;
+    public tree: Tree;
+    public actionableIds: Set<string>;
+    public states: Map<string, VibeAnimationState>;
+    public actionableIdToAnimationIdMap: Map<string, string>;
+    public isActionable: boolean;
 
-
-    constructor(containerId: string, baseURL: string, tree: Tree, actionableIds: Set<string>) {
+    constructor(containerId: string, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<string>) {
         this.containerId = containerId;
-        this.baseURL = baseURL;
+        this.vibeSchema = vibeSchema;
         this.tree = tree;
-        this.actionableIds = actionableIds
-    }
-
-    public getId(): string {
-        return this.containerId;
-    }
-
-    public getCanvasSizes(): Map<string, VibeCanvasSize> | null {
-        return this.canvasSizes;
-    }
-
-    public async load(path: string): Promise<VibeSchema | null> {
-        const res = await fetch(path);
-        if (res.body) return await res.json();
-        return null;
-    }
-
-    public async init() {
-        if (this.objects) return;
-
-        const schema = await this.load(`${this.baseURL}/${this.containerId}.json`);
-        if (!schema?.objects) return;
-
-        const tmpObjects = new Map<string, VibeShape>();
-        const states = new Map<string, VibeAnimationState>();
-
-        for (const obj of schema.objects) {
-            tmpObjects.set(obj.id, obj);
-            states.set(obj.id, {
-                id: obj.id,
-                trigger: obj.animation.invokeType === VibeAnimationInvokeType.trigger ? false : null,
-                isCancelled: false
-            });
-        }
-
-        this.objects = tmpObjects;
-        this.states = states;
+        this.actionableIds = actionableIds;
+        this.states = new Map<string, VibeAnimationState>();
+        this.actionableIdToAnimationIdMap = new Map<string, string>();
+        this.isActionable = false;
     }
 }
 
@@ -297,84 +216,194 @@ export class Tree {
     }
 }
 
-export class VibeWebSocket {
-    private ws: WebSocket | null = null;
-    public onMessageActionable: ((msg: { isActionable: boolean }) => void) | null = null;
-    public onMessageActionables: ((msg: { tree: Tree; actionableIds: Set<string> }) => void) | null = null;
-    public onMessageSelected: ((msg: { selectedIds: Set<string> }) => void) | null = null;
-    public onMessageSchema: ((msg: { schemaWrappers: VibeShape[] }) => void) | null = null;
+export type VibeSchemaWrapper = {
+    schema: VibeSchema;
+    actionableId: VibeID;
+    container: AnimationContainer;
+    animationId: string;
+};
 
-    constructor(private url: string) {}
+function base64Encode(str: string): string {
+    // Convert UTF-8 string to bytes
+    const bytes = new TextEncoder().encode(str);
+    // Convert bytes to binary string
+    let binary = '';
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    // Base64 encode
+    return btoa(binary);
+}
 
-    connect(onOpen: () => void) {
-        this.ws = new WebSocket(this.url);
-        this.ws.binaryType = "arraybuffer";
+export interface MessageActionables {
+    tree: Tree;
+    actionableIds: string[]; // Use array for JSON compatibility
+}
 
-        this.ws.onopen = onOpen
-        this.ws.onclose = () => console.log("WebSocket disconnected");
-        this.ws.onerror = (err) => console.error("WebSocket error", err);
-        this.ws.onmessage = (event) => this.handleMessage(event);
+export interface MessageActionable {
+    isActionable: boolean;
+}
+
+export interface MessageSchema {
+    schemaWrappers: VibeSchemaWrapper[];
+}
+
+export class WebSocketClient {
+    private static instance: WebSocketClient;
+    private socket: WebSocket | null = null;
+    public isConnected = false;
+
+    public messageReceived?: (selectedIds: Set<string>) => void;
+    public messageReceivedSchema?: (schemas: VibeSchemaWrapper[]) => void;
+    public messageReceivedIsActionable?: (isActionable: boolean) => void;
+
+    private constructor() {}
+
+    public static get shared(): WebSocketClient {
+        if (!WebSocketClient.instance) {
+            WebSocketClient.instance = new WebSocketClient();
+        }
+        return WebSocketClient.instance;
     }
 
-    private handleMessage(event: MessageEvent) {
-        try {
-            const jsonStr = typeof event.data === "string"
-                ? event.data
-                : new TextDecoder().decode(event.data); // fallback for binary
+    public connect(uri: string, onConnect: () => void): void {
+        if (this.isConnected == true) {
+            return
+        }
 
-            const wrapper: MessageWrapper<any> = JSON.parse(jsonStr);
+        this.socket = new WebSocket(uri);
 
-            // If payload is already an object, don't decode again
-            let payloadObj = wrapper.payload;
+        this.socket.onopen = () => {
+            this.isConnected = true;
+            console.log("WebSocket connected");
+            onConnect()
+        };
 
-            // If the server sends payload as base64 string, decode it
-            if (typeof payloadObj === "string") {
-                const decodedStr = atob(payloadObj);
-                payloadObj = JSON.parse(decodedStr);
-            }
+        this.socket.onmessage = (event: MessageEvent) => {
+            this.handleMessage(event.data);
+        };
 
-            switch (wrapper.type) {
-                case MessageType.actionable:
-                    this.onMessageActionable?.(payloadObj);
-                    break;
-                case MessageType.actionables:
-                    this.onMessageActionables?.(payloadObj);
-                    break;
-                case MessageType.schema:
-                    this.onMessageSchema?.(payloadObj);
-                    break;
-            }
-        } catch (err) {
-            console.error("Failed to decode WebSocket message:", err);
+        this.socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        this.socket.onclose = () => {
+            this.isConnected = false;
+            console.log("WebSocket disconnected");
+        };
+    }
+
+    // private send(data: any): void {
+    //     if (this.socket && this.isConnected) {
+    //         // // 1️⃣ Encode payload as JSON string
+    //         const payloadStr = JSON.stringify(data);
+
+    //         // // 2️⃣ Convert to base64
+    //         const base64Payload = btoa(payloadStr);
+
+    //         // // 3️⃣ Wrap in type wrapper
+    //         const wrapper = { type: data.type, payload: base64Payload };
+
+    //         this.socket.send(JSON.stringify(wrapper));
+    //         // this.socket.send(base64Payload);
+
+    //         console.log("Message sent:", data);
+    //     } else {
+    //         console.error("WebSocket is not connected");
+    //     }
+    // }
+
+    private send(data: any): void {
+        if (this.socket && this.isConnected) {
+            // 1️⃣ Wrap payload in type wrapper
+            const wrapper = {
+                type: data.type,
+                payload: data.payload // Keep as object
+            };
+
+            // 2️⃣ Encode the full wrapper as JSON string
+            this.socket.send(JSON.stringify(wrapper));
+
+            console.log("Message sent:", wrapper);
+        } else {
+            console.error("WebSocket is not connected");
         }
     }
 
-    sendMessage<T extends object>(type: MessageType, payload: T) {
-        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+    public sendMessageActionables(message: MessageActionables): void {
+        if (!this.socket || !this.isConnected) {
+            console.error("WebSocket is not connected");
+            return;
+        }
 
-        // 1️⃣ Encode payload as JSON string
-        const payloadStr = JSON.stringify(payload);
+        // Build message wrapper with payload as object (not string)
+        const messageWrapper: MessageWrapper<string> = {
+            type: MessageType.actionables,
+            payload: base64Encode(JSON.stringify(message))
+        };
 
-        // 2️⃣ Convert to base64
-        const base64Payload = btoa(payloadStr);
+        let json = JSON.stringify(messageWrapper)
 
-        // 3️⃣ Wrap in type wrapper
-        const wrapper = { type, payload: base64Payload };
+        try {
+            // Send the full wrapper as JSON string
+            this.socket.send(json);
 
-        // 4️⃣ Send wrapper as JSON string
-        this.ws.send(JSON.stringify(wrapper));
+            console.log("✅ Message sent:", messageWrapper);
+        } catch (error) {
+            console.error("❌ Error sending message:", error);
+        }
     }
 
-    // High-level helpers
-    sendActionable(isActionable: boolean) {
-        this.sendMessage(MessageType.actionable, { isActionable });
+    public sendMessageSchema(message: MessageSchema): void {
+        const wrapper: MessageWrapper = {
+            type: MessageType.schema,
+            payload: message
+        };
+        this.send(wrapper);
     }
 
-    sendActionables(tree: Tree, actionableIds: Set<string>) {
-        this.sendMessage(MessageType.actionables, { tree: tree.toJSON(), actionableIds: Array.from(actionableIds) });
+    private async handleMessage(rawData: any): Promise<void> {
+        try {
+            let text: string;
+
+            if (typeof rawData === "string") {
+                text = rawData;
+            } else if (rawData instanceof Blob) {
+                text = await rawData.text();
+            } else if (rawData instanceof ArrayBuffer) {
+                text = new TextDecoder().decode(rawData);
+            } else {
+                throw new Error("Unsupported message format");
+            }
+
+            const messageWrapper: MessageWrapper<string> = JSON.parse(text);
+
+            // Decode Base64 payload
+            const payloadJson = atob(messageWrapper.payload);
+            const payload = JSON.parse(payloadJson);
+
+            switch (messageWrapper.type) {
+                case MessageType.actionable:
+                    const actionableMessage: MessageActionable = payload;
+                    console.log("[INERTIA_LOG]: Received actionable:", actionableMessage);
+                    break;
+
+                case MessageType.actionables:
+                    const msg: MessageActionables = payload;
+                    console.log("[INERTIA_LOG]: Received actionables:", msg);
+                    this.messageReceived?.(new Set(msg.actionableIds));
+                    break;
+
+                case MessageType.schema:
+                    const schemaMessage: MessageSchema = payload;
+                    console.log("[INERTIA_LOG]: Received schema:", schemaMessage);
+                    this.messageReceivedSchema?.(schemaMessage.schemaWrappers);
+                    break;
+
+                default:
+                    console.warn("Unknown message type:", messageWrapper.type);
+            }
+        } catch (error) {
+            console.error("❌ Error parsing message:", error, rawData);
+        }
     }
 
-    sendSchema(schemaWrappers: any[]) {
-        this.sendMessage(MessageType.schema, { schemaWrappers });
-    }
 }

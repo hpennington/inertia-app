@@ -246,9 +246,8 @@ struct TreeViewContainer: View {
                                     set: {
                                         treePacket.wrappedValue.actionableIds = $0
                                         for id in server.clients.wrappedValue.keys {
-                                            server.wrappedValue.sendSelectedIds($0, tree: treePacket.tree.wrappedValue, to: id)
+                                            server.wrappedValue.sendSelectedIds($0, tree: treePacket.wrappedValue.tree, to: id)
                                         }
-                                        
                                         
                                         if $0 != treePacket.wrappedValue.actionableIds {
                                             self.updateDelegates(treePacket.wrappedValue.actionableIds)
