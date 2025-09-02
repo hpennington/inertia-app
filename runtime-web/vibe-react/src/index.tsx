@@ -556,7 +556,7 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
             style={{ position: "relative", display: "inline-block", cursor: "pointer" }}
         >
             {children}
-            {isSelected && (
+            {isSelected && vibeDataModel?.isActionable && (
                 <div
                     style={{
                         position: "absolute",
