@@ -424,7 +424,7 @@ export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps
 
     return (
         <VibeCanvasSizeContext.Provider value={bounds}>
-            <div data-vibe-container-id={id} ref={ref} style={{ width: "100%", height: "100%" }}>
+            <div data-vibe-container-id={id} ref={ref}>
                 <VibeContext.Provider value={{ vibeDataModel, setVibeDataModel }}>
                     <VibeParentIdContext.Provider value={id}>
                         <VibeContainerIdContext.Provider value={id}>

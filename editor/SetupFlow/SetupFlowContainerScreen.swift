@@ -36,7 +36,8 @@ struct SetupFlowContainerScreen: View {
             }
         }
     }
-    
+        
+    //  TODO: - Easy Cleanup
     func openProjectFiles(url: URL) -> (Result<[VibeSchema], ProjectFileError>, Result<MetaFile, ProjectFileError>)  {
         let metaFilePath = "meta.json"
         let metaFileURL = url.appending(path: metaFilePath)
@@ -45,8 +46,9 @@ struct SetupFlowContainerScreen: View {
         let animationsDirectoryURL = url.appending(path: animationsDirectoryFilePath)
         
         let meta = self.loadMetaFile(url: metaFileURL)
-        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
-        return (animations, meta)
+//        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
+        let animations = try! JSONDecoder().decode(VibeSchema.self, from: fakeDB.data(using: .utf8)!)
+        return (.success([animations]), meta)
     }
     
     func loadAnimationFiles(url: URL) -> Result<Array<VibeSchema>, ProjectFileError> {
