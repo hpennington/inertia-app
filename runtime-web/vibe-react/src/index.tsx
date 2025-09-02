@@ -511,47 +511,6 @@ export const Vibeable = ({ children, hierarchyIdPrefix }: VibeableProps): React.
         }
     }, [vibeCanvasSize, hierarchyId, vibeDataModel.vibeSchema]);
 
-
-    // React.useEffect(() => {
-    //     if (!hierarchyId || !vibeDataModel || !vibeCanvasSize) return;
-
-    //     const animationId = vibeDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
-    //     if (!animationId) {
-    //         console.log("[INERTIA_LOG]: animationId is null");
-    //         return;
-    //     }
-
-    //     console.log(`[INERTIA_LOG]: hierarchyId: ${hierarchyId} animationId: ${animationId}`);
-
-    //     const animation = vibeDataModel.vibeSchema?.objects?.find(obj => obj.animation?.id === animationId)?.animation;
-
-    //     if (animation) {
-    //         console.log("[INERTIA_LOG]: animation found", animation);
-    //         const keyframes = animation.keyframes || [];
-    //         const allValues = [animation.initialValues, ...keyframes.map(k => k.values)];
-
-    //         const keyframesWebAPI = allValues.map(values => {
-    //             const translateX = values.translate[0] * (vibeCanvasSize.width / 2);
-    //             const translateY = values.translate[1] * (vibeCanvasSize.height / 2);
-    //             return {
-    //                 transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
-    //                 transformOrigin: "center",
-    //                 opacity: values.opacity,
-    //             };
-    //         });
-
-    //         const totalDuration = keyframes.reduce((acc, k) => acc + k.duration * 1000, 0);
-    //         containerRef.current?.animate(keyframesWebAPI, {
-    //             duration: totalDuration || 1000,
-    //             iterations: Infinity,
-    //             easing: "ease-in-out",
-    //         });
-    //     } else {
-    //         console.log("[INERTIA_LOG]: animation not found");
-    //     }
-    // }, [vibeCanvasSize, hierarchyId, vibeDataModel.vibeSchema]);
-
-
     React.useEffect(() => {
         if (hierarchyId && vibeDataModel) {
             vibeDataModel.actionableIdToAnimationIdMap.set(hierarchyId, hierarchyIdPrefix)
