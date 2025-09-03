@@ -708,7 +708,7 @@ struct InertiaActionable<Content: View>: View {
                     .keyframeAnimator(initialValue: animation.initialValues, content: { contentView, values in
                         contentView
                             .scaleEffect(values.scale)
-                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
+//                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
                             .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
                             .offset(x: values.translate.width * inertiaContainerSize.width / 2, y: values.translate.height * inertiaContainerSize.height / 2)
                             .opacity(values.opacity)
@@ -1178,11 +1178,11 @@ public struct VibeSchemaWrapper: Codable {
     }
 }
 
-struct InertiaDecider: View {
+struct InertiaDecider<Content: View>: View {
     @Environment(\.inertiaEditor) private var isEditor
     
     let hierarchyId: String
-    let content: AnyView
+    let content: Content
     
     var body: some View {
         if isEditor {
@@ -1195,7 +1195,7 @@ struct InertiaDecider: View {
 
 extension View {
     public func inertia(_ hierarchyId: String) -> some View {
-        InertiaDecider(hierarchyId: hierarchyId, content: AnyView(self))
+        InertiaDecider(hierarchyId: hierarchyId, content: self)
     }
     
     public func inertiaContainer(dev: Bool, id: VibeID, hierarchyId: String) -> some View {
