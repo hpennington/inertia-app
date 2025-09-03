@@ -56,8 +56,8 @@ export default function App() {
     backgroundColor: "white",
     borderRadius: "20px",
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    padding: "24px",
-    width: "204px",
+    padding: "12px",
+    width: "228px",
     alignItems: "center",
     margin: "24px"
   };

@@ -971,9 +971,10 @@ struct EditorView: View {
                         webView: webView
                     )
                     .frame(width: 300)
+                    
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .aspectRatio(16 / 10, contentMode: .fit)
-
+                    .background(Color.black)
                     .cornerRadius(renderViewportCornerRadius)
                     .padding(6 / 2)
                     .overlay {
