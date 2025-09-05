@@ -100,7 +100,7 @@ function Card({ id }: { id: string }) {
   };
 
   const buttonStyle: CSSProperties = {
-    backgroundColor: "#007aff",
+    backgroundColor: "red",
     color: "white",
     padding: "8px 14px", // slightly smaller
     border: "none",
