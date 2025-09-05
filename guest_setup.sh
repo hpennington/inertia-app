@@ -10,7 +10,7 @@ sudo waydroid upgrade -o
 #settings put global policy_control immersive.full=*
 
 sudo mount -t virtiofs inertia_storage ~/Inertia
-waydroid prop set persist.waydroid.width 375  
+waydroid prop set persist.waydroid.width 400 
 
 
 
