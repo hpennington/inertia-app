@@ -1,25 +1,30 @@
 import SwiftUI
 import WebKit
 
-struct WKWebViewWrapper: NSViewRepresentable {
+struct WKWebViewWrapper: NSViewRepresentable, Equatable {
+    static func ==(lhs: WKWebViewWrapper, rhs: WKWebViewWrapper) -> Bool {
+        return lhs.url.path(percentEncoded: true) == rhs.url.path(percentEncoded: true)
+    }
+    
     let url: URL
     let webView: WKWebView
-    let selectedActionableIDTracker: SelectedActionableIDTracker
+    let coordinator: Coordinator
     
-    init(url: URL, webView: WKWebView, selectedActionabeIDTracker: SelectedActionableIDTracker) {
+    init(url: URL, webView: WKWebView, coordinator: Coordinator) {
         self.url = url
         self.webView = webView
-        self.selectedActionableIDTracker = selectedActionabeIDTracker
+        self.coordinator = coordinator
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(selectedActionabeIDTracker: selectedActionableIDTracker)
+        coordinator
     }
     
     func makeNSView(context: Context) -> WKWebView {
         webView.isInspectable = true
         webView.configuration.userContentController.removeAllScriptMessageHandlers()
         webView.configuration.userContentController.add(context.coordinator, name: "vibeMessageBusHandler")
+        
         return webView
     }
     
@@ -40,14 +45,15 @@ struct WKWebViewWrapper: NSViewRepresentable {
         let isSelected: Bool
     }
     
+    @Observable
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
-        let selectedActionabeIDTracker: SelectedActionableIDTracker
+        let selectedActionableIDTracker: SelectedActionableIDTracker
         
-        @State var currentURL: URL? = nil
+        var currentURL: URL? = nil
         private weak var webView: WKWebView?
         
-        init(selectedActionabeIDTracker: SelectedActionableIDTracker) {
-            self.selectedActionabeIDTracker = selectedActionabeIDTracker
+        init(selectedActionableIDTracker: SelectedActionableIDTracker) {
+            self.selectedActionableIDTracker = selectedActionableIDTracker
         }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation) {
@@ -70,29 +76,31 @@ struct WKWebViewWrapper: NSViewRepresentable {
                     return
                 }
                 
-                let contains = selectedActionabeIDTracker.selectedActionableIds.contains(busMessage.id)
+                let contains = selectedActionableIDTracker.selectedActionableIds.contains(busMessage.id)
                 
                 if busMessage.isSelected && !contains {
-                    selectedActionabeIDTracker.selectedActionableIds.insert(busMessage.id)
+                    selectedActionableIDTracker.selectedActionableIds.insert(busMessage.id)
                 } else if !busMessage.isSelected && contains {
-                    selectedActionabeIDTracker.selectedActionableIds.remove(busMessage.id)
+                    selectedActionableIDTracker.selectedActionableIds.remove(busMessage.id)
                 }
             }
         }
     }
 }
 
-struct WebRenderView: View {
+struct WebRenderView: View, Equatable {
     static func ==(lhs: WebRenderView, rhs: WebRenderView) -> Bool {
-        true
+        return lhs.url.path(percentEncoded: true) == rhs.url.path(percentEncoded: true)
     }
     
     let url: URL
     let contentController: WKUserContentController
-    let selectedActionabeIDTracker: SelectedActionableIDTracker
+    let coordinator: WKWebViewWrapper.Coordinator
     let webView: WKWebView
     
     var body: some View {
-        WKWebViewWrapper(url: url, webView: webView, selectedActionabeIDTracker: selectedActionabeIDTracker)
+        WKWebViewWrapper(url: url, webView: webView, coordinator: coordinator)
+            .equatable()
+            .id(url.absoluteString)
     }
 }

@@ -551,6 +551,8 @@ struct EditorView: View {
         framework: Binding<SetupFlowFramework>,
         animations: [VibeSchema],
         webView: WKWebView,
+        coordinator: WKWebViewWrapper.Coordinator,
+        selectedActionableIDTracker: SelectedActionableIDTracker,
         contentController: WKUserContentController,
         configuration: WKWebViewConfiguration,
         delegate: AppDelegate
@@ -559,6 +561,8 @@ struct EditorView: View {
         self._framework = framework
         self.animations = animations
         self.webView = webView
+        self.coordinator = coordinator
+        self.selectedActionableIDTracker = selectedActionableIDTracker
         self.contentController = contentController
         self.configuration = configuration
         self.delegate = delegate
@@ -568,7 +572,6 @@ struct EditorView: View {
     @State private var editorModel = EditorModel()
     @State private var isFocused = false
     @State private var frameSize: CGSize? = nil
-    @State private var selectedActionabeIDTracker = SelectedActionableIDTracker()
     @State private var selectedAnimation: String = ""
     @State private var attachActionTitle: String = "Attach Container"
     @State private var downloadingMacOS: Bool = true
@@ -587,6 +590,8 @@ struct EditorView: View {
     @Binding var framework: SetupFlowFramework
     let animations: [VibeSchema]
     let webView: WKWebView
+    let selectedActionableIDTracker: SelectedActionableIDTracker
+    let coordinator: WKWebViewWrapper.Coordinator
     let contentController: WKUserContentController
     let configuration: WKWebViewConfiguration
     let delegate: AppDelegate
@@ -821,13 +826,13 @@ struct EditorView: View {
             if let server = servers[framework] {
                 for treePacket in server.treePackets {
                     for id in treePacket.actionableIds {
-                        selectedActionabeIDTracker.selectedActionableIds.insert(id)
+                        selectedActionableIDTracker.selectedActionableIds.insert(id)
                     }
                 }
                 
                 editorModel.animations.append(
                     ActionableAnimationAssociater(
-                        actionableIds: selectedActionabeIDTracker.selectedActionableIds,
+                        actionableIds: selectedActionableIDTracker.selectedActionableIds,
                         containerId: animation.containerId,
                         animationId: animation.id
                     )
@@ -998,9 +1003,11 @@ struct EditorView: View {
                     WebRenderView(
                         url: url,
                         contentController: contentController,
-                        selectedActionabeIDTracker: selectedActionabeIDTracker,
+                        coordinator: coordinator,
                         webView: webView
                     )
+                    .equatable()
+                    .id(url)
                     .frame(width: 300)
                     
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -1012,7 +1019,7 @@ struct EditorView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                     }
-                    .onChange(of: selectedActionabeIDTracker.selectedActionableIds) { _, newValue in
+                    .onChange(of: selectedActionableIDTracker.selectedActionableIds) { _, newValue in
                         print(newValue)
                     }
                     .onAppear {
@@ -1112,7 +1119,7 @@ struct EditorView: View {
                             AnimationsAvailableColumn(
                                 animations: animationsAvailableContents,
                                 selected: $selectedAnimation,
-                                actionableIds: $selectedActionabeIDTracker.wrappedValue.selectedActionableIds,
+                                actionableIds: selectedActionableIDTracker.selectedActionableIds,
                                 disabled: false,
                                 actionTitle: attachActionTitle, attachAnimation: self.attachAnimation)
                                 .padding(.vertical)

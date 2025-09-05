@@ -22,6 +22,11 @@ final class VibeAppVM: ObservableObject {
     
     let configuration = WKWebViewConfiguration()
     let contentController = WKUserContentController()
+    @Published var coordinator: WKWebViewWrapper.Coordinator = WKWebViewWrapper.Coordinator(selectedActionableIDTracker: SelectedActionableIDTracker())
+    
+    var selectedActionableIDTracker: SelectedActionableIDTracker {
+        coordinator.selectedActionableIDTracker
+    }
     
     lazy var webView: WKWebView = {
         WKWebView(frame: .zero, configuration: configuration)
