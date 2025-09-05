@@ -402,7 +402,7 @@ export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps
         const ws = WebSocketClient.shared;
         if (!vibeDataModel?.tree) return;
 
-        ws.connect("ws://127.0.0.1:8060", () => {
+        ws.connect("ws://127.0.0.1:8080", () => {
             ws.messageReceived = (msg) => {
                 setVibeDataModel(prev => ({ ...prev, actionableIds: msg }));
             };

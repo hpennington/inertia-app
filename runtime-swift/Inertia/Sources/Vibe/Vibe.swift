@@ -560,6 +560,7 @@ func getHostIPAddressFromResolvConf() -> String? {
     }
     
     if let firstValidIP = potentialIPs.first {
+        print("firstValidIP: \(firstValidIP)")
         return firstValidIP
     } else {
         print("No valid IP addresses found in /etc/resolv.conf")

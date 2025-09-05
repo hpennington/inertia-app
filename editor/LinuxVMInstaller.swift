@@ -194,6 +194,7 @@ class LinuxVirtualMachineConfigurationHelper {
 
     static func createNetworkDeviceConfiguration() -> VZVirtioNetworkDeviceConfiguration {
         let networkDevice = VZVirtioNetworkDeviceConfiguration()
+        networkDevice.macAddress = VZMACAddress(string: "d6:a7:58:8e:78:d4")!
         let networkAttachment = VZNATNetworkDeviceAttachment()
         networkDevice.attachment = networkAttachment
         return networkDevice

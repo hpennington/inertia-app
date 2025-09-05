@@ -179,7 +179,7 @@ struct TreeViewContainer: View {
     
     let appMode: SetupFlowFramework
     let isFocused: Binding<Bool>
-    let server: Binding<WebSocketServer>
+    let server: WebSocketServer
     let updateDelegates: (_ ids: Set<String>) -> Void
     
     func convertTreeToTreeItem(tree: Tree) -> TreeItem {
@@ -208,6 +208,7 @@ struct TreeViewContainer: View {
             }
         )
     }
+    
     var body: some View {
         ScrollView {
             VStack {
@@ -219,57 +220,60 @@ struct TreeViewContainer: View {
                             Spacer(minLength: .zero)
                             FocusIndicator(isOn: isFocused)
                                 .onChange(of: isFocused.wrappedValue) { _, newValue in
-                                    for id in self.server.clients.wrappedValue.keys {
-                                        self.server.wrappedValue.sendIsActionable(newValue, to: id)
+                                    for id in server.clients.keys {
+                                        server.sendIsActionable(newValue, to: id)
                                     }
                                 }
                         }
-                        
+
                         Divider()
                         VStack {
                             TreeView(
                                 id: treePacket.tree.id,
-                                displayName: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue).displayName,
-                                rootItem: convertTreeToTreeItem(tree: treePacket.tree.wrappedValue),
+                                displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,
+                                rootItem: convertTreeToTreeItem(tree: treePacket.tree),
         //                        isSelected: server.projectedValue.treePackets[index].actionableIds
                                 isSelected: Binding(
                                     get: {
         //                                print(treePacket.actionableIds)
-                                        if oldActionableIds != treePacket.wrappedValue.actionableIds {
+                                        if oldActionableIds != treePacket.actionableIds {
                                             DispatchQueue.main.async {
-                                                oldActionableIds = treePacket.wrappedValue.actionableIds
+                                                oldActionableIds = treePacket.actionableIds
                                                 self.updateDelegates(oldActionableIds)
                                             }
                                         }
-                                        return treePacket.wrappedValue.actionableIds
+                                        return treePacket.actionableIds
                                     },
                                     set: {
-                                        treePacket.wrappedValue.actionableIds = $0
-                                        for id in server.clients.wrappedValue.keys {
-                                            server.wrappedValue.sendSelectedIds($0, tree: treePacket.wrappedValue.tree, to: id)
+                                        treePacket.actionableIds = $0
+                                        for id in server.clients.keys {
+                                            server.sendSelectedIds($0, tree: treePacket.tree, to: id)
                                         }
-                                        
-                                        if $0 != treePacket.wrappedValue.actionableIds {
-                                            self.updateDelegates(treePacket.wrappedValue.actionableIds)
+
+                                        if $0 != treePacket.actionableIds {
+                                            self.updateDelegates(treePacket.actionableIds)
                                         }
                                     }
                                 )
                             )
                             .disabled(!isFocused.wrappedValue && server.treePackets.count > .zero)
                         }
-                        
+
                     }
                     .padding(.vertical, 42)
                     .padding(.horizontal, 24)
                 }
+//                ForEach(server.treePackets, id: \.hashValue) { treePacket in
+//
+//                }
                 
-                if !server.treePackets.isEmpty {
+                if !(server.treePackets.isEmpty) {
                     Divider()
                 }
             }
         }
-        .padding(.vertical, 42)
-        .padding(.horizontal, 24)
+//        .padding(.vertical, 42)
+//        .padding(.horizontal, 24)
     }
 }
 

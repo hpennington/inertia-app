@@ -295,16 +295,31 @@ final class WebSocketServer {
         parameters.defaultProtocolStack.applicationProtocols.insert(wsOptions, at: 0)
 
         listener = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
-        
+
+        // Set handlers before starting
         listener.newConnectionHandler = { [weak self] connection in
             self?.handleNewConnection(connection)
+        }
+
+        listener.stateUpdateHandler = { state in
+            switch state {
+            case .ready:
+                print("✅ Listener ready on port \(self.listener.port!.rawValue)")
+            case .failed(let error):
+                print("❌ Listener failed: \(error)")
+            case .cancelled:
+                print("⚠️ Listener cancelled")
+            default:
+                break
+            }
         }
     }
 
     func start() {
-        print("✅ WebSocket server listening on port \(listener.port!.rawValue)")
+        // Start listener last, after setting handlers
         listener.start(queue: .main)
     }
+
 
     private func handleNewConnection(_ connection: NWConnection) {
         let clientId = UUID()
@@ -488,6 +503,7 @@ enum VibeWebScriptError: Error {
 
 enum VibeSwiftWebsocketError: Error {
     case didFailToEval(Error)
+    case serverNil
 }
 
 @Observable
@@ -563,7 +579,8 @@ struct EditorView: View {
 //    @State private var installerFatory: MacOSVMInstalledFactory? = nil
     @State private var installerFactoryLinux: LinuxVMFactory? = nil
     
-    @State private var server = try! WebSocketServer(port: 8060)
+//    @State private var server: WebSocketServer? = nil
+    @State private var servers: [SetupFlowFramework: WebSocketServer] = [:]
 
     
     @Binding var url: String
@@ -633,6 +650,10 @@ struct EditorView: View {
     }
     
     func executeVibeSwiftWebsocketFunction(schemaWrappers: [VibeSchemaWrapper]) async -> Result<Int, VibeSwiftWebsocketError> {
+        guard let server = servers[framework] else {
+            return .failure(.serverNil)
+        }
+        
         for id in server.clients.keys {
             server.sendSchema(schemaWrappers, to: id)
         }
@@ -774,14 +795,17 @@ struct EditorView: View {
     
     @ViewBuilder
     var treeView: some View {
-        TreeViewContainer(appMode: framework, isFocused: $isFocused, server: $server) { ids in
-            var localRowData: [String: [Int]] = [:]
-            for id in ids {
-                localRowData[id] = [Int]()
+        if let server = servers[framework] {
+            TreeViewContainer(appMode: framework, isFocused: $isFocused, server: server) { ids in
+                var localRowData: [String: [Int]] = [:]
+                for id in ids {
+                    localRowData[id] = [Int]()
+                }
+                
+                self.rowData = localRowData
             }
-            
-            self.rowData = localRowData
         }
+        
     }
     
     func attachAnimation(id: String, actionableIds: Set<String>) {
@@ -793,19 +817,22 @@ struct EditorView: View {
             editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
         } else if let animation = animations.first(where: { animation in animation.id == id }) {
             editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
-            for treePacket in server.treePackets {
-                for id in treePacket.actionableIds {
-                    selectedActionabeIDTracker.selectedActionableIds.insert(id)
-                }
-            }
             
-            editorModel.animations.append(
-                ActionableAnimationAssociater(
-                    actionableIds: selectedActionabeIDTracker.selectedActionableIds,
-                    containerId: animation.containerId,
-                    animationId: animation.id
-                )
-            )   
+            if let server = servers[framework] {
+                for treePacket in server.treePackets {
+                    for id in treePacket.actionableIds {
+                        selectedActionabeIDTracker.selectedActionableIds.insert(id)
+                    }
+                }
+                
+                editorModel.animations.append(
+                    ActionableAnimationAssociater(
+                        actionableIds: selectedActionabeIDTracker.selectedActionableIds,
+                        containerId: animation.containerId,
+                        animationId: animation.id
+                    )
+                )   
+            }
         }
     }
     
@@ -871,11 +898,13 @@ struct EditorView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                     }
-                    .task {
-                        server.start()
-                        
-                        // Keep the server running
-                        //                                            RunLoop.main.run()
+                    .onAppear {
+                        if servers[.compose] == nil {
+                            if let server = try? WebSocketServer(port: 8070) {
+                                server.start()
+                                servers[.compose] = server
+                            }
+                        }
                     }
                 }
             } else {
@@ -930,11 +959,13 @@ struct EditorView: View {
                             RoundedRectangle(cornerRadius: 4)
                                 .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                         }
-                        .task {
-                            server.start()
-                        
-                            // Keep the server running
-//                                            RunLoop.main.run()
+                        .onAppear {
+                            if servers[.swiftUI] == nil {
+                                if let server = try? WebSocketServer(port: 8060) {
+                                    server.start()
+                                    servers[.swiftUI] = server
+                                }
+                            }
                         }
                 }
             } else {
@@ -990,11 +1021,13 @@ struct EditorView: View {
                     .onChange(of: proxy.size) { oldValue, newValue in
                         frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
                     }
-                    .task {
-                        server.start()
-                    
-                        // Keep the server running
-//                                            RunLoop.main.run()
+                    .onAppear {
+                        if servers[.react] == nil {
+                            if let server = try? WebSocketServer(port: 8080) {
+                                server.start()
+                                servers[.react] = server
+                            }
+                        }
                     }
                 } else {
                     Color.black
