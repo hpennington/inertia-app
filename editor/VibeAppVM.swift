@@ -22,10 +22,15 @@ final class VibeAppVM: ObservableObject {
     
     let configuration = WKWebViewConfiguration()
     let contentController = WKUserContentController()
-    @Published var coordinator: WKWebViewWrapper.Coordinator = WKWebViewWrapper.Coordinator(selectedActionableIDTracker: SelectedActionableIDTracker())
     
-    var selectedActionableIDTracker: SelectedActionableIDTracker {
-        coordinator.selectedActionableIDTracker
+    @Published private var selectedActionableIDTrackers: [SetupFlowFramework: SelectedActionableIDTracker] = [:]
+//    @State private var
+    @Published var coordinator: WKWebViewWrapper.Coordinator
+    
+    var selectedActionableIDTracker: SelectedActionableIDTracker? {
+        get {
+            return self.selectedActionableIDTrackers[framework]
+        }
     }
     
     lazy var webView: WKWebView = {
@@ -33,6 +38,11 @@ final class VibeAppVM: ObservableObject {
     }()
     
     init() {
+        let selectedActionableIDTracker = SelectedActionableIDTracker()
+        coordinator = WKWebViewWrapper.Coordinator(selectedActionableIDTracker: selectedActionableIDTracker)
+        selectedActionableIDTrackers[.react] = selectedActionableIDTracker
+        selectedActionableIDTrackers[.compose] = SelectedActionableIDTracker()
+        selectedActionableIDTrackers[.swiftUI] = SelectedActionableIDTracker()
         configuration.userContentController = contentController
         webView.underPageBackgroundColor = .black
         

@@ -383,7 +383,7 @@ public class WebSocketClient {
     func connect(uri: URL) {
         self.task = URLSession.shared.webSocketTask(with: uri)
         self.task?.resume()
-        isConnected = true
+        isConnected = self.task?.state == .completed || self.task?.state == .running || self.task?.state == .suspended
     }
     
     public enum MessageType: String, Codable {
@@ -1025,8 +1025,20 @@ struct InertiaEditable<Content: View>: View {
                     manager.messageReceivedIsActionable = handleMessageActionable
                 }
             }
-            
         }
+        .onChange(of: manager.isConnected, { oldValue, newValue in
+            if !newValue {
+                if let ip = getHostIPAddressFromResolvConf() {
+                    let uri = URL(string: "ws://\(ip):8060")!
+                    NSLog("[INERTIA_LOG]: Starting to send data 2 (setup)...")
+                    manager.connect(uri: uri)
+
+                    manager.messageReceived = handleMessage
+                    manager.messageReceivedSchema = handleMessageSchema
+                    manager.messageReceivedIsActionable = handleMessageActionable
+                }
+            }
+        })
         .onChange(of: vibeDataModel?.tree, { oldValue, newValue in
             if let tree = newValue {
                 for node in tree.nodeMap.values {

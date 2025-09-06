@@ -319,12 +319,19 @@ final class WebSocketServer {
         // Start listener last, after setting handlers
         listener.start(queue: .main)
     }
-
-
+    
+    func reset() {
+        for client in clients.values {
+            client.cancel()
+        }
+        
+        clients.removeAll()
+    }
+    
     private func handleNewConnection(_ connection: NWConnection) {
         let clientId = UUID()
         clients[clientId] = connection
-
+        
         connection.stateUpdateHandler = { state in
             switch state {
             case .ready:
@@ -332,10 +339,10 @@ final class WebSocketServer {
                 self.receiveNextMessage(on: connection, clientId: clientId)
             case .failed(let error):
                 print("❌ Connection failed: \(error)")
-                self.clients.removeValue(forKey: clientId)
+                self.reset()
             case .cancelled:
                 print("⚠️ Connection cancelled: \(clientId)")
-                self.clients.removeValue(forKey: clientId)
+                self.reset()
             default:
                 break
             }
@@ -354,7 +361,9 @@ final class WebSocketServer {
 
             if let error = error {
                 print("❌ Receive error: \(error)")
-                self?.clients.removeValue(forKey: clientId)
+//                self?.clients.removeValue(forKey: clientId)
+                self?.reset()
+//                self?.errorCallback()
                 return
             }
 
@@ -363,7 +372,9 @@ final class WebSocketServer {
                 switch wsMetadata.opcode {
                 case .close:
                     print("🔌 Client closed connection: \(clientId)")
-                    self?.clients.removeValue(forKey: clientId)
+//                    self?.clients.removeValue(forKey: clientId)
+//                    self?.errorCallback()
+                    self?.reset()
                     return
                 case .ping, .pong:
                     return // Auto-replied
@@ -552,7 +563,7 @@ struct EditorView: View {
         animations: [VibeSchema],
         webView: WKWebView,
         coordinator: WKWebViewWrapper.Coordinator,
-        selectedActionableIDTracker: SelectedActionableIDTracker,
+        selectedActionableIDTracker: SelectedActionableIDTracker?,
         contentController: WKUserContentController,
         configuration: WKWebViewConfiguration,
         delegate: AppDelegate
@@ -584,13 +595,13 @@ struct EditorView: View {
     
 //    @State private var server: WebSocketServer? = nil
     @State private var servers: [SetupFlowFramework: WebSocketServer] = [:]
+    let selectedActionableIDTracker: SelectedActionableIDTracker?
 
     
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
     let animations: [VibeSchema]
     let webView: WKWebView
-    let selectedActionableIDTracker: SelectedActionableIDTracker
     let coordinator: WKWebViewWrapper.Coordinator
     let contentController: WKUserContentController
     let configuration: WKWebViewConfiguration
@@ -659,8 +670,12 @@ struct EditorView: View {
             return .failure(.serverNil)
         }
         
-        for id in server.clients.keys {
-            server.sendSchema(schemaWrappers, to: id)
+        for client in server.clients {
+            if client.value.state == .ready {
+                server.sendSchema(schemaWrappers, to: client.key)
+            } else {
+                return .failure(.serverNil)
+            }
         }
         
         return .success(1)
@@ -809,6 +824,7 @@ struct EditorView: View {
                 
                 self.rowData = localRowData
             }
+            .id(server.clients.keys.description)
         }
         
     }
@@ -826,17 +842,20 @@ struct EditorView: View {
             if let server = servers[framework] {
                 for treePacket in server.treePackets {
                     for id in treePacket.actionableIds {
-                        selectedActionableIDTracker.selectedActionableIds.insert(id)
+                        selectedActionableIDTracker?.selectedActionableIds.insert(id)
                     }
                 }
                 
-                editorModel.animations.append(
-                    ActionableAnimationAssociater(
-                        actionableIds: selectedActionableIDTracker.selectedActionableIds,
-                        containerId: animation.containerId,
-                        animationId: animation.id
+                if let selectedActionableIds = selectedActionableIDTracker?.selectedActionableIds {
+                    editorModel.animations.append(
+                        ActionableAnimationAssociater(
+                            actionableIds: selectedActionableIds,
+                            containerId: animation.containerId,
+                            animationId: animation.id
+                        )
                     )
-                )   
+                }
+                   
             }
         }
     }
@@ -1019,9 +1038,6 @@ struct EditorView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                     }
-                    .onChange(of: selectedActionableIDTracker.selectedActionableIds) { _, newValue in
-                        print(newValue)
-                    }
                     .onAppear {
                         frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
                     }
@@ -1043,6 +1059,85 @@ struct EditorView: View {
             }
         }
         .background(appColors.backgroundPrimary)
+    }
+    
+    @ViewBuilder
+    var animationPropertyView: some View {
+        ScrollView {
+            VStack {
+                VStack(alignment: .leading) {
+                    Picker(selection: $framework) {
+                        Text("React")
+                            .tag(SetupFlowFramework.react)
+                        Text("SwiftUI")
+                            .tag(SetupFlowFramework.swiftUI)
+                        Text("Compose")
+                            .tag(SetupFlowFramework.compose)
+                    } label: {
+                        EmptyView()
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.vertical)
+                    
+                    HStack() {
+//                                FocusIndicator(isOn: $isFocused)
+//                                    .onChange(of: isFocused) { _, newValue in
+//                                        for id in server.clients.keys {
+//                                            server.sendIsActionable(newValue, to: id)
+//                                        }
+//                                    }
+                        Spacer(minLength: .zero)
+                        SettingsIconButton {
+                            showExportPanel()
+                        }
+                    }
+                    
+                    if framework == .react {
+                        AddressBar(path: url) { newURL in
+                            self.url = newURL
+                        }
+                        .frame(maxWidth: frameSize?.width)
+                        .padding(.top, 24)
+                    }
+
+                    AnimationsAvailableColumn(
+                        animations: animationsAvailableContents,
+                        selected: $selectedAnimation,
+                        actionableIds: selectedActionableIDTracker?.selectedActionableIds,
+                        disabled: false,
+                        actionTitle: attachActionTitle, attachAnimation: self.attachAnimation)
+                        .padding(.vertical)
+                    
+                }
+                .frame(maxHeight: .infinity)
+                .padding(.horizontal)
+                .modifier(WithPanelBackground())
+                .frame(minHeight: 600)
+                .cornerRadius(bottomLeft: cornerRadius)
+                .onChange(of: selectedAnimation) { _, newValue in
+                    let containers = self.animations
+                    let animations = self.animations.flatMap({$0.objects})
+                    if let container = containers.first(where: { container in container.id == newValue }) {
+                        attachActionTitle = "Attach Container"
+                    } else if let animation = animations.first(where: { animation in animation.id == newValue }) {
+                        attachActionTitle = "Attach Animation"
+                    }
+                }
+                
+                Spacer(minLength: spacing)
+                
+                VStack {
+//                            AnimationsAttachedList(animations: editorModel.animations)
+//                                .padding(.vertical)
+                }
+                .padding(.horizontal)
+                .modifier(WithPanelBackground())
+                .frame(minHeight: 600)
+                .frame(maxHeight: .infinity)
+                .cornerRadius(topLeft: cornerRadius)
+            }
+            .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
+        }
     }
     
     var body: some View {
@@ -1079,80 +1174,7 @@ struct EditorView: View {
                 }
 
             } trailing: {
-                ScrollView {
-                    VStack {
-                        VStack(alignment: .leading) {
-                            Picker(selection: $framework) {
-                                Text("React")
-                                    .tag(SetupFlowFramework.react)
-                                Text("SwiftUI")
-                                    .tag(SetupFlowFramework.swiftUI)
-                                Text("Compose")
-                                    .tag(SetupFlowFramework.compose)
-                            } label: {
-                                EmptyView()
-                            }
-                            .pickerStyle(.segmented)
-                            .padding(.vertical)
-                            
-                            HStack() {
-//                                FocusIndicator(isOn: $isFocused)
-//                                    .onChange(of: isFocused) { _, newValue in
-//                                        for id in server.clients.keys {
-//                                            server.sendIsActionable(newValue, to: id)
-//                                        }
-//                                    }
-                                Spacer(minLength: .zero)
-                                SettingsIconButton {
-                                    showExportPanel()
-                                }
-                            }
-                            
-                            if framework == .react {
-                                AddressBar(path: url) { newURL in
-                                    self.url = newURL
-                                }
-                                .frame(maxWidth: frameSize?.width)
-                                .padding(.top, 24)
-                            }
-
-                            AnimationsAvailableColumn(
-                                animations: animationsAvailableContents,
-                                selected: $selectedAnimation,
-                                actionableIds: selectedActionableIDTracker.selectedActionableIds,
-                                disabled: false,
-                                actionTitle: attachActionTitle, attachAnimation: self.attachAnimation)
-                                .padding(.vertical)
-                        }
-                        .frame(maxHeight: .infinity)
-                        .padding(.horizontal)
-                        .modifier(WithPanelBackground())
-                        .frame(minHeight: 600)
-                        .cornerRadius(bottomLeft: cornerRadius)
-                        .onChange(of: selectedAnimation) { _, newValue in
-                            let containers = self.animations
-                            let animations = self.animations.flatMap({$0.objects})
-                            if let container = containers.first(where: { container in container.id == newValue }) {
-                                attachActionTitle = "Attach Container"
-                            } else if let animation = animations.first(where: { animation in animation.id == newValue }) {
-                                attachActionTitle = "Attach Animation"
-                            }
-                        }
-                        
-                        Spacer(minLength: spacing)
-                        
-                        VStack {
-//                            AnimationsAttachedList(animations: editorModel.animations)
-//                                .padding(.vertical)
-                        }
-                        .padding(.horizontal)
-                        .modifier(WithPanelBackground())
-                        .frame(minHeight: 600)
-                        .frame(maxHeight: .infinity)
-                        .cornerRadius(topLeft: cornerRadius)
-                    }
-                    .frame(maxWidth: propertiesViewWidth, maxHeight: .infinity)
-                }
+                animationPropertyView
             } bottom: {
                 timelineView
             }

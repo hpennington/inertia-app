@@ -236,23 +236,24 @@ struct TreeViewContainer: View {
                                 isSelected: Binding(
                                     get: {
         //                                print(treePacket.actionableIds)
-                                        if oldActionableIds != treePacket.actionableIds {
-                                            DispatchQueue.main.async {
-                                                oldActionableIds = treePacket.actionableIds
-                                                self.updateDelegates(oldActionableIds)
-                                            }
-                                        }
+//                                        if oldActionableIds != treePacket.actionableIds {
+//                                            DispatchQueue.main.async {
+//                                                self.updateDelegates(oldActionableIds)
+//                                                oldActionableIds = treePacket.actionableIds
+//                                            }
+//                                        }
                                         return treePacket.actionableIds
                                     },
                                     set: {
-                                        treePacket.actionableIds = $0
-                                        for id in server.clients.keys {
-                                            server.sendSelectedIds($0, tree: treePacket.tree, to: id)
+                                        for client in server.clients.keys {
+                                            server.sendSelectedIds($0, tree: treePacket.tree, to: client)
                                         }
-
+                                        
                                         if $0 != treePacket.actionableIds {
-                                            self.updateDelegates(treePacket.actionableIds)
+                                            self.updateDelegates($0)
                                         }
+                                        
+                                        treePacket.actionableIds = $0
                                     }
                                 )
                             )

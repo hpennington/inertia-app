@@ -28,8 +28,3 @@ struct FocusIndicator: View {
             }
     }
 }
-
-#Preview {
-    @State var isOn = false
-    return FocusIndicator(isOn: $isOn)
-}

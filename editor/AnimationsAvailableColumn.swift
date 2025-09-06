@@ -10,7 +10,7 @@ import SwiftUI
 struct AnimationsAvailableColumn: View {
     let animations: [String: [String]]
     let selected: Binding<String>
-    let actionableIds: Set<String>
+    let actionableIds: Set<String>?
     let disabled: Bool
     let actionTitle: String
     let attachAnimation: (_ id: String, _ actionableIds: Set<String>) -> Void
@@ -43,7 +43,7 @@ struct AnimationsAvailableColumn: View {
             AnimationsList(animations: animations, selected: selected)
             
             AttachAnimationButton(title: actionTitle) {
-                if !selected.wrappedValue.isEmpty {
+                if let actionableIds, !selected.wrappedValue.isEmpty {
                     attachAnimation(selected.wrappedValue, actionableIds)
                 }
             }

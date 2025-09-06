@@ -27,7 +27,7 @@ struct Card: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
-                    .background(Color.yellow)
+                    .background(Color.orange)
                     .cornerRadius(10)
             }
 

@@ -27,8 +27,3 @@ struct VibeTextContainer: View {
         }
     }
 }
-
-#Preview {
-    @State var text = ""
-    return VibeTextContainer(title: "Title", text: $text)
-}
