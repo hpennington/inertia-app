@@ -541,24 +541,16 @@ struct EditorView: View {
                     .padding(.vertical)
                     
                     HStack() {
-//                                FocusIndicator(isOn: $isFocused)
-//                                    .onChange(of: isFocused) { _, newValue in
-//                                        for id in server.clients.keys {
-//                                            server.sendIsActionable(newValue, to: id)
-//                                        }
-//                                    }
-                        Spacer(minLength: .zero)
+                        if framework == .react {
+                            AddressBar(path: url) { newURL in
+                                self.url = newURL
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        Spacer()
                         SettingsIconButton {
                             showExportPanel()
                         }
-                    }
-                    
-                    if framework == .react {
-                        AddressBar(path: url) { newURL in
-                            self.url = newURL
-                        }
-                        .frame(maxWidth: frameSize?.width)
-                        .padding(.top, 24)
                     }
 
                     AnimationsAvailableColumn(
