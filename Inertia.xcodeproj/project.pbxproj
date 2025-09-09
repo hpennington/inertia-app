@@ -19,6 +19,9 @@
 		F81316DF2CBCE36300266728 /* AttachAnimationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */; };
 		F824833C2E6E024B0009682E /* Playhead.swift in Sources */ = {isa = PBXBuildFile; fileRef = F824833B2E6E024B0009682E /* Playhead.swift */; };
 		F824833E2E6E60390009682E /* TimelineColumn.swift in Sources */ = {isa = PBXBuildFile; fileRef = F824833D2E6E60390009682E /* TimelineColumn.swift */; };
+		F82483402E6FC7140009682E /* FakeDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = F824833F2E6FC7140009682E /* FakeDB.swift */; };
+		F82483422E6FC73D0009682E /* TreePacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82483412E6FC73D0009682E /* TreePacket.swift */; };
+		F82483442E6FC79D0009682E /* WebSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82483432E6FC79D0009682E /* WebSocketServer.swift */; };
 		F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */; };
 		F84A605B2CE3D3D900070036 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F84A605A2CE3D3D900070036 /* Inertia */; };
 		F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */; };
@@ -88,6 +91,9 @@
 		F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachAnimationButton.swift; sourceTree = "<group>"; };
 		F824833B2E6E024B0009682E /* Playhead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playhead.swift; sourceTree = "<group>"; };
 		F824833D2E6E60390009682E /* TimelineColumn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineColumn.swift; sourceTree = "<group>"; };
+		F824833F2E6FC7140009682E /* FakeDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeDB.swift; sourceTree = "<group>"; };
+		F82483412E6FC73D0009682E /* TreePacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreePacket.swift; sourceTree = "<group>"; };
+		F82483432E6FC79D0009682E /* WebSocketServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketServer.swift; sourceTree = "<group>"; };
 		F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlow.swift; sourceTree = "<group>"; };
 		F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCompilationModeScreen.swift; sourceTree = "<group>"; };
 		F8641C432C978AA500E43338 /* VibeAppVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeAppVM.swift; sourceTree = "<group>"; };
@@ -218,6 +224,9 @@
 				F8067EF42CF4C2B5002E7B89 /* ViewHierarchy */,
 				F89C08632C875AAE00F58F9A /* SetupFlow */,
 				F89BA0AD2C48C85A0006603C /* EditorView.swift */,
+				F82483432E6FC79D0009682E /* WebSocketServer.swift */,
+				F82483412E6FC73D0009682E /* TreePacket.swift */,
+				F824833F2E6FC7140009682E /* FakeDB.swift */,
 				F87681242CA22AD90065CB6C /* SearchField.swift */,
 				F8C2A8782CAB75D50054B165 /* AnimationsList.swift */,
 				F8C2A87C2CAB7C290054B165 /* AnimationsAvailableColumn.swift */,
@@ -396,10 +405,13 @@
 				F8B4956A2C87BC010076A42C /* VibeTextContainer.swift in Sources */,
 				F89C08692C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift in Sources */,
 				F8932C8B2C51D6AF00546975 /* MacRenderView.swift in Sources */,
+				F82483442E6FC79D0009682E /* WebSocketServer.swift in Sources */,
 				F89BA0BB2C48CA280006603C /* Colors.swift in Sources */,
 				F8C2A87B2CAB75DF0054B165 /* AnimationsAttachedList.swift in Sources */,
 				F80DC09C2E631F5C00D0F196 /* SettingsIconButton.swift in Sources */,
 				F8ACA5F02D1E015C00D0B878 /* TimelineKeypointIndicator.swift in Sources */,
+				F82483422E6FC73D0009682E /* TreePacket.swift in Sources */,
+				F82483402E6FC7140009682E /* FakeDB.swift in Sources */,
 				F8DD5AB32C7D5AD0003A3330 /* ProjectsListView.swift in Sources */,
 				F89BA0BD2C48CBE10006603C /* MainLayout.swift in Sources */,
 				F8DD5AB92C7D5E89003A3330 /* ProjectButton.swift in Sources */,
