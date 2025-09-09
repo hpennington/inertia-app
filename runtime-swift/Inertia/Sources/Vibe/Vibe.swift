@@ -764,7 +764,7 @@ struct InertiaActionable<Content: View>: View {
                             .scaleEffect(values.scale)
 //                            .rotationEffect(Angle(degrees: values.rotate), anchor: .topLeading)
                             .rotationEffect(Angle(degrees: values.rotateCenter), anchor: .center)
-                            .offset(x: values.translate.width * inertiaContainerSize.width / 2, y: values.translate.height * inertiaContainerSize.height / 2)
+                            .offset(x: values.translate.width * inertiaContainerSize.width, y: values.translate.height * inertiaContainerSize.height)
                             .opacity(values.opacity)
                     }, keyframes: { _ in
                         KeyframeTrack {
@@ -899,8 +899,8 @@ struct InertiaEditable<Content: View>: View {
                     if let actionableIds = vibeDataModel?.actionableIds {
                         manager.sendMessage(
                             WebSocketClient.MessageTranslation(
-                                translationX: (value.startLocation.x + dragOffset.width) / inertiaContainerSize.width,
-                                translationY: (value.startLocation.y +  dragOffset.height) / inertiaContainerSize.height,
+                                translationX: (dragOffset.width) / (inertiaContainerSize.width / 2),
+                                translationY: (dragOffset.height) / (inertiaContainerSize.height / 2),
                                 actionableIds: actionableIds
                             )
                         )
@@ -1058,6 +1058,9 @@ struct InertiaEditable<Content: View>: View {
                             }
                         }
                     })
+                    .onAppear {
+                        self.dragOffset = animation.initialValues.translate
+                    }
             } else {
                 wrappedContent                    
             }

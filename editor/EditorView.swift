@@ -419,16 +419,21 @@ struct EditorView: View {
                                     let rectangle = VibeShape(
                                         id: "bird2",
                                         containerId: "animation2", // or "animation123schema" if you want a new container
-                                        width: 400,
-                                        height: 1000,
+                                        width: 200,
+                                        height: 100,
                                         position: .zero,
                                         color: [127, 244, 122],
                                         shape: "rectangle",
-                                        objectType: .shape, // ✅ was .animation
+                                        objectType: .animation, // ✅ was .animation
                                         zIndex: 0,
                                         animation: .init(
                                             id: "test123321anim",
-                                            initialValues: VibeAnimationValues(scale: 1.0, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: 1.0), // ✅ was .zero (invisible)
+                                            initialValues: VibeAnimationValues(
+                                                scale: 1.0,
+                                                translate: .zero,
+                                                rotate: .zero,
+                                                rotateCenter: .zero,
+                                                opacity: 1.0),
                                             invokeType: .auto,
                                             keyframes: keyframes
                                         )
