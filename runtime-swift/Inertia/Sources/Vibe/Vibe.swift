@@ -35,7 +35,9 @@ public class Node: Identifiable, Hashable, Codable, Equatable, CustomStringConve
     }
     
     public var description: String {
-        "{id: \(id), parentId: \(parentId), parent.id: \(parent?.id), children: \(children?.map {$0.id})}"
+"""
+{"id": \(id), "parentId": \(parentId), "children": \(children?.map {$0.id})}
+"""
     }
     
     private enum CodingKeys: String, CodingKey {
@@ -137,7 +139,9 @@ public class Tree: Identifiable, Hashable, Codable, CustomStringConvertible, Equ
     }
     
     public var description: String {
-        "treeId: \(id) root: \(rootNode)"
+"""
+{"treeId": \(id), "root": \(rootNode)}
+"""
     }
 }
 
@@ -1285,7 +1289,13 @@ extension View {
     }
 }
 
-public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equatable {
+public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equatable, CustomStringConvertible {
+    public var description: String {
+"""
+{"scale": \(scale), "translate": \(translate), "rotate": \(rotate), "rotateCenter": \(rotateCenter), "opacity": \(opacity)}
+"""
+    }
+    
     public static var zero = VibeAnimationValues(scale: .zero, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: .zero)
     
     public init(scale: CGFloat, translate: CGSize, rotate: CGFloat, rotateCenter: CGFloat, opacity: CGFloat) {
@@ -1353,7 +1363,13 @@ public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equata
     }
 }
 
-public struct VibeAnimationKeyframe: Identifiable, Codable, Equatable {
+public struct VibeAnimationKeyframe: Identifiable, Codable, Equatable, CustomStringConvertible {
+    public var description: String {
+"""
+{"id": \(id), "values": \(values), "duration": \(duration)}
+"""
+    }
+    
     public let id: VibeID
     public let values: VibeAnimationValues
     public let duration: CGFloat
@@ -1371,11 +1387,21 @@ public struct VibeAnimationKeyframe: Identifiable, Codable, Equatable {
     }
 }
 
-public enum VibeObjectType: String, Codable, Equatable {
+public enum VibeObjectType: String, Codable, Equatable, CustomStringConvertible {
+    public var description: String {
+        "\(self.rawValue)"
+    }
+    
     case shape, animation
 }
 
-public struct VibeShape: Codable, Identifiable, Equatable {
+public struct VibeShape: Codable, Identifiable, Equatable, CustomStringConvertible {
+    public var description: String {
+"""
+{"id": "\(id)", "containerId": "\(containerId.description)", "width": \(width.description), "height": \(height.description), "position": \(position.debugDescription), "color": \(color.description), "shape": \(shape.description), "objectType": \(objectType.description), "zIndex": \(zIndex), "animation": \(animation.description)}
+"""
+    }
+    
     public let id: VibeID
     public let containerId: VibeID
     public let width: CGFloat
@@ -1401,7 +1427,13 @@ public struct VibeShape: Codable, Identifiable, Equatable {
     }
 }
 
-public struct VibeSchema: Codable, Equatable {
+public struct VibeSchema: Codable, Equatable, CustomStringConvertible {
+    public var description: String {
+"""
+{"id": "\(id)", objects: \(objects)}
+"""
+    }
+    
     public let id: VibeID
     public let objects: [VibeShape]
     
@@ -1411,11 +1443,21 @@ public struct VibeSchema: Codable, Equatable {
     }
 }
 
-public enum VibeAnimationInvokeType: String, Codable {
+public enum VibeAnimationInvokeType: String, Codable, CustomStringConvertible {
+    public var description: String {
+        "\(self.rawValue)"
+    }
+    
     case trigger, auto
 }
 
-public struct VibeAnimationSchema: Codable, Identifiable, Equatable {
+public struct VibeAnimationSchema: Codable, Identifiable, Equatable, CustomStringConvertible {
+    public var description: String {
+"""
+{"id": \(id), "initialValues": \(initialValues), "invokeType": \(invokeType), "keyframes": \(keyframes)}
+"""
+    }
+    
     public let id: VibeID
     public let initialValues: VibeAnimationValues
     public let invokeType: VibeAnimationInvokeType

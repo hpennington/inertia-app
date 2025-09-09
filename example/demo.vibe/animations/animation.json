@@ -1,0 +1,67 @@
+{
+  "id" : "animation2",
+  "objects" : [
+    {
+      "animation" : {
+        "id" : "test123321anim",
+        "initialValues" : {
+          "opacity" : 1,
+          "rotate" : 0,
+          "rotateCenter" : 0,
+          "scale" : 1,
+          "translate" : [
+            0,
+            0
+          ]
+        },
+        "invokeType" : "auto",
+        "keyframes" : [
+          {
+            "duration" : 1,
+            "id" : "221BDB82-60C3-4CA7-8667-E0F5F65809A2",
+            "values" : {
+              "opacity" : 1,
+              "rotate" : 0,
+              "rotateCenter" : 0,
+              "scale" : 1,
+              "translate" : [
+                -1.4648813802083336,
+                0.00762939453125
+              ]
+            }
+          },
+          {
+            "duration" : 1,
+            "id" : "2C01A52D-AD6C-4712-9B42-4368BBF95E43",
+            "values" : {
+              "opacity" : 1,
+              "rotate" : 0,
+              "rotateCenter" : 0,
+              "scale" : 1,
+              "translate" : [
+                1.32514140625,
+                0.029943847656249932
+              ]
+            }
+          }
+        ]
+      },
+      "color" : [
+        127,
+        244,
+        122
+      ],
+      "containerId" : "animation2",
+      "height" : 100,
+      "id" : "bird2",
+      "objectType" : "animation",
+      "position" : [
+        0,
+        0
+      ],
+      "shape" : "rectangle",
+      "width" : 200,
+      "zIndex" : 0
+    }
+  ]
+}

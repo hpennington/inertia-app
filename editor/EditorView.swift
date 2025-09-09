@@ -302,9 +302,17 @@ struct EditorView: View {
     }
     
     func exportAnimationFile(url: URL) {
-        
-//        let fakeDBText = fakeDB
-        _exportAnimationFile(text: animations.description, url: url)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys] // optional: makes JSON readable and keys ordered
+
+        do {
+            let jsonData = try encoder.encode(animations.first)
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                _exportAnimationFile(text: jsonString, url: url)
+            }
+        } catch {
+            print("Error encoding JSON: \(error)")
+        }
     }
         
     func _exportAnimationFile(text: String, url: URL) {

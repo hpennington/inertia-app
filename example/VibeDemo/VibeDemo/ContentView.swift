@@ -55,13 +55,13 @@ struct ContentView: View {
                 VStack(spacing: 24) {
                     Spacer()
                     Card()
-                        .inertia("card1")
+                        .inertia("test123321anim")
                     
                     Card()
-                        .inertia("card2")
+                        .inertia("test123321anim")
                     
                     Card()
-                        .inertia("card3")
+                        .inertia("test123321anim")
                     Spacer()
                 }
                 .padding()

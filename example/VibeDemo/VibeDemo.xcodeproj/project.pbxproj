@@ -9,11 +9,9 @@
 /* Begin PBXBuildFile section */
 		F80DC08A2E607AC600D0F196 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F80DC0882E607AC600D0F196 /* Inertia */; };
 		F80DC08C2E607AC600D0F196 /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
-		F80DC08D2E607AC600D0F196 /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation1.json */; };
+		F80DC08D2E607AC600D0F196 /* animation.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation.json */; };
 		F80DC08E2E607AC600D0F196 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
 		F80DC08F2E607AC600D0F196 /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
-		F80DC0902E607AC600D0F196 /* animation3.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF252CE7F9C90099FB2D /* animation3.json */; };
-		F80DC0912E607AC600D0F196 /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF232CE7F9C90099FB2D /* animation2.json */; };
 		F80DC0922E607AC600D0F196 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
 		F80DC0942E607AC600D0F196 /* VibeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */; };
 		F80DC0952E607AC600D0F196 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
@@ -23,11 +21,9 @@
 		F81FD6252E5FE3CC0017016E /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
 		F8DB1C192E5FDA9A00C8E09C /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8DB1C132E5FDA9A00C8E09C /* Inertia */; };
 		F8DB1C1B2E5FDA9A00C8E09C /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
-		F8DB1C1C2E5FDA9A00C8E09C /* animation1.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation1.json */; };
+		F8DB1C1C2E5FDA9A00C8E09C /* animation.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation.json */; };
 		F8DB1C1D2E5FDA9A00C8E09C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
 		F8DB1C1E2E5FDA9A00C8E09C /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
-		F8DB1C1F2E5FDA9A00C8E09C /* animation3.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF252CE7F9C90099FB2D /* animation3.json */; };
-		F8DB1C202E5FDA9A00C8E09C /* animation2.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF232CE7F9C90099FB2D /* animation2.json */; };
 		F8DB1C212E5FDA9A00C8E09C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -36,9 +32,7 @@
 		F827B7302D1E496300A8A27A /* CircleImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImage.swift; sourceTree = "<group>"; };
 		F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = landing_image_2.jpeg; sourceTree = "<group>"; };
 		F827B7332D1E49D800A8A27A /* landing_image_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landing_image_1.png; sourceTree = "<group>"; };
-		F852BF232CE7F9C90099FB2D /* animation2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation2.json; path = ../demo.vibe/animations/animation2.json; sourceTree = "<group>"; };
-		F852BF242CE7F9C90099FB2D /* animation1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation1.json; path = ../demo.vibe/animations/animation1.json; sourceTree = "<group>"; };
-		F852BF252CE7F9C90099FB2D /* animation3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation3.json; path = ../demo.vibe/animations/animation3.json; sourceTree = "<group>"; };
+		F852BF242CE7F9C90099FB2D /* animation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation.json; path = ../demo.vibe/animations/animation.json; sourceTree = "<group>"; };
 		F86317EB2C66DF05001DEE60 /* VibeDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeDemoApp.swift; sourceTree = "<group>"; };
 		F86317ED2C66DF05001DEE60 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F86317EF2C66DF06001DEE60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -69,9 +63,7 @@
 		F86317DF2C66DF05001DEE60 = {
 			isa = PBXGroup;
 			children = (
-				F852BF242CE7F9C90099FB2D /* animation1.json */,
-				F852BF232CE7F9C90099FB2D /* animation2.json */,
-				F852BF252CE7F9C90099FB2D /* animation3.json */,
+				F852BF242CE7F9C90099FB2D /* animation.json */,
 				F86317EA2C66DF05001DEE60 /* VibeDemo */,
 				F8CEB2112CFCE28800FB16F3 /* Frameworks */,
 				F86317E92C66DF05001DEE60 /* Products */,
@@ -197,11 +189,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F80DC08C2E607AC600D0F196 /* landing_image_1.png in Resources */,
-				F80DC08D2E607AC600D0F196 /* animation1.json in Resources */,
+				F80DC08D2E607AC600D0F196 /* animation.json in Resources */,
 				F80DC08E2E607AC600D0F196 /* Preview Assets.xcassets in Resources */,
 				F80DC08F2E607AC600D0F196 /* landing_image_2.jpeg in Resources */,
-				F80DC0902E607AC600D0F196 /* animation3.json in Resources */,
-				F80DC0912E607AC600D0F196 /* animation2.json in Resources */,
 				F80DC0922E607AC600D0F196 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -211,11 +201,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8DB1C1B2E5FDA9A00C8E09C /* landing_image_1.png in Resources */,
-				F8DB1C1C2E5FDA9A00C8E09C /* animation1.json in Resources */,
+				F8DB1C1C2E5FDA9A00C8E09C /* animation.json in Resources */,
 				F8DB1C1D2E5FDA9A00C8E09C /* Preview Assets.xcassets in Resources */,
 				F8DB1C1E2E5FDA9A00C8E09C /* landing_image_2.jpeg in Resources */,
-				F8DB1C1F2E5FDA9A00C8E09C /* animation3.json in Resources */,
-				F8DB1C202E5FDA9A00C8E09C /* animation2.json in Resources */,
 				F8DB1C212E5FDA9A00C8E09C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
