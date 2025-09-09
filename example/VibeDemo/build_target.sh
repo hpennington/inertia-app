@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT="VibeDemo"
+PROJECT="VibeDemoInertia"
 
 xcodebuild clean archive \
     -allowProvisioningUpdates \
@@ -17,4 +17,4 @@ xcodebuild -exportArchive \
     -exportOptionsPlist ExportOptions.plist
 
 
-cp build/ipa/"$PROJECT.ipa" ~/Library/Containers/com.vectorstudio.Inertia-Pro/Data/Inertia/
+cp build/ipa/"VibeDemo (Inertia).ipa" ~/InertiaStorage/

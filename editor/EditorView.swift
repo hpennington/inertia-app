@@ -284,8 +284,10 @@ final class WebSocketServer {
     var clients: [UUID: NWConnection] = [:]
     var treePackets: [TreePacket] = []
     var treePacketsLUT: [String: Int] = [:]
+    let translation: (WebSocketClient.MessageTranslation) -> Void
 
-    init(port: UInt16) throws {
+    init(port: UInt16, translation: @escaping (_ message: WebSocketClient.MessageTranslation) -> Void) throws {
+        self.translation = translation
         // Configure WebSocket over TCP
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
@@ -412,7 +414,14 @@ final class WebSocketServer {
             updateTreePackets(with: msg)
         case .schema:
             break
+        case .translationEnded:
+            let msg = try! JSONDecoder().decode(WebSocketClient.MessageTranslation.self, from: messageWrapper.payload)
+            updateKeyframeTranslation(with: msg)
         }
+    }
+    
+    private func updateKeyframeTranslation(with msg: WebSocketClient.MessageTranslation) {
+        translation(msg)
     }
     
     private func updateTreePackets(with msg: WebSocketClient.MessageActionables) {
@@ -560,7 +569,7 @@ struct EditorView: View {
     init(
         url: Binding<String>,
         framework: Binding<SetupFlowFramework>,
-        animations: [VibeSchema],
+        animations: Binding<[VibeSchema]>,
         webView: WKWebView,
         coordinator: WKWebViewWrapper.Coordinator,
         selectedActionableIDTracker: SelectedActionableIDTracker?,
@@ -570,7 +579,7 @@ struct EditorView: View {
     ) {
         self._url = url
         self._framework = framework
-        self.animations = animations
+        self._animations = animations
         self.webView = webView
         self.coordinator = coordinator
         self.selectedActionableIDTracker = selectedActionableIDTracker
@@ -600,7 +609,7 @@ struct EditorView: View {
     
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
-    let animations: [VibeSchema]
+    @Binding var animations: [VibeSchema]
     let webView: WKWebView
     let coordinator: WKWebViewWrapper.Coordinator
     let contentController: WKUserContentController
@@ -812,6 +821,7 @@ struct EditorView: View {
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     @State private var isPlaying: Bool = false
     @State private var rowData: [String: [Int]] = [:]
+    @State private var keyframes: [VibeAnimationKeyframe] = []
     
     @ViewBuilder
     var treeView: some View {
@@ -889,8 +899,9 @@ struct EditorView: View {
     }
     
     func exportAnimationFile(url: URL) {
-        let fakeDBText = fakeDB
-        _exportAnimationFile(text: fakeDBText, url: url)
+        
+//        let fakeDBText = fakeDB
+        _exportAnimationFile(text: animations.description, url: url)
     }
         
     func _exportAnimationFile(text: String, url: URL) {
@@ -924,7 +935,9 @@ struct EditorView: View {
                     }
                     .onAppear {
                         if servers[.compose] == nil {
-                            if let server = try? WebSocketServer(port: 8070) {
+                            if let server = try? WebSocketServer(port: 8070) { message in
+
+                            } {
                                 server.start()
                                 servers[.compose] = server
                             }
@@ -985,7 +998,50 @@ struct EditorView: View {
                         }
                         .onAppear {
                             if servers[.swiftUI] == nil {
-                                if let server = try? WebSocketServer(port: 8060) {
+                                if let server = try? WebSocketServer(port: 8060) { message in
+                                    print(message)
+                                    print(animations)
+                                    
+                                    let values = VibeAnimationValues(
+                                        scale: 1.0,
+                                        translate: .init(width: message.translationX, height: message.translationY),
+                                        rotate: .zero,
+                                        rotateCenter: .zero,
+                                        opacity: 1.0
+                                    )
+
+                                    let newKeyframe = VibeAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
+                                    keyframes.append(newKeyframe)
+
+                                    let rectangle = VibeShape(
+                                        id: "bird2",
+                                        containerId: "animation2", // or "animation123schema" if you want a new container
+                                        width: 400,
+                                        height: 1000,
+                                        position: .zero,
+                                        color: [127, 244, 122],
+                                        shape: "rectangle",
+                                        objectType: .shape, // ✅ was .animation
+                                        zIndex: 0,
+                                        animation: .init(
+                                            id: "test123321anim",
+                                            initialValues: VibeAnimationValues(scale: 1.0, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: 1.0), // ✅ was .zero (invisible)
+                                            invokeType: .auto,
+                                            keyframes: keyframes
+                                        )
+                                    )
+                                    
+                                    if let animationIndex = animations.firstIndex(where: { schema in
+                                        schema.id == "animation2"
+                                    }) {
+                                        animations[animationIndex] = VibeSchema(id: "animation2", objects: [rectangle])
+                                    } else {
+                                        animations.append(VibeSchema(id: "animation2", objects: [rectangle]))
+                                        editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation2", animationId: "test123321anim"))
+                                    }
+                                    
+                                    
+                                } {
                                     server.start()
                                     servers[.swiftUI] = server
                                 }
@@ -1046,7 +1102,9 @@ struct EditorView: View {
                     }
                     .onAppear {
                         if servers[.react] == nil {
-                            if let server = try? WebSocketServer(port: 8080) {
+                            if let server = try? WebSocketServer(port: 8080) { message in
+        
+                            } {
                                 server.start()
                                 servers[.react] = server
                             }

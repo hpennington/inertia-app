@@ -236,12 +236,12 @@ struct TreeViewContainer: View {
                                 isSelected: Binding(
                                     get: {
         //                                print(treePacket.actionableIds)
-//                                        if oldActionableIds != treePacket.actionableIds {
-//                                            DispatchQueue.main.async {
-//                                                self.updateDelegates(oldActionableIds)
-//                                                oldActionableIds = treePacket.actionableIds
-//                                            }
-//                                        }
+                                        if oldActionableIds != treePacket.actionableIds {
+                                            DispatchQueue.main.async {
+                                                self.updateDelegates(treePacket.actionableIds)
+                                                oldActionableIds = treePacket.actionableIds
+                                            }
+                                        }
                                         return treePacket.actionableIds
                                     },
                                     set: {

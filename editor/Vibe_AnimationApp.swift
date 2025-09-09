@@ -35,7 +35,7 @@ struct Vibe_AnimationApp: App {
                 EditorView(
                     url: $vm.setupFlowManager.reactProjectPath,
                     framework: $vm.framework,
-                    animations: vm.animations,
+                    animations: $vm.animations,
                     webView: vm.webView,
                     coordinator: vm.coordinator,
                     selectedActionableIDTracker: vm.selectedActionableIDTracker,

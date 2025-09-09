@@ -17,6 +17,8 @@
 		F81148232CBEC17E00326B61 /* animationsAdd.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148222CBEC17E00326B61 /* animationsAdd.js */; };
 		F81148252CBEC1D900326B61 /* initInvokePlayback.js in Resources */ = {isa = PBXBuildFile; fileRef = F81148242CBEC1D900326B61 /* initInvokePlayback.js */; };
 		F81316DF2CBCE36300266728 /* AttachAnimationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */; };
+		F824833C2E6E024B0009682E /* Playhead.swift in Sources */ = {isa = PBXBuildFile; fileRef = F824833B2E6E024B0009682E /* Playhead.swift */; };
+		F824833E2E6E60390009682E /* TimelineColumn.swift in Sources */ = {isa = PBXBuildFile; fileRef = F824833D2E6E60390009682E /* TimelineColumn.swift */; };
 		F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */; };
 		F84A605B2CE3D3D900070036 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F84A605A2CE3D3D900070036 /* Inertia */; };
 		F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */; };
@@ -84,6 +86,8 @@
 		F81148222CBEC17E00326B61 /* animationsAdd.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = animationsAdd.js; sourceTree = "<group>"; };
 		F81148242CBEC1D900326B61 /* initInvokePlayback.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = initInvokePlayback.js; sourceTree = "<group>"; };
 		F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachAnimationButton.swift; sourceTree = "<group>"; };
+		F824833B2E6E024B0009682E /* Playhead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playhead.swift; sourceTree = "<group>"; };
+		F824833D2E6E60390009682E /* TimelineColumn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineColumn.swift; sourceTree = "<group>"; };
 		F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlow.swift; sourceTree = "<group>"; };
 		F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCompilationModeScreen.swift; sourceTree = "<group>"; };
 		F8641C432C978AA500E43338 /* VibeAppVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeAppVM.swift; sourceTree = "<group>"; };
@@ -182,6 +186,7 @@
 		F89BA09F2C48C85A0006603C = {
 			isa = PBXGroup;
 			children = (
+				F824833B2E6E024B0009682E /* Playhead.swift */,
 				F89BA0AA2C48C85A0006603C /* editor */,
 				F89BA0A92C48C85A0006603C /* Products */,
 			);
@@ -276,6 +281,7 @@
 		F8ACA5E82D1E000300D0B878 /* Playback */ = {
 			isa = PBXGroup;
 			children = (
+				F824833D2E6E60390009682E /* TimelineColumn.swift */,
 				F8ACA5E62D1DFFFE00D0B878 /* PlaybackControls.swift */,
 				F8ACA5F52D1E094600D0B878 /* TimelineView.swift */,
 				F8ACA5EF2D1E015C00D0B878 /* TimelineKeypointIndicator.swift */,
@@ -382,6 +388,7 @@
 				F8DD5AB12C7D421F003A3330 /* ProjectsContainerSplitView.swift in Sources */,
 				F87681252CA22AD90065CB6C /* SearchField.swift in Sources */,
 				F8ACA5E72D1DFFFE00D0B878 /* PlaybackControls.swift in Sources */,
+				F824833C2E6E024B0009682E /* Playhead.swift in Sources */,
 				F8641C442C978AA500E43338 /* VibeAppVM.swift in Sources */,
 				F89C08672C875AD700F58F9A /* SetupFlowBase.swift in Sources */,
 				F8C4A0262C95E619004386D4 /* SetupFlowProjectLoad.swift in Sources */,
@@ -406,6 +413,7 @@
 				F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */,
 				F8C2A87D2CAB7C290054B165 /* AnimationsAvailableColumn.swift in Sources */,
 				F8744E342CDB06D300921BF9 /* AddressBar.swift in Sources */,
+				F824833E2E6E60390009682E /* TimelineColumn.swift in Sources */,
 				F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */,
 				F8C2A8792CAB75D50054B165 /* AnimationsList.swift in Sources */,
 				F8ACA5F62D1E094600D0B878 /* TimelineView.swift in Sources */,

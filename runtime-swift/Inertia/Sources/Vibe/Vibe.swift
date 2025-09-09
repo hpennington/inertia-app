@@ -362,6 +362,7 @@ public struct InertiaContainer<Content: View>: View {
                     .environment(\.inertiaEditor, dev)
                     .coordinateSpace(.named(hierarchyId))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scrollDisabled(self.vibeDataModel.isActionable)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -390,6 +391,7 @@ public class WebSocketClient {
         case actionable
         case actionables
 //        case selected
+        case translationEnded
         case schema
     }
 
@@ -409,6 +411,18 @@ public class WebSocketClient {
         
         public init(tree: Tree, actionableIds: Set<String>) {
             self.tree = tree
+            self.actionableIds = actionableIds
+        }
+    }
+    
+    public struct MessageTranslation: Codable {
+        public let translationX: CGFloat
+        public let translationY: CGFloat
+        public let actionableIds: Set<String>
+        
+        public init(translationX: CGFloat, translationY: CGFloat, actionableIds: Set<String>) {
+            self.translationX = translationX
+            self.translationY = translationY
             self.actionableIds = actionableIds
         }
     }
@@ -489,6 +503,37 @@ public class WebSocketClient {
         }
     }
     
+    func sendMessage(_ message: MessageTranslation) {
+        do {
+            guard let jsonData = try? JSONEncoder().encode(message) else {
+                print("Error: Could not encode JSON to data")
+                return
+            }
+            
+            let messageWrapper = MessageWrapper(type: .translationEnded, payload: jsonData)
+            guard let messageWrapperData = try? JSONEncoder().encode(messageWrapper) else {
+                return
+            }
+            
+            let messageData = URLSessionWebSocketTask.Message.data(messageWrapperData)
+            task?.send(messageData) { error in
+                if let error = error {
+                    print("Error sending message: \(error)")
+                } else {
+                    print("Message sent: \(messageData)")
+                }
+                
+                // Begin receiving responses
+                if let task = self.task {
+                    self.receiveMessage(task: task)
+                }
+            }
+            
+        } catch {
+            print("Error encoding data: \(error)")
+        }
+    }
+    
     func receiveMessage(task: URLSessionWebSocketTask) {
         task.receive { result in
             switch result {
@@ -522,6 +567,14 @@ public class WebSocketClient {
                         
                         NSLog("[INERTIA_LOG]:  Received message (data): \(schemaMessage)")
                         self.messageReceivedSchema?(schemaMessage.schemaWrappers)
+                    case .translationEnded:
+                        fatalError()
+//                        guard let schemaMessage = try? JSONDecoder().decode(WebSocketClient.MessageSchema.self, from: messageWrapper.payload) else {
+//                            return
+//                        }
+                        
+//                        NSLog("[INERTIA_LOG]:  Received message (data): \(schemaMessage)")
+//                        self.messageReceivedSchema?(schemaMessage.schemaWrappers)
                     }
                 case .string(let text):
                     fatalError()
@@ -843,6 +896,16 @@ struct InertiaEditable<Content: View>: View {
             .onEnded { value in
                 if vibeDataModel?.isActionable == true {
                     dragOffset = value.translation
+                    if let actionableIds = vibeDataModel?.actionableIds {
+                        manager.sendMessage(
+                            WebSocketClient.MessageTranslation(
+                                translationX: (value.startLocation.x + dragOffset.width) / inertiaContainerSize.width,
+                                translationY: (value.startLocation.y +  dragOffset.height) / inertiaContainerSize.height,
+                                actionableIds: actionableIds
+                            )
+                        )
+                    }
+                    
                 }
             }
     }
@@ -853,6 +916,7 @@ struct InertiaEditable<Content: View>: View {
                 .disabled(vibeDataModel?.isActionable ?? false)
 //                .modifier(BindableSize(size: $contentSize))
         }
+        
         .onTapGesture {
             print("tapped \(content)")
             guard let vibeDataModel else {
@@ -1221,6 +1285,14 @@ extension View {
 public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equatable {
     public static var zero = VibeAnimationValues(scale: .zero, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: .zero)
     
+    public init(scale: CGFloat, translate: CGSize, rotate: CGFloat, rotateCenter: CGFloat, opacity: CGFloat) {
+        self.scale = scale
+        self.translate = translate
+        self.rotate = rotate
+        self.rotateCenter = rotateCenter
+        self.opacity = opacity
+    }
+    
     public var scale: CGFloat
     public var translate: CGSize
     public var rotate: CGFloat
@@ -1311,11 +1383,29 @@ public struct VibeShape: Codable, Identifiable, Equatable {
     public let objectType: VibeObjectType
     public let zIndex: Int
     public let animation: VibeAnimationSchema
+    
+    public init(id: VibeID, containerId: VibeID, width: CGFloat, height: CGFloat, position: CGPoint, color: [CGFloat], shape: String, objectType: VibeObjectType, zIndex: Int, animation: VibeAnimationSchema) {
+        self.id = id
+        self.containerId = containerId
+        self.width = width
+        self.height = height
+        self.position = position
+        self.color = color
+        self.shape = shape
+        self.objectType = objectType
+        self.zIndex = zIndex
+        self.animation = animation
+    }
 }
 
 public struct VibeSchema: Codable, Equatable {
     public let id: VibeID
     public let objects: [VibeShape]
+    
+    public init(id: VibeID, objects: [VibeShape]) {
+        self.id = id
+        self.objects = objects
+    }
 }
 
 public enum VibeAnimationInvokeType: String, Codable {
@@ -1327,6 +1417,13 @@ public struct VibeAnimationSchema: Codable, Identifiable, Equatable {
     public let initialValues: VibeAnimationValues
     public let invokeType: VibeAnimationInvokeType
     public let keyframes: [VibeAnimationKeyframe]
+    
+    public init(id: VibeID, initialValues: VibeAnimationValues, invokeType: VibeAnimationInvokeType, keyframes: [VibeAnimationKeyframe]) {
+        self.id = id
+        self.initialValues = initialValues
+        self.invokeType = invokeType
+        self.keyframes = keyframes
+    }
 }
 
 func decodeVibeSchema(json: Data) -> VibeSchema? {
