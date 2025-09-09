@@ -280,6 +280,7 @@ public final class InertiaDataModel{
     public var actionableIds: Set<String>
     public var states: [VibeID: VibeAnimationState]
     public var actionableIdToAnimationIdMap: [String: String] = [:]
+    
     public var isActionable: Bool = false
     
     public init(containerId: VibeID, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<String>) {
@@ -958,7 +959,7 @@ struct InertiaEditable<Content: View>: View {
             }
         }
         .overlay {
-            if showSelectedBorder && vibeDataModel?.isActionable ?? false{
+            if showSelectedBorder && vibeDataModel?.isActionable ?? false {
                 Rectangle()
                     .stroke(Color.green)
             }
@@ -1169,21 +1170,19 @@ struct InertiaEditable<Content: View>: View {
             return nil
         }
 
-        if vibeDataModel.actionableIds.contains(hierarchyId) {
-            guard let animationId = vibeDataModel.actionableIdToAnimationIdMap[hierarchyId] else {
-                NSLog("[INERTIA_LOG]:  animationId is nil")
-                return nil
-            }
-            NSLog("[INERTIA_LOG]:  hierarchyId: \(hierarchyId) animationId: \(animationId)")
-            let animation = vibeDataModel.vibeSchema.objects.first(where: { $0.animation.id == animationId })?.animation
-            
-            if let animation {
-                return animation
-            } else {
-                NSLog("\(vibeDataModel.vibeSchema.objects)")
-                NSLog("[INERTIA_LOG]:  animation is nil")
-                return nil
-            }
+        guard let animationId = vibeDataModel.actionableIdToAnimationIdMap[hierarchyId] else {
+            NSLog("[INERTIA_LOG]:  animationId is nil")
+            return nil
+        }
+        NSLog("[INERTIA_LOG]:  hierarchyId: \(hierarchyId) animationId: \(animationId)")
+        let animation = vibeDataModel.vibeSchema.objects.first(where: { $0.animation.id == animationId })?.animation
+        
+        if let animation {
+            return animation
+        } else {
+            NSLog("\(vibeDataModel.vibeSchema.objects)")
+            NSLog("[INERTIA_LOG]:  animation is nil")
+            return nil
         }
         
         NSLog("[INERTIA_LOG]:  animation nil at end")
@@ -1200,8 +1199,8 @@ struct InertiaEditable<Content: View>: View {
         for schemaWrapper in schemaWrappers {
             if schemaWrapper.container.containerId == vibeDataModel?.containerId {
                 
-                vibeDataModel?.vibeSchema = schemaWrapper.schema
                 vibeDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId
+                vibeDataModel?.vibeSchema = schemaWrapper.schema
                 NSLog("[INERTIA_LOG]:  animationId: \(schemaWrapper.animationId) actionableId: \(schemaWrapper.actionableId)")
             }
         }

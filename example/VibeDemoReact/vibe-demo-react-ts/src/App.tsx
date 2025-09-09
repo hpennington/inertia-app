@@ -149,9 +149,9 @@ export default function App() {
     <VibeContainer id={"animation"} baseURL={"http://localhost:8000"} dev={true}>
       <div style={containerStyle}>
         <div style={contentStyle}>
-          <Card id="test123321anim" />
+          <Card id="card0" />
+          <Card id="card1" />
           <Card id="card2" />
-          <Card id="card3" />
         </div>
       </div>
     </VibeContainer>

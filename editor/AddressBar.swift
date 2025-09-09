@@ -19,7 +19,7 @@ struct AddressBar: View {
         TextField("Address", text: $text)
             .textFieldStyle(.plain)
             .foregroundStyle(appColors.accent)
-            .padding(8)
+            .padding(4)
             .overlay {
                 RoundedRectangle(cornerRadius: 4)
                     .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray1, lineWidth: 1)

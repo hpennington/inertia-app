@@ -18,43 +18,43 @@
         "keyframes" : [
           {
             "duration" : 1,
-            "id" : "8EAE7BDA-7088-4A2B-B5A9-A43FFC45D2CE",
+            "id" : "00CA9C82-76D8-41E4-AA0C-AD4251226F86",
             "values" : {
               "opacity" : 1,
               "rotate" : 0,
               "rotateCenter" : 0,
               "scale" : 1,
               "translate" : [
-                -1.4909360677083334,
-                -0.01336669921875
+                -1.4467299479166669,
+                -0.013891601562500102
               ]
             }
           },
           {
             "duration" : 1,
-            "id" : "D74336BB-DE2A-4954-B417-D3FE77881A23",
+            "id" : "D8351776-FE46-4769-9220-7F07AF020D39",
             "values" : {
               "opacity" : 1,
               "rotate" : 0,
               "rotateCenter" : 0,
               "scale" : 1,
               "translate" : [
-                1.5025738281250003,
-                0.0069580078125
+                1.327138932291667,
+                0.0189208984375
               ]
             }
           },
           {
             "duration" : 1,
-            "id" : "DC41F202-887F-4C61-94F6-E5A9E78EB3BC",
+            "id" : "51C587CE-8B11-42EB-B10D-CDF2CB04DBA5",
             "values" : {
               "opacity" : 1,
               "rotate" : 0,
               "rotateCenter" : 0,
               "scale" : 1,
               "translate" : [
-                -0.004342447916666666,
-                -0.03826904296875
+                -0.004081901041666545,
+                0.04998779296875
               ]
             }
           }
@@ -79,4 +79,3 @@
     }
   ]
 }
-

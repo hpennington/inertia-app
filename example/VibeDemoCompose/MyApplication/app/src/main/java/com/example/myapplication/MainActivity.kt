@@ -777,15 +777,15 @@ fun DemoApp() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(12.dp))
-            Vibeable(hierarchyIdPrefix = "test123321anim") {
+            Vibeable(hierarchyIdPrefix = "card0") {
                 DemoCard()
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Vibeable(hierarchyIdPrefix = "demo-card1") {
+            Vibeable(hierarchyIdPrefix = "card1") {
                 DemoCard()
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Vibeable(hierarchyIdPrefix = "demo-card2") {
+            Vibeable(hierarchyIdPrefix = "card2") {
                 DemoCard()
             }
             Spacer(modifier = Modifier.height(12.dp))
