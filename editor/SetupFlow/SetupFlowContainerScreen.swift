@@ -46,9 +46,8 @@ struct SetupFlowContainerScreen: View {
         let animationsDirectoryURL = url.appending(path: animationsDirectoryFilePath)
         
         let meta = self.loadMetaFile(url: metaFileURL)
-//        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
-        let animations = try! JSONDecoder().decode(VibeSchema.self, from: fakeDB.data(using: .utf8)!)
-        return (.success([animations]), meta)
+        let animations = self.loadAnimationFiles(url: animationsDirectoryURL)
+        return (animations, meta)
     }
     
     func loadAnimationFiles(url: URL) -> Result<Array<VibeSchema>, ProjectFileError> {

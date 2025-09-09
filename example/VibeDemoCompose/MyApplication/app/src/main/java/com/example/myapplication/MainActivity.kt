@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 VibeContainer(
-                    id = "animation1",
+                    id = "animation",
                     baseURL = "ws://192.168.64.1:8070",
                     dev = true
                 ) {
@@ -777,7 +777,7 @@ fun DemoApp() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(12.dp))
-            Vibeable(hierarchyIdPrefix = "demo-card0") {
+            Vibeable(hierarchyIdPrefix = "test123321anim") {
                 DemoCard()
             }
             Spacer(modifier = Modifier.height(12.dp))

@@ -1,5 +1,5 @@
 {
-  "id" : "animation2",
+  "id" : "animation",
   "objects" : [
     {
       "animation" : {
@@ -18,29 +18,43 @@
         "keyframes" : [
           {
             "duration" : 1,
-            "id" : "221BDB82-60C3-4CA7-8667-E0F5F65809A2",
+            "id" : "8EAE7BDA-7088-4A2B-B5A9-A43FFC45D2CE",
             "values" : {
               "opacity" : 1,
               "rotate" : 0,
               "rotateCenter" : 0,
               "scale" : 1,
               "translate" : [
-                -1.4648813802083336,
-                0.00762939453125
+                -1.4909360677083334,
+                -0.01336669921875
               ]
             }
           },
           {
             "duration" : 1,
-            "id" : "2C01A52D-AD6C-4712-9B42-4368BBF95E43",
+            "id" : "D74336BB-DE2A-4954-B417-D3FE77881A23",
             "values" : {
               "opacity" : 1,
               "rotate" : 0,
               "rotateCenter" : 0,
               "scale" : 1,
               "translate" : [
-                1.32514140625,
-                0.029943847656249932
+                1.5025738281250003,
+                0.0069580078125
+              ]
+            }
+          },
+          {
+            "duration" : 1,
+            "id" : "DC41F202-887F-4C61-94F6-E5A9E78EB3BC",
+            "values" : {
+              "opacity" : 1,
+              "rotate" : 0,
+              "rotateCenter" : 0,
+              "scale" : 1,
+              "translate" : [
+                -0.004342447916666666,
+                -0.03826904296875
               ]
             }
           }
@@ -51,7 +65,7 @@
         244,
         122
       ],
-      "containerId" : "animation2",
+      "containerId" : "animation",
       "height" : 100,
       "id" : "bird2",
       "objectType" : "animation",
@@ -65,3 +79,4 @@
     }
   ]
 }
+

@@ -426,7 +426,7 @@ struct EditorView: View {
 
                                     let rectangle = VibeShape(
                                         id: "bird2",
-                                        containerId: "animation2", // or "animation123schema" if you want a new container
+                                        containerId: "animation", // or "animation123schema" if you want a new container
                                         width: 200,
                                         height: 100,
                                         position: .zero,
@@ -448,12 +448,12 @@ struct EditorView: View {
                                     )
                                     
                                     if let animationIndex = animations.firstIndex(where: { schema in
-                                        schema.id == "animation2"
+                                        schema.id == "animation"
                                     }) {
-                                        animations[animationIndex] = VibeSchema(id: "animation2", objects: [rectangle])
+                                        animations[animationIndex] = VibeSchema(id: "animation", objects: [rectangle])
                                     } else {
-                                        animations.append(VibeSchema(id: "animation2", objects: [rectangle]))
-                                        editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation2", animationId: "test123321anim"))
+                                        animations.append(VibeSchema(id: "animation", objects: [rectangle]))
+                                        editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation", animationId: "test123321anim"))
                                     }
                                     
                                     

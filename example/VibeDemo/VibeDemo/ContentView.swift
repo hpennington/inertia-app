@@ -58,10 +58,10 @@ struct ContentView: View {
                         .inertia("test123321anim")
                     
                     Card()
-                        .inertia("test123321anim")
+                        .inertia("test123321anim123")
                     
                     Card()
-                        .inertia("test123321anim")
+                        .inertia("test123321anim321")
                     Spacer()
                 }
                 .padding()
