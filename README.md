@@ -4,7 +4,10 @@
 An editor application and library for creating in-app, native, keyframe animations with a WYSIWYG (what you see is what you get) editor.
 
 ## Demo Video
-![Screen Recording 2025-09-09 at 7 18 23 PM](https://github.com/user-attachments/assets/c4c2c9cf-efae-4df7-8934-4c06c1176ce1)
+
+
+https://github.com/user-attachments/assets/b3251bed-75bd-4967-a8c7-8927c85d3f48
+
 
 
 ## Problem statement
