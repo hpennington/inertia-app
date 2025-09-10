@@ -3,6 +3,10 @@
 ## Overview
 An editor application and library for creating in-app, native, keyframe animations with a WYSIWYG (what you see is what you get) editor.
 
+## Demo Video
+![Screen Recording 2025-09-09 at 7 18 23 PM](https://github.com/user-attachments/assets/c4c2c9cf-efae-4df7-8934-4c06c1176ce1)
+
+
 ## Problem statement
 As a mobile engineer, I want a workflow for creating in-app animations, 
 from the ease of an animation WYSIWYG editor. This editor should export a file format suitable for describing a keyframe animation system, 
@@ -20,7 +24,6 @@ and handle interactions from the codebase as well.
 - Local compilation / serving
 
 #### Non Goals
-- Building custom animations to gain platform parity (e.g don’t build both forms of rotate for the time being)
 - Supporting spring animations
 - Remote compilation / serving
 - Specification export
