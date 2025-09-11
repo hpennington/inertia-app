@@ -323,6 +323,55 @@ struct EditorView: View {
         }
     }
     
+    func createKeyframe(message: WebSocketClient.MessageTranslation) {
+        print(message)
+        print(animations)
+        
+        let values = VibeAnimationValues(
+            scale: 1.0,
+            translate: .init(width: message.translationX, height: message.translationY),
+            rotate: .zero,
+            rotateCenter: .zero,
+            opacity: 1.0
+        )
+
+        let newKeyframe = VibeAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
+        keyframes.append(newKeyframe)
+
+        let rectangle = VibeShape(
+            id: "bird2",
+            containerId: "animation", // or "animation123schema" if you want a new container
+            width: 200,
+            height: 100,
+            position: .zero,
+            color: [127, 244, 122],
+            shape: "rectangle",
+            objectType: .animation, // ✅ was .animation
+            zIndex: 0,
+            animation: .init(
+                id: "test123321anim",
+                initialValues: VibeAnimationValues(
+                    scale: 1.0,
+                    translate: .zero,
+                    rotate: .zero,
+                    rotateCenter: .zero,
+                    opacity: 1.0),
+                invokeType: .auto,
+                keyframes: keyframes
+            )
+        )
+        
+        if let animationIndex = animations.firstIndex(where: { schema in
+            schema.id == "animation"
+        }) {
+            animations[animationIndex] = VibeSchema(id: "animation", objects: [rectangle])
+        } else {
+            animations.append(VibeSchema(id: "animation", objects: [rectangle]))
+            editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation", animationId: "test123321anim"))
+        }
+        
+    }
+    
     @ViewBuilder
     var composeView: some View {
         VStack {
@@ -347,7 +396,7 @@ struct EditorView: View {
                     .onAppear {
                         if servers[.compose] == nil {
                             if let server = try? WebSocketServer(port: 8070) { message in
-
+                                createKeyframe(message: message)
                             } {
                                 server.start()
                                 servers[.compose] = server
@@ -410,52 +459,7 @@ struct EditorView: View {
                         .onAppear {
                             if servers[.swiftUI] == nil {
                                 if let server = try? WebSocketServer(port: 8060) { message in
-                                    print(message)
-                                    print(animations)
-                                    
-                                    let values = VibeAnimationValues(
-                                        scale: 1.0,
-                                        translate: .init(width: message.translationX, height: message.translationY),
-                                        rotate: .zero,
-                                        rotateCenter: .zero,
-                                        opacity: 1.0
-                                    )
-
-                                    let newKeyframe = VibeAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
-                                    keyframes.append(newKeyframe)
-
-                                    let rectangle = VibeShape(
-                                        id: "bird2",
-                                        containerId: "animation", // or "animation123schema" if you want a new container
-                                        width: 200,
-                                        height: 100,
-                                        position: .zero,
-                                        color: [127, 244, 122],
-                                        shape: "rectangle",
-                                        objectType: .animation, // ✅ was .animation
-                                        zIndex: 0,
-                                        animation: .init(
-                                            id: "test123321anim",
-                                            initialValues: VibeAnimationValues(
-                                                scale: 1.0,
-                                                translate: .zero,
-                                                rotate: .zero,
-                                                rotateCenter: .zero,
-                                                opacity: 1.0),
-                                            invokeType: .auto,
-                                            keyframes: keyframes
-                                        )
-                                    )
-                                    
-                                    if let animationIndex = animations.firstIndex(where: { schema in
-                                        schema.id == "animation"
-                                    }) {
-                                        animations[animationIndex] = VibeSchema(id: "animation", objects: [rectangle])
-                                    } else {
-                                        animations.append(VibeSchema(id: "animation", objects: [rectangle]))
-                                        editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation", animationId: "test123321anim"))
-                                    }
-                                    
+                                    createKeyframe(message: message)
                                     
                                 } {
                                     server.start()
@@ -519,7 +523,7 @@ struct EditorView: View {
                     .onAppear {
                         if servers[.react] == nil {
                             if let server = try? WebSocketServer(port: 8080) { message in
-        
+                                createKeyframe(message: message)
                             } {
                                 server.start()
                                 servers[.react] = server

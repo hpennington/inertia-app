@@ -12,6 +12,7 @@ export enum MessageType {
     actionable = "actionable",
     actionables = "actionables",
     schema = "schema",
+    translationEnded = "translationEnded"
 }
 
 export interface MessageWrapper<T = any> {
@@ -245,6 +246,12 @@ export interface MessageSchema {
     schemaWrappers: VibeSchemaWrapper[];
 }
 
+export type MessageTranslation = {
+    translationX: number;
+    translationY: number;
+    actionableIds: Set<string>;
+}
+
 export class WebSocketClient {
     private static instance: WebSocketClient;
     private socket: WebSocket | null = null;
@@ -253,6 +260,7 @@ export class WebSocketClient {
     public messageReceived?: (selectedIds: Set<string>) => void;
     public messageReceivedSchema?: (schemas: VibeSchemaWrapper[]) => void;
     public messageReceivedIsActionable?: (isActionable: boolean) => void;
+    public messageReceivedTranslationEnded?: (actionableIds: Set<string>, translationX: number, translationY: number) => void;
 
     private constructor() {}
 
@@ -359,6 +367,36 @@ export class WebSocketClient {
         this.send(wrapper);
     }
 
+    public sendMessageTranslation(message: MessageTranslation): void {
+        if (!this.socket || !this.isConnected) {
+            console.error("WebSocket is not connected");
+            return;
+        }
+
+        try {
+            // Convert Set → Array for JSON compatibility
+            const jsonData = JSON.stringify({
+                ...message,
+                actionableIds: Array.from(message.actionableIds),
+            });
+
+            // Wrap in message wrapper (base64 payload like your other send)
+            const messageWrapper: MessageWrapper<string> = {
+                type: MessageType.translationEnded,
+                payload: base64Encode(jsonData),
+            };
+
+            const json = JSON.stringify(messageWrapper);
+
+            this.socket.send(json);
+
+            console.log("✅ Message sent:", messageWrapper);
+        } catch (error) {
+            console.error("❌ Error sending message:", error);
+        }
+    }
+
+
     private async handleMessage(rawData: any): Promise<void> {
         try {
             let text: string;
@@ -398,8 +436,11 @@ export class WebSocketClient {
                     this.messageReceivedSchema?.(schemaMessage.schemaWrappers);
                     break;
 
-                default:
-                    console.warn("Unknown message type:", messageWrapper.type);
+                case MessageType.translationEnded:
+                    const translationMSG: MessageTranslation = payload
+                    console.log("[INERTIA_LOG]: Received translationEnded:", translationMSG);
+                    this.messageReceivedTranslationEnded?.(translationMSG.actionableIds, translationMSG.translationX, translationMSG.translationY)
+                    break
             }
         } catch (error) {
             console.error("❌ Error parsing message:", error, rawData);
