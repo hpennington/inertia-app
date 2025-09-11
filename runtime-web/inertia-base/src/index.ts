@@ -1,9 +1,9 @@
-export interface VibeSchema {
+export interface InertiaSchema {
     id: string;
-    objects: Array<VibeShape>;
+    objects: Array<InertiaShape>;
 }
 
-export type VibeCanvasSize = {
+export type InertiaCanvasSize = {
     width: number;
     height: number;
 }
@@ -20,7 +20,7 @@ export interface MessageWrapper<T = any> {
     payload: T;
 }
 
-export type VibeAnimationValues = {
+export type InertiaAnimationValues = {
     scale: number;
     translate: [number, number];
     rotate: number;
@@ -28,21 +28,21 @@ export type VibeAnimationValues = {
     opacity: number;
 }
 
-export enum VibeAnimationInvokeType {
+export enum InertiaAnimationInvokeType {
     trigger,
     auto
 }
 
-export type VibeAnimationKeyframe = {
-    values: VibeAnimationValues;
+export type InertiaAnimationKeyframe = {
+    values: InertiaAnimationValues;
     duration: number;
 }
 
-export type VibeAnimationSchema = {
+export type InertiaAnimationSchema = {
     id: string;
-    initialValues: VibeAnimationValues;
-    invokeType: VibeAnimationInvokeType;
-    keyframes: Array<VibeAnimationKeyframe>;
+    initialValues: InertiaAnimationValues;
+    invokeType: InertiaAnimationInvokeType;
+    keyframes: Array<InertiaAnimationKeyframe>;
 }
 
 export type AnimationContainer = {
@@ -50,7 +50,7 @@ export type AnimationContainer = {
     containerId: string;
 }
 
-export type VibeShape = {
+export type InertiaShape = {
     id: string;
     container: AnimationContainer;
     width: number;
@@ -59,35 +59,35 @@ export type VibeShape = {
     color: Array<number>;
     shape: string;
     zIndex: number;
-    animation: VibeAnimationSchema;
+    animation: InertiaAnimationSchema;
 }
 
-export type VibeAnimationState = {
+export type InertiaAnimationState = {
     id: string;
     trigger: boolean | null;
     isCancelled: boolean;
 }
 
-export class VibeDataModel {
+export class InertiaDataModel {
     public containerId: string;
-    public vibeSchema: VibeSchema;
+    public inertiaSchema: InertiaSchema;
     public tree: Tree;
     public actionableIds: Set<string>;
-    public states: Map<string, VibeAnimationState>;
+    public states: Map<string, InertiaAnimationState>;
     public actionableIdToAnimationIdMap: Map<string, string>;
     public isActionable: boolean = false
 
-    constructor(containerId: string, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<string>) {
+    constructor(containerId: string, inertiaSchema: InertiaSchema, tree: Tree, actionableIds: Set<string>) {
         this.containerId = containerId;
-        this.vibeSchema = vibeSchema;
+        this.inertiaSchema = inertiaSchema;
         this.tree = tree;
         this.actionableIds = actionableIds;
-        this.states = new Map<string, VibeAnimationState>();
+        this.states = new Map<string, InertiaAnimationState>();
         this.actionableIdToAnimationIdMap = new Map<string, string>();
     }
 }
 
-export type VibeID = string;
+export type InertiaID = string;
 
 export class Node {
     public id: string;
@@ -216,9 +216,9 @@ export class Tree {
     }
 }
 
-export type VibeSchemaWrapper = {
-    schema: VibeSchema;
-    actionableId: VibeID;
+export type InertiaSchemaWrapper = {
+    schema: InertiaSchema;
+    actionableId: InertiaID;
     container: AnimationContainer;
     animationId: string;
 };
@@ -243,7 +243,7 @@ export interface MessageActionable {
 }
 
 export interface MessageSchema {
-    schemaWrappers: VibeSchemaWrapper[];
+    schemaWrappers: InertiaSchemaWrapper[];
 }
 
 export type MessageTranslation = {
@@ -258,7 +258,7 @@ export class WebSocketClient {
     public isConnected = false;
 
     public messageReceived?: (selectedIds: Set<string>) => void;
-    public messageReceivedSchema?: (schemas: VibeSchemaWrapper[]) => void;
+    public messageReceivedSchema?: (schemas: InertiaSchemaWrapper[]) => void;
     public messageReceivedIsActionable?: (isActionable: boolean) => void;
     public messageReceivedTranslationEnded?: (actionableIds: Set<string>, translationX: number, translationY: number) => void;
 

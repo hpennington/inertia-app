@@ -1,5 +1,5 @@
 {
-  "name": "vibe-react",
+  "name": "inertia-react",
   "version": "0.1.0",
   "description": "",
   "main": "dist/index.min.js",
@@ -21,7 +21,7 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-ts": "^6.0.0-beta.22",
     "typescript": "^5.5.4",
-    "vibe-base": "file:../vibe-base"
+    "inertia-base": "file:../inertia-base"
   },
   "peerDependencies": {
     "react": "18.3.1",

@@ -1,75 +1,75 @@
 import React from 'react'
-import {VibeSchema, MessageTranslation, MessageActionables, MessageActionable, VibeSchemaWrapper, VibeAnimationInvokeType, WebSocketClient, VibeDataModel, VibeCanvasSize, MessageType, MessageWrapper, VibeID, VibeShape, Tree, Node, VibeAnimationSchema} from 'vibe-base'
+import {InertiaSchema, MessageTranslation, MessageActionables, MessageActionable, InertiaSchemaWrapper, InertiaAnimationInvokeType, WebSocketClient, InertiaDataModel, InertiaCanvasSize, MessageType, MessageWrapper, InertiaID, InertiaShape, Tree, Node, InertiaAnimationSchema} from 'inertia-base'
 
-export type VibeContainerProps = {
+export type InertiaContainerProps = {
     children: React.ReactElement,
     id: string,
     baseURL: string,
     dev: boolean,
 }
 
-export type VibeableProps = {
+export type InertiaableProps = {
     children: React.ReactElement,
     hierarchyIdPrefix: string,
 }
 
-export type VibeActionableProps = {
+export type InertiaActionableProps = {
     children: React.ReactElement,
     id: string,
 }
 
-type VibeContextType = {
-    vibeDataModel: VibeDataModel;
-    setVibeDataModel: React.Dispatch<React.SetStateAction<VibeDataModel>>;
+type InertiaContextType = {
+    inertiaDataModel: InertiaDataModel;
+    setInertiaDataModel: React.Dispatch<React.SetStateAction<InertiaDataModel>>;
 };
 
-const VibeContext = React.createContext<VibeContextType | undefined>(undefined);
+const InertiaContext = React.createContext<InertiaContextType | undefined>(undefined);
 
-const useVibeDataModel = (): VibeContextType => {
-    const context = React.useContext(VibeContext);
+const useInertiaDataModel = (): InertiaContextType => {
+    const context = React.useContext(InertiaContext);
     if (!context) {
-        throw new Error('useVibeDataModel must be used within a VibeContext.Provider');
+        throw new Error('useInertiaDataModel must be used within a InertiaContext.Provider');
     }
     return context;
 };
 
-const VibeParentIdContext = React.createContext<string|undefined>(undefined)
+const InertiaParentIdContext = React.createContext<string|undefined>(undefined)
 
 
-const useVibeParentId = () => {
-    const vibeParentId = React.useContext(VibeParentIdContext)
+const useInertiaParentId = () => {
+    const inertiaParentId = React.useContext(InertiaParentIdContext)
 
-    if (!vibeParentId) {
-        throw new Error('useVibeParentId must be used within a VibeContext.Provider')
+    if (!inertiaParentId) {
+        throw new Error('useInertiaParentId must be used within a InertiaContext.Provider')
     }
 
-    return vibeParentId
+    return inertiaParentId
 }
 
-const VibeContainerIdContext = React.createContext<string|undefined>(undefined)
+const InertiaContainerIdContext = React.createContext<string|undefined>(undefined)
 
 
-const useVibeContainerId = () => {
-    const vibeContainerId = React.useContext(VibeContainerIdContext)
+const useInertiaContainerId = () => {
+    const inertiaContainerId = React.useContext(InertiaContainerIdContext)
 
-    if (!vibeContainerId) {
-        throw new Error('useVibeContainerId must be used within a VibeContainerIdContext.Provider')
+    if (!inertiaContainerId) {
+        throw new Error('useInertiaContainerId must be used within a InertiaContainerIdContext.Provider')
     }
 
-    return vibeContainerId
+    return inertiaContainerId
 }
 
-const VibeIsContainerContext = React.createContext<boolean>(false)
+const InertiaIsContainerContext = React.createContext<boolean>(false)
 
 
-const useVibeIsContainer = () => {
-    const vibeIsContainer = React.useContext(VibeIsContainerContext)
+const useInertiaIsContainer = () => {
+    const inertiaIsContainer = React.useContext(InertiaIsContainerContext)
 
-    if (!vibeIsContainer) {
-        throw new Error('useVibeIsContainer must be used within a VibeIsContainerContext.Provider')
+    if (!inertiaIsContainer) {
+        throw new Error('useInertiaIsContainer must be used within a InertiaIsContainerContext.Provider')
     }
 
-    return vibeIsContainer
+    return inertiaIsContainer
 }
 
 // Helper to convert JSON received from WebSocket into MessageActionables
@@ -119,7 +119,7 @@ export function messageSelectedToJSON(msg: MessageSelected): any {
 
 // --- MessageSchema ---
 export type MessageSchema = {
-    schemaWrappers: Array<VibeSchemaWrapper>;
+    schemaWrappers: Array<InertiaSchemaWrapper>;
 };
 
 export function messageSchemaFromJSON(json: any): MessageSchema {
@@ -139,15 +139,15 @@ export type CGPoint = { x: number; y: number };
 export type CGSize = { width: number; height: number };
 
 // --- Enum ---
-export enum VibeObjectType {
+export enum InertiaObjectType {
     Shape = "shape",
     Animation = "animation",
 }
 
 // --- AnimationContainer ---
 export type AnimationContainer = {
-    actionableId: VibeID;
-    containerId: VibeID;
+    actionableId: InertiaID;
+    containerId: InertiaID;
 };
 
 export function animationContainerFromJSON(json: any): AnimationContainer {
@@ -164,9 +164,9 @@ export function animationContainerToJSON(container: AnimationContainer): any {
     };
 }
 
-export function vibeShapeFromJSON(json: {
-    id: string, container: AnimationContainer, width: number, height: number, position: {x: number, y: number}, color: number[], shape: string, zIndex: number, animation: VibeAnimationSchema}
-): VibeShape {
+export function inertiaShapeFromJSON(json: {
+    id: string, container: AnimationContainer, width: number, height: number, position: {x: number, y: number}, color: number[], shape: string, zIndex: number, animation: InertiaAnimationSchema}
+): InertiaShape {
     return {
         id: json.id,
         container: json.container,
@@ -180,7 +180,7 @@ export function vibeShapeFromJSON(json: {
     };
 }
 
-export function vibeShapeToJSON(shape: VibeShape): any {
+export function inertiaShapeToJSON(shape: InertiaShape): any {
     return {
         id: shape.id,
         containerId: shape.id,
@@ -195,32 +195,32 @@ export function vibeShapeToJSON(shape: VibeShape): any {
     };
 }
 
-export function vibeSchemaFromJSON(json: any): VibeSchema {
+export function inertiaSchemaFromJSON(json: any): InertiaSchema {
     return {
         id: json.id,
-        objects: (json.objects ?? []).map(vibeShapeFromJSON),
+        objects: (json.objects ?? []).map(inertiaShapeFromJSON),
     };
 }
 
-export function vibeSchemaToJSON(schema: VibeSchema): any {
+export function inertiaSchemaToJSON(schema: InertiaSchema): any {
     return {
         id: schema.id,
-        objects: schema.objects.map(vibeShapeToJSON),
+        objects: schema.objects.map(inertiaShapeToJSON),
     };
 }
 
-export function vibeSchemaWrapperFromJSON(json: any): VibeSchemaWrapper {
+export function inertiaSchemaWrapperFromJSON(json: any): InertiaSchemaWrapper {
     return {
-        schema: vibeSchemaFromJSON(json.schema),
+        schema: inertiaSchemaFromJSON(json.schema),
         actionableId: json.actionableId,
         container: animationContainerFromJSON(json.container),
         animationId: json.animationId,
     };
 }
 
-export function vibeSchemaWrapperToJSON(wrapper: VibeSchemaWrapper): any {
+export function inertiaSchemaWrapperToJSON(wrapper: InertiaSchemaWrapper): any {
     return {
-        schema: vibeSchemaToJSON(wrapper.schema),
+        schema: inertiaSchemaToJSON(wrapper.schema),
         actionableId: wrapper.actionableId,
         container: animationContainerToJSON(wrapper.container),
         animationId: wrapper.animationId,
@@ -228,8 +228,8 @@ export function vibeSchemaWrapperToJSON(wrapper: VibeSchemaWrapper): any {
 }
 
 
-// --- VibeAnimationValues ---
-export type VibeAnimationValues = {
+// --- InertiaAnimationValues ---
+export type InertiaAnimationValues = {
     scale: number;
     translate: CGSize;
     rotate: number;
@@ -238,7 +238,7 @@ export type VibeAnimationValues = {
 };
 
 // Zero value constant
-export const zeroVibeAnimationValues: VibeAnimationValues = {
+export const zeroInertiaAnimationValues: InertiaAnimationValues = {
     scale: 0,
     translate: { width: 0, height: 0 },
     rotate: 0,
@@ -247,10 +247,10 @@ export const zeroVibeAnimationValues: VibeAnimationValues = {
 };
 
 // Arithmetic helpers
-export function addVibeAnimationValues(
-    a: VibeAnimationValues,
-    b: VibeAnimationValues
-): VibeAnimationValues {
+export function addInertiaAnimationValues(
+    a: InertiaAnimationValues,
+    b: InertiaAnimationValues
+): InertiaAnimationValues {
     return {
         scale: a.scale + b.scale,
         translate: { width: a.translate.width + b.translate.width, height: a.translate.height + b.translate.height },
@@ -260,10 +260,10 @@ export function addVibeAnimationValues(
     };
 }
 
-export function subtractVibeAnimationValues(
-    a: VibeAnimationValues,
-    b: VibeAnimationValues
-): VibeAnimationValues {
+export function subtractInertiaAnimationValues(
+    a: InertiaAnimationValues,
+    b: InertiaAnimationValues
+): InertiaAnimationValues {
     return {
         scale: a.scale - b.scale,
         translate: { width: a.translate.width - b.translate.width, height: a.translate.height - b.translate.height },
@@ -273,7 +273,7 @@ export function subtractVibeAnimationValues(
     };
 }
 
-export function scaleVibeAnimationValues(v: VibeAnimationValues, factor: number): VibeAnimationValues {
+export function scaleInertiaAnimationValues(v: InertiaAnimationValues, factor: number): InertiaAnimationValues {
     return {
         scale: v.scale * factor,
         translate: { width: v.translate.width * factor, height: v.translate.height * factor },
@@ -283,14 +283,14 @@ export function scaleVibeAnimationValues(v: VibeAnimationValues, factor: number)
     };
 }
 
-// --- VibeAnimationKeyframe ---
-export type VibeAnimationKeyframe = {
-    id: VibeID;
-    values: VibeAnimationValues;
+// --- InertiaAnimationKeyframe ---
+export type InertiaAnimationKeyframe = {
+    id: InertiaID;
+    values: InertiaAnimationValues;
     duration: number;
 };
 
-export function vibeAnimationKeyframeFromJSON(json: any): VibeAnimationKeyframe {
+export function inertiaAnimationKeyframeFromJSON(json: any): InertiaAnimationKeyframe {
     return {
         id: json.id,
         values: json.values,
@@ -298,7 +298,7 @@ export function vibeAnimationKeyframeFromJSON(json: any): VibeAnimationKeyframe 
     };
 }
 
-export function vibeAnimationKeyframeToJSON(keyframe: VibeAnimationKeyframe): any {
+export function inertiaAnimationKeyframeToJSON(keyframe: InertiaAnimationKeyframe): any {
     return {
         id: keyframe.id,
         values: keyframe.values,
@@ -306,21 +306,21 @@ export function vibeAnimationKeyframeToJSON(keyframe: VibeAnimationKeyframe): an
     };
 }
 
-export function vibeAnimationSchemaFromJSON(json: any): VibeAnimationSchema {
+export function inertiaAnimationSchemaFromJSON(json: any): InertiaAnimationSchema {
     return {
         id: json.id,
         initialValues: json.initialValues,
-        invokeType: json.invokeType as VibeAnimationInvokeType,
-        keyframes: (json.keyframes ?? []).map(vibeAnimationKeyframeFromJSON),
+        invokeType: json.invokeType as InertiaAnimationInvokeType,
+        keyframes: (json.keyframes ?? []).map(inertiaAnimationKeyframeFromJSON),
     };
 }
 
-// export function vibeAnimationSchemaToJSON(schema: VibeAnimationSchema): any {
+// export function inertiaAnimationSchemaToJSON(schema: InertiaAnimationSchema): any {
 //     return {
 //         id: schema.id,
 //         initialValues: schema.initialValues,
 //         invokeType: schema.invokeType,
-//         keyframes: schema.keyframes.map(vibeAnimationKeyframeToJSON),
+//         keyframes: schema.keyframes.map(inertiaAnimationKeyframeToJSON),
 //     };
 // }
 
@@ -346,19 +346,19 @@ class SharedIndexManager {
 }
 
 function handleMessageSchema(
-    schemaWrappers: VibeSchemaWrapper[],
-    vibeDataModel: VibeDataModel | null,
-    setVibeDataModel: React.Dispatch<React.SetStateAction<VibeDataModel>>
+    schemaWrappers: InertiaSchemaWrapper[],
+    inertiaDataModel: InertiaDataModel | null,
+    setInertiaDataModel: React.Dispatch<React.SetStateAction<InertiaDataModel>>
 ): void {
-    if (!vibeDataModel) return;
+    if (!inertiaDataModel) return;
 
     for (const schemaWrapper of schemaWrappers) {
-        if (schemaWrapper.container.containerId === vibeDataModel.containerId) {
-            setVibeDataModel(prev => {
+        if (schemaWrapper.container.containerId === inertiaDataModel.containerId) {
+            setInertiaDataModel(prev => {
                 const updated = { ...prev };
 
                 // Update schema
-                updated.vibeSchema = schemaWrapper.schema;
+                updated.inertiaSchema = schemaWrapper.schema;
 
                 // Update actionableId -> animationId map
                 updated.actionableIdToAnimationIdMap.set(schemaWrapper.actionableId, schemaWrapper.animationId)
@@ -373,11 +373,11 @@ function handleMessageSchema(
     }
 }
 
-export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps): React.ReactElement => {
-    const [vibeDataModel, setVibeDataModel] = React.useState(
-        new VibeDataModel(id, { id: id, objects: [] }, new Tree(id), new Set())
+export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContainerProps): React.ReactElement => {
+    const [inertiaDataModel, setInertiaDataModel] = React.useState(
+        new InertiaDataModel(id, { id: id, objects: [] }, new Tree(id), new Set())
     );
-    const [bounds, setBounds] = React.useState<VibeCanvasSize | null>(null);
+    const [bounds, setBounds] = React.useState<InertiaCanvasSize | null>(null);
     const ref = React.useRef<HTMLDivElement | null>(null);
 
     React.useEffect(() => {
@@ -400,49 +400,49 @@ export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps
     // ✅ WebSocket logic stays the same
     React.useEffect(() => {
         const ws = WebSocketClient.shared;
-        if (!vibeDataModel?.tree) return;
+        if (!inertiaDataModel?.tree) return;
 
         ws.connect("ws://127.0.0.1:8080", () => {
             ws.messageReceived = (msg) => {
-                setVibeDataModel(prev => ({ ...prev, actionableIds: msg }));
+                setInertiaDataModel(prev => ({ ...prev, actionableIds: msg }));
             };
 
             ws.messageReceivedSchema = (msg) => {
-                handleMessageSchema(msg, vibeDataModel, setVibeDataModel)
+                handleMessageSchema(msg, inertiaDataModel, setInertiaDataModel)
             };
 
             ws.messageReceivedIsActionable = (msg) => {
-                setVibeDataModel(prev => ({ ...prev, isActionable: msg }));
+                setInertiaDataModel(prev => ({ ...prev, isActionable: msg }));
             };
 
             ws.sendMessageActionables({
-                tree: vibeDataModel.tree,
-                actionableIds: Array.from(vibeDataModel.actionableIds),
+                tree: inertiaDataModel.tree,
+                actionableIds: Array.from(inertiaDataModel.actionableIds),
             });
         });
-    }, [vibeDataModel?.tree]);
+    }, [inertiaDataModel?.tree]);
 
     return (
-        <VibeCanvasSizeContext.Provider value={bounds}>
-            <div data-vibe-container-id={id} ref={ref}>
-                <VibeContext.Provider value={{ vibeDataModel, setVibeDataModel }}>
-                    <VibeParentIdContext.Provider value={id}>
-                        <VibeContainerIdContext.Provider value={id}>
-                            <VibeIsContainerContext.Provider value={true}>
+        <InertiaCanvasSizeContext.Provider value={bounds}>
+            <div data-inertia-container-id={id} ref={ref}>
+                <InertiaContext.Provider value={{ inertiaDataModel, setInertiaDataModel }}>
+                    <InertiaParentIdContext.Provider value={id}>
+                        <InertiaContainerIdContext.Provider value={id}>
+                            <InertiaIsContainerContext.Provider value={true}>
                                 {children}
-                            </VibeIsContainerContext.Provider>
-                        </VibeContainerIdContext.Provider>
-                    </VibeParentIdContext.Provider>
-                </VibeContext.Provider>
+                            </InertiaIsContainerContext.Provider>
+                        </InertiaContainerIdContext.Provider>
+                    </InertiaParentIdContext.Provider>
+                </InertiaContext.Provider>
             </div>
-        </VibeCanvasSizeContext.Provider>
+        </InertiaCanvasSizeContext.Provider>
     );
 };
 
 
 import { useState, useRef, useMemo, useCallback, useContext, useEffect } from "react";
 
-const VibeCanvasSizeContext = React.createContext<VibeCanvasSize | null>(null)
+const InertiaCanvasSizeContext = React.createContext<InertiaCanvasSize | null>(null)
 const manager = WebSocketClient.shared
 
 // ------------------ Draggable Props ------------------
@@ -453,7 +453,7 @@ export interface DraggableProps {
   containerRef: React.RefObject<HTMLDivElement>;
   children: React.ReactNode;
   handleClick: () => void;
-  vibeDataModel?: VibeDataModel;
+  inertiaDataModel?: InertiaDataModel;
   pos: { x: number; y: number };
   setPos: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
   moved?: React.MutableRefObject<boolean>;
@@ -475,7 +475,7 @@ export function withDrag<T extends DraggableProps>(
     const moved = useRef(false);
     const offset = useRef({ x: 0, y: 0 });
 
-    const vibeCanvasSize = useContext(VibeCanvasSizeContext);
+    const inertiaCanvasSize = useContext(InertiaCanvasSizeContext);
 
     const startDrag = (clientX: number, clientY: number) => {
       if (!isSelected) return;
@@ -493,11 +493,11 @@ export function withDrag<T extends DraggableProps>(
     };
 
     const stopDrag = () => {
-      if (dragging.current && actionableIds && vibeCanvasSize) {
+      if (dragging.current && actionableIds && inertiaCanvasSize) {
         manager.sendMessageTranslation({
           actionableIds: Array.from(actionableIds),
-          translationX: pos.x / vibeCanvasSize.width,
-          translationY: pos.y / vibeCanvasSize.height,
+          translationX: pos.x / inertiaCanvasSize.width,
+          translationY: pos.y / inertiaCanvasSize.height,
         });
       }
       dragging.current = false;
@@ -543,24 +543,24 @@ export function withDrag<T extends DraggableProps>(
   };
 }
 
-// ------------------ VibeableGuts ------------------
-const VibeableGuts: React.FC<DraggableProps> = React.memo(
-  ({ hierarchyId, handleClick, isSelected, containerRef, children, vibeDataModel, moved }) => {
+// ------------------ InertiaableGuts ------------------
+const InertiaableGuts: React.FC<DraggableProps> = React.memo(
+  ({ hierarchyId, handleClick, isSelected, containerRef, children, inertiaDataModel, moved }) => {
     const onClick = (e: React.MouseEvent) => {
       if (!moved?.current) handleClick();
     };
 
-    const vibeCanvasSize = useContext(VibeCanvasSizeContext);
+    const inertiaCanvasSize = useContext(InertiaCanvasSizeContext);
 
     // Keyframe animation
     useEffect(() => {
-      if (!containerRef.current || !vibeDataModel || !hierarchyId || !vibeCanvasSize) return;
-      const animationId = vibeDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
-      const animation = vibeDataModel.vibeSchema?.objects.find(obj => obj.animation?.id === animationId)?.animation;
+      if (!containerRef.current || !inertiaDataModel || !hierarchyId || !inertiaCanvasSize) return;
+      const animationId = inertiaDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
+      const animation = inertiaDataModel.inertiaSchema?.objects.find(obj => obj.animation?.id === animationId)?.animation;
       if (!animation) return;
 
       const keyframesWebAPI = [animation.initialValues, ...(animation.keyframes || []).map(k => k.values)].map(values => ({
-        transform: `translateX(${values.translate[0] * vibeCanvasSize.width}px) translateY(${values.translate[1] * vibeCanvasSize.height}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
+        transform: `translateX(${values.translate[0] * inertiaCanvasSize.width}px) translateY(${values.translate[1] * inertiaCanvasSize.height}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
         transformOrigin: "center",
         opacity: values.opacity,
       }));
@@ -571,17 +571,17 @@ const VibeableGuts: React.FC<DraggableProps> = React.memo(
         iterations: Infinity,
         easing: "ease-in-out",
       });
-    }, [containerRef, vibeDataModel, hierarchyId]);
+    }, [containerRef, inertiaDataModel, hierarchyId]);
 
     return (
       <div
-        data-vibe-id={hierarchyId}
+        data-inertia-id={hierarchyId}
         ref={containerRef}
         onClick={onClick}
         style={{ display: "inline-block", cursor: "pointer", position: "relative" }}
       >
         {children}
-        {isSelected && vibeDataModel?.isActionable && (
+        {isSelected && inertiaDataModel?.isActionable && (
           <div
             style={{
               position: "absolute",
@@ -600,13 +600,13 @@ const VibeableGuts: React.FC<DraggableProps> = React.memo(
   }
 );
 
-export const DraggableVibeableGuts = React.memo(withDrag(VibeableGuts));
+export const DraggableInertiaableGuts = React.memo(withDrag(InertiaableGuts));
 
-// ------------------ Vibeable ------------------
-export const Vibeable: React.FC<VibeableProps> = ({ children, hierarchyIdPrefix }) => {
-  const { vibeDataModel, setVibeDataModel } = useContext(VibeContext)!;
-  const vibeParentId = useContext(VibeParentIdContext)!;
-  const vibeIsContainer = useContext(VibeIsContainerContext)!;
+// ------------------ Inertiaable ------------------
+export const Inertiaable: React.FC<InertiaableProps> = ({ children, hierarchyIdPrefix }) => {
+  const { inertiaDataModel, setInertiaDataModel } = useContext(InertiaContext)!;
+  const inertiaParentId = useContext(InertiaParentIdContext)!;
+  const inertiaIsContainer = useContext(InertiaIsContainerContext)!;
   const indexManager = SharedIndexManager.shared;
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -622,20 +622,20 @@ export const Vibeable: React.FC<VibeableProps> = ({ children, hierarchyIdPrefix 
 
   useEffect(() => {
     if (hierarchyId) {
-      vibeDataModel?.tree.addRelationship(hierarchyId, vibeParentId, vibeIsContainer);
+      inertiaDataModel?.tree.addRelationship(hierarchyId, inertiaParentId, inertiaIsContainer);
     }
-  }, [hierarchyId, vibeParentId, vibeIsContainer]);
+  }, [hierarchyId, inertiaParentId, inertiaIsContainer]);
 
   useEffect(() => {
     setPos({x: 0, y: 0})
-  }, [vibeDataModel?.vibeSchema?.objects])
+  }, [inertiaDataModel?.inertiaSchema?.objects])
 
-  const isSelected = hierarchyId ? vibeDataModel?.actionableIds.has(hierarchyId) ?? false : false;
+  const isSelected = hierarchyId ? inertiaDataModel?.actionableIds.has(hierarchyId) ?? false : false;
 
   const handleClick = () => {
-      if (!hierarchyId || !vibeDataModel?.isActionable) return;
+      if (!hierarchyId || !inertiaDataModel?.isActionable) return;
 
-      const newActionableIds = new Set(vibeDataModel.actionableIds);
+      const newActionableIds = new Set(inertiaDataModel.actionableIds);
       if (newActionableIds.has(hierarchyId)) {
         newActionableIds.delete(hierarchyId);
       } else {
@@ -643,25 +643,25 @@ export const Vibeable: React.FC<VibeableProps> = ({ children, hierarchyIdPrefix 
       }
 
       // Update UI immediately
-      setVibeDataModel(prev => ({ ...prev, actionableIds: newActionableIds }));
+      setInertiaDataModel(prev => ({ ...prev, actionableIds: newActionableIds }));
       
       // Sync to server separately (maybe debounced)
       manager.sendMessageActionables({ 
-        tree: vibeDataModel.tree, 
+        tree: inertiaDataModel.tree, 
         actionableIds: Array.from(newActionableIds)
       });
     }
 
   return (
-    <DraggableVibeableGuts
+    <DraggableInertiaableGuts
       key={hierarchyId}
       hierarchyId={hierarchyId}
       handleClick={handleClick}
       isSelected={isSelected}
       containerRef={containerRef}
       children={children}
-      vibeDataModel={vibeDataModel}
-      actionableIds={vibeDataModel?.actionableIds}
+      inertiaDataModel={inertiaDataModel}
+      actionableIds={inertiaDataModel?.actionableIds}
       pos={pos}
       setPos={setPos}
     />
