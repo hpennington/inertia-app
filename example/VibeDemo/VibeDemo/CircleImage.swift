@@ -1,6 +1,6 @@
 //
 //  CircleImage.swift
-//  VibeDemo
+//  InertiaDemo
 //
 //  Created by Hayden Pennington on 12/26/24.
 //

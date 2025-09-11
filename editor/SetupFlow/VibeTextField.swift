@@ -1,13 +1,13 @@
 //
-//  VibeTextField.swift
-//  Vibe Animation
+//  InertiaTextField.swift
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/3/24.
 //
 
 import SwiftUI
 
-struct VibeTextField: View {
+struct InertiaTextField: View {
     let title: String
     @Binding var text: String
     let error: Bool
@@ -43,5 +43,5 @@ struct VibeTextField: View {
 }
 
 #Preview {
-    VibeTextField(title: "Test Title", text: .constant("Testing text"))
+    InertiaTextField(title: "Test Title", text: .constant("Testing text"))
 }

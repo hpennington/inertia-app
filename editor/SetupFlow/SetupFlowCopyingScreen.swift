@@ -1,6 +1,6 @@
 //
 //  SetupFlowCopyingScreen.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/4/24.
 //

@@ -1,6 +1,6 @@
 //
 //  SetupFlowInfoScreen.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/3/24.
 //
@@ -21,13 +21,13 @@ import SwiftUI
 //    var body: some View {
 //        SetupFlowBase(title: "Give your Project a Name") {
 //            VStack(spacing: 16) {
-//                VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
+//                InertiaTextField(title: "Title", text: $setupFlowManager.projectTitle)
 //                    .focused($focusState, equals: .titleTextField)
 //                    .onSubmit {
 //                        focusState = .descriptionTextField
 //                    }
 //                
-//                VibeTextContainer(title: "Description", text: $setupFlowManager.projectDescription)
+//                InertiaTextContainer(title: "Description", text: $setupFlowManager.projectDescription)
 //                    .focused($focusState, equals: .descriptionTextField)
 //                Spacer()
 //            
@@ -59,12 +59,12 @@ import SwiftUI
 //    var body: some View {
 //        SetupFlowBase(title: "Give your Project a Name") {
 //            VStack(spacing: 16) {
-//                VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
+//                InertiaTextField(title: "Title", text: $setupFlowManager.projectTitle)
 //                    .focused($focusState, equals: .titleTextField)
 //                    .onSubmit {
 //                        focusState = .descriptionTextField
 //                    }
-//                VibeTextContainer(title: "Description", text: $description)
+//                InertiaTextContainer(title: "Description", text: $description)
 //                    .focused($focusState, equals: .descriptionTextField)
 //                Spacer()
 //            
@@ -96,12 +96,12 @@ import SwiftUI
 //    var body: some View {
 //        SetupFlowBase(title: "Give your Project a Name") {
 //            VStack(spacing: 16) {
-//                VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
+//                InertiaTextField(title: "Title", text: $setupFlowManager.projectTitle)
 //                    .focused($focusState, equals: .titleTextField)
 //                    .onSubmit {
 //                        focusState = .descriptionTextField
 //                    }
-//                VibeTextContainer(title: "Description", text: $description)
+//                InertiaTextContainer(title: "Description", text: $description)
 //                    .focused($focusState, equals: .descriptionTextField)
 //                Spacer()
 //            
@@ -133,12 +133,12 @@ struct SetupFlowInfoScreen: View {
     var body: some View {
         SetupFlowBase(title: "Give your Project a Name") {
             VStack(spacing: 16) {
-                VibeTextField(title: "Title", text: $setupFlowManager.projectTitle)
+                InertiaTextField(title: "Title", text: $setupFlowManager.projectTitle)
                     .focused($focusState, equals: .titleTextField)
                     .onSubmit {
                         focusState = .descriptionTextField
                     }
-                VibeTextContainer(title: "Description", text: $description)
+                InertiaTextContainer(title: "Description", text: $description)
                     .focused($focusState, equals: .descriptionTextField)
                 Spacer()
             

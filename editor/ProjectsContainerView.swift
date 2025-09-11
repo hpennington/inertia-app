@@ -1,6 +1,6 @@
 //
 //  ProjectsContainerView.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 8/26/24.
 //

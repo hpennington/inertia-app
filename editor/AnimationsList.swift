@@ -1,6 +1,6 @@
 //
 //  AnimationsList.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/30/24.
 //

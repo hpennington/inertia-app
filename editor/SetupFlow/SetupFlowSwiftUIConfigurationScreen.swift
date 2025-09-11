@@ -1,6 +1,6 @@
 //
 //  SetupFlowSwiftUIConfigurationScreen.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/4/24.
 //
@@ -25,12 +25,12 @@ struct SetupFlowSwiftUIConfigurationScreen: View {
     var body: some View {
         SetupFlowBase(title: "Setup the SwiftUI Configuration") {
             VStack(spacing: 16) {
-                VibeTextField(title: "Xcode Project URL", text: $setupFlowManager.xcodeProjectURL)
+                InertiaTextField(title: "Xcode Project URL", text: $setupFlowManager.xcodeProjectURL)
                     .focused($focusState, equals: .projectURL)
                     .onSubmit {
                         focusState = .entryPoint
                     }
-                VibeTextField(title: "Entry Struct", text: $setupFlowManager.entryStructTitle)
+                InertiaTextField(title: "Entry Struct", text: $setupFlowManager.entryStructTitle)
                     .focused($focusState, equals: .entryPoint)
                 Spacer(minLength: 0)
             

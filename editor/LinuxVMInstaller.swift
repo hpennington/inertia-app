@@ -1,6 +1,6 @@
 //
 //  LinuxVMInstaller.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 10/29/24.
 //  Modified for Linux VM support

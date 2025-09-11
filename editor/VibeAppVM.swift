@@ -1,6 +1,6 @@
 //
-//  VibeAppVM.swift
-//  Vibe Animation
+//  InertiaAppVM.swift
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/15/24.
 //
@@ -10,7 +10,7 @@ import SwiftUI
 import WebKit
 import Inertia
 
-final class VibeAppVM: ObservableObject {
+final class InertiaAppVM: ObservableObject {
     @Published var framework: SetupFlowFramework = .react
     @Published private(set) var stateMachine = SetupFlowStateMachine()
     @Published var navigationPath = NavigationPath()

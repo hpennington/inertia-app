@@ -1,6 +1,6 @@
 //
-//  VibeDemoApp.swift
-//  VibeDemo
+//  InertiaDemoApp.swift
+//  InertiaDemo
 //
 //  Created by Hayden Pennington on 8/9/24.
 //
@@ -17,7 +17,7 @@ struct AppEnvironment {
 }
 
 @main
-struct VibeDemoApp: App {
+struct InertiaDemoApp: App {
     var body: some Scene {
         WindowGroup {
             InertiaContainer(

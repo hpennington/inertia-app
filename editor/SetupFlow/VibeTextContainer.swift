@@ -1,13 +1,13 @@
 //
-//  VibeTextContainer.swift
-//  Vibe Animation
+//  InertiaTextContainer.swift
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/3/24.
 //
 
 import SwiftUI
 
-struct VibeTextContainer: View {
+struct InertiaTextContainer: View {
     let title: String
     @Binding var text: String
     

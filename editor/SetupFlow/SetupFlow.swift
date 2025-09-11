@@ -1,6 +1,6 @@
 //
 //  SetupFlow.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 8/28/24.
 //

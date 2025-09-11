@@ -1,6 +1,6 @@
 (function() {
     console.log('Injecting animations into the DOM')
-//    const dataModel = vibeDataModel
+//    const dataModel = inertiaDataModel
 //    
 //    if (dataModel) {
 //        dataModel.animations = new Map()

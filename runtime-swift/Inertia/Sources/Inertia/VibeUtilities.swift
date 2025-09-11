@@ -1,5 +1,5 @@
 //
-//  VibeUtilities.swift
+//  InertiaUtilities.swift
 //  
 //
 //  Created by Hayden Pennington on 7/5/24.

@@ -25,8 +25,8 @@ function invokePlayback(animationsFromHost) {
 //            const containerId = container.containerId
 ////            console.log({actionableId})
 ////            console.log({containerId})
-//            const containerView = document.querySelector('[data-vibe-actionable-id="' + actionableId + '"]')
-//            containerView.dataset.vibeContainerId = containerId
+//            const containerView = document.querySelector('[data-inertia-actionable-id="' + actionableId + '"]')
+//            containerView.dataset.inertiaContainerId = containerId
 //            const rect = containerView.getBoundingClientRect()
 ////            console.log({rect})
 //            canvasSizes[containerId] = {width: rect.width, height: rect.height}
@@ -42,11 +42,11 @@ function invokePlayback(animationsFromHost) {
 //            
 //            dataModel.animations.get(animationId).push(schema)
 ////            console.log({animation})
-//            const view = document.querySelector('[data-vibe-actionable-id="' + actionableId + '"]')
+//            const view = document.querySelector('[data-inertia-actionable-id="' + actionableId + '"]')
 ////            console.log({view})
 //            
 //            const animation = animationObject.schema.objects.filter(obj => obj.id == animationId)[0]
-//            const vibeCanvasSize = canvasSizes[animation.containerId]
+//            const inertiaCanvasSize = canvasSizes[animation.containerId]
 //            const keyframes = animation.animation.keyframes
 //            const keyframeValues = keyframes?.map(keyframe => {
 //                return keyframe.values
@@ -56,8 +56,8 @@ function invokePlayback(animationsFromHost) {
 //            const keyframeInitialValues = animation.animation.initialValues
 ////            console.log({keyframeInitialValues})
 ////            console.log({keyframeValues})
-////            console.log({vibeCanvasSize})
-//            if (keyframeValues != null && keyframeInitialValues != null && vibeCanvasSize != null) {
+////            console.log({inertiaCanvasSize})
+//            if (keyframeValues != null && keyframeInitialValues != null && inertiaCanvasSize != null) {
 //                const keyframeValuesWithInitial = [
 //                    keyframeInitialValues,
 //                    ...keyframeValues
@@ -65,8 +65,8 @@ function invokePlayback(animationsFromHost) {
 //                
 //                const keyframesWebAPI = keyframeValuesWithInitial?.map(values => {
 //                    const translate = values.translate
-//                    const translateX = translate[0] * vibeCanvasSize.width / 2
-//                    const translateY = translate[1] * vibeCanvasSize.height / 2
+//                    const translateX = translate[0] * inertiaCanvasSize.width / 2
+//                    const translateY = translate[1] * inertiaCanvasSize.height / 2
 //                    return {
 //                        transform: 'translateX(' + translateX + 'px) translateY(' + translateY + 'px)' + ' rotate(' + values.rotateCenter + 'deg) scale(' + values.scale + ')',
 //                        transformOrigin: 'center',

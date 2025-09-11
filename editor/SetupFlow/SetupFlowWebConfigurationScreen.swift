@@ -1,6 +1,6 @@
 //
 //  SetupFlowWebConfigurationScreen.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/3/24.
 //
@@ -29,7 +29,7 @@ import SwiftUI
 //    var body: some View {
 //        SetupFlowBase(title: "Configure the web URL") {
 //            VStack(spacing: 16) {
-//                VibeTextField(title: "Server URL", text: $setupFlowManager.reactProjectPath, error: isInvalidURL)
+//                InertiaTextField(title: "Server URL", text: $setupFlowManager.reactProjectPath, error: isInvalidURL)
 //                    .focused($focusState, equals: .serverURL)
 //                Spacer()
 //            

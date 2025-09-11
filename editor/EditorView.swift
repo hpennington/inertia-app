@@ -1,6 +1,6 @@
 //
 //  EditorView.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 7/17/24.
 //
@@ -125,7 +125,7 @@ struct EditorView: View {
         return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
     }
     
-    func executeVibeSwiftWebsocketFunction(schemaWrappers: [InertiaSchemaWrapper]) async -> Result<Int, InertiaSwiftWebsocketError> {
+    func executeInertiaSwiftWebsocketFunction(schemaWrappers: [InertiaSchemaWrapper]) async -> Result<Int, InertiaSwiftWebsocketError> {
         guard let server = servers[framework] else {
             return .failure(.serverNil)
         }
@@ -177,7 +177,7 @@ struct EditorView: View {
             return updateSchema
         }
         
-        let result = await executeVibeSwiftWebsocketFunction(schemaWrappers: animationArgs)
+        let result = await executeInertiaSwiftWebsocketFunction(schemaWrappers: animationArgs)
         
         switch result {
         case .success(let success):

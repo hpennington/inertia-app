@@ -23,7 +23,7 @@ struct WKWebViewWrapper: NSViewRepresentable, Equatable {
     func makeNSView(context: Context) -> WKWebView {
         webView.isInspectable = true
         webView.configuration.userContentController.removeAllScriptMessageHandlers()
-        webView.configuration.userContentController.add(context.coordinator, name: "vibeMessageBusHandler")
+        webView.configuration.userContentController.add(context.coordinator, name: "inertiaMessageBusHandler")
         
         return webView
     }
@@ -40,7 +40,7 @@ struct WKWebViewWrapper: NSViewRepresentable, Equatable {
         }
     }
     
-    struct VibeMessageBusBody: Codable {
+    struct InertiaMessageBusBody: Codable {
         let id: String
         let isSelected: Bool
     }
@@ -65,14 +65,14 @@ struct WKWebViewWrapper: NSViewRepresentable, Equatable {
                 if let type = messageBody["type"] as? String, let args = messageBody["args"] as? [Any] {
                     print("Console \(type):", args)
                 }
-            } else if message.name == "vibeMessageBusHandler" {
+            } else if message.name == "inertiaMessageBusHandler" {
                 guard let data = try? JSONSerialization.data(withJSONObject: message.body) else {
                     print("Failed to encode data")
                     return
                 }
                 
-                guard let busMessage = try? JSONDecoder().decode(VibeMessageBusBody.self, from: data) else {
-                    print("Failed to decode the VibeMEssageBusBody")
+                guard let busMessage = try? JSONDecoder().decode(InertiaMessageBusBody.self, from: data) else {
+                    print("Failed to decode the InertiaMEssageBusBody")
                     return
                 }
                 

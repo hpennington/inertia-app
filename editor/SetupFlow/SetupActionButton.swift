@@ -1,6 +1,6 @@
 //
 //  SetupActionButton.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 9/3/24.
 //

@@ -1,6 +1,6 @@
 //
 //  MacRenderView.swift
-//  Vibe Animation
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 7/24/24.
 //

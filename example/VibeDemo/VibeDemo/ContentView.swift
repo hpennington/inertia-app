@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  VibeDemo
+//  InertiaDemo
 //
 //  Created by Hayden Pennington on 8/9/24.
 //

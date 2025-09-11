@@ -283,9 +283,9 @@ public final class InertiaDataModel{
     
     public var isActionable: Bool = false
     
-    public init(containerId: InertiaID, vibeSchema: InertiaSchema, tree: Tree, actionableIds: Set<String>) {
+    public init(containerId: InertiaID, inertiaSchema: InertiaSchema, tree: Tree, actionableIds: Set<String>) {
         self.containerId = containerId
-        self.inertiaSchema = vibeSchema
+        self.inertiaSchema = inertiaSchema
         self.tree = tree
         self.actionableIds = actionableIds
         self.states = [:]
@@ -314,7 +314,7 @@ public struct InertiaContainer<Content: View>: View {
     let dev: Bool
     let id: InertiaID
     let hierarchyId: String
-    @State private var vibeDataModel: InertiaDataModel
+    @State private var inertiaDataModel: InertiaDataModel
     @ViewBuilder let content: () -> Content
     
     public init(
@@ -332,8 +332,8 @@ public struct InertiaContainer<Content: View>: View {
         
         // TODO: - Solve error handling when file is missing or schema is wrong
         if dev {
-            self._vibeDataModel = State(
-                wrappedValue: InertiaDataModel(containerId: id, vibeSchema: InertiaSchema(id: id, objects: []), tree: Tree(id: id), actionableIds: Set())
+            self._inertiaDataModel = State(
+                wrappedValue: InertiaDataModel(containerId: id, inertiaSchema: InertiaSchema(id: id, objects: []), tree: Tree(id: id), actionableIds: Set())
             )
         } else {
             if let url = bundle.url(forResource: id, withExtension: "json") {
@@ -341,15 +341,15 @@ public struct InertiaContainer<Content: View>: View {
                 if let data = schemaText.data(using: .utf8),
                    let schema = decodeInertiaSchema(json: data) {
                     NSLog("[INERTIA_LOG]: InertiaDataModel instantiated for container: \(id)")
-                    self._vibeDataModel = State(
-                        wrappedValue: InertiaDataModel(containerId: id, vibeSchema: schema, tree: Tree(id: id), actionableIds: Set())
+                    self._inertiaDataModel = State(
+                        wrappedValue: InertiaDataModel(containerId: id, inertiaSchema: schema, tree: Tree(id: id), actionableIds: Set())
                     )
                 } else {
-                    NSLog("[INERTIA_LOG]:  Failed to decode the vibe schema")
+                    NSLog("[INERTIA_LOG]:  Failed to decode the inertia schema")
                     fatalError()
                 }
             } else {
-                NSLog("[INERTIA_LOG]:  Failed to parse the vibe file")
+                NSLog("[INERTIA_LOG]:  Failed to parse the inertia file")
                 fatalError()
             }
         }
@@ -360,14 +360,14 @@ public struct InertiaContainer<Content: View>: View {
             ZStack(alignment: .center) {
                 content()
                     .environment(\.inertiaParentID, hierarchyId)
-                    .environment(\.inertiaDataModel, self.vibeDataModel)
+                    .environment(\.inertiaDataModel, self.inertiaDataModel)
                     .environment(\.isInertiaContainer, true)
                     .environment(\.inertiaContainerSize, proxy.size)
                     .environment(\.inertiaContainerId, hierarchyId)
                     .environment(\.inertiaEditor, dev)
                     .coordinateSpace(.named(hierarchyId))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .scrollDisabled(self.vibeDataModel.isActionable)
+                    .scrollDisabled(self.inertiaDataModel.isActionable)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -671,7 +671,7 @@ struct InertiaActionable<Content: View>: View {
         self.content = content
     }
     
-    @Environment(\.inertiaDataModel) var vibeDataModel
+    @Environment(\.inertiaDataModel) var inertiaDataModel
     @Environment(\.inertiaParentID) var inertiaParentID
     @Environment(\.inertiaContainerId) var inertiaContainerId
     @Environment(\.isInertiaContainer) var isInertiaContainer
@@ -688,11 +688,11 @@ struct InertiaActionable<Content: View>: View {
         let frame = CGRect(origin: .zero, size: inertiaContainerSize)
         let device = vm.device
         NSLog("[INERTIA_LOG]:  enter backgroundView")
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return AnyView(EmptyView())
         }
                 
-        let object = vibeDataModel.inertiaSchema.objects.first(where: { element in
+        let object = inertiaDataModel.inertiaSchema.objects.first(where: { element in
             element.objectType == .shape
         })
         
@@ -713,8 +713,8 @@ struct InertiaActionable<Content: View>: View {
 //            return AnyView(EmptyView())
 //        }
         
-//        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
-        let zUnderObjects = vibeDataModel.inertiaSchema.objects.filter({$0.objectType == .shape})
+//        let zUnderObjects = inertiaDataModel.inertiaSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
+        let zUnderObjects = inertiaDataModel.inertiaSchema.objects.filter({$0.objectType == .shape})
 
         if !zUnderObjects.isEmpty {
             NSLog("[INERTIA_LOG]:  enter zUnderObjects")
@@ -802,10 +802,10 @@ struct InertiaActionable<Content: View>: View {
                 return
             }
             
-            vibeDataModel?.actionableIdToAnimationIdMap[hierarchyId] = hierarchyIdPrefix
+            inertiaDataModel?.actionableIdToAnimationIdMap[hierarchyId] = hierarchyIdPrefix
         }
         .onDisappear {
-            if let zIndex = vibeDataModel?.inertiaSchema.objects.first(where: { element in
+            if let zIndex = inertiaDataModel?.inertiaSchema.objects.first(where: { element in
                 element.objectType == .shape
             })?.zIndex {
                 vm.layerOwner[zIndex]?.removeAll()
@@ -814,8 +814,8 @@ struct InertiaActionable<Content: View>: View {
     }
     
     var getAnimation: InertiaAnimationSchema? {
-        guard let vibeDataModel else {
-            NSLog("[INERTIA_LOG]:  vibeDataModel is nil")
+        guard let inertiaDataModel else {
+            NSLog("[INERTIA_LOG]:  inertiaDataModel is nil")
             return nil
         }
         
@@ -823,17 +823,17 @@ struct InertiaActionable<Content: View>: View {
             return nil
         }
 
-        guard let animationId = vibeDataModel.actionableIdToAnimationIdMap[hierarchyId] else {
+        guard let animationId = inertiaDataModel.actionableIdToAnimationIdMap[hierarchyId] else {
             NSLog("[INERTIA_LOG]:  animationId is nil")
             return nil
         }
         NSLog("[INERTIA_LOG]:  hierarchyId: \(hierarchyId) animationId: \(animationId)")
-        let animation = vibeDataModel.inertiaSchema.objects.first(where: { $0.animation.id == animationId })?.animation
+        let animation = inertiaDataModel.inertiaSchema.objects.first(where: { $0.animation.id == animationId })?.animation
         
         if let animation {
             return animation
         } else {
-            NSLog("\(vibeDataModel.inertiaSchema.objects)")
+            NSLog("\(inertiaDataModel.inertiaSchema.objects)")
             NSLog("[INERTIA_LOG]:  animation is nil")
             return nil
         }
@@ -872,14 +872,14 @@ struct InertiaEditable<Content: View>: View {
         self.content = content
     }
     
-    @Environment(\.inertiaDataModel) var vibeDataModel
+    @Environment(\.inertiaDataModel) var inertiaDataModel
     @Environment(\.inertiaParentID) var inertiaParentID
     @Environment(\.inertiaContainerId) var inertiaContainerId
     @Environment(\.isInertiaContainer) var isInertiaContainer
     @Environment(\.inertiaContainerSize) var inertiaContainerSize: CGSize
     
     var showSelectedBorder: Bool {
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return false
         }
         
@@ -887,21 +887,21 @@ struct InertiaEditable<Content: View>: View {
             return false
         }
         
-        return vibeDataModel.actionableIds.contains(hierarchyId)
+        return inertiaDataModel.actionableIds.contains(hierarchyId)
     }
     
     var dragGesture: some Gesture {
         DragGesture()
             .onChanged { value in
-                if vibeDataModel?.isActionable == true {
+                if inertiaDataModel?.isActionable == true {
                     dragOffset = value.translation
                 }
                 
             }
             .onEnded { value in
-                if vibeDataModel?.isActionable == true {
+                if inertiaDataModel?.isActionable == true {
                     dragOffset = value.translation
-                    if let actionableIds = vibeDataModel?.actionableIds {
+                    if let actionableIds = inertiaDataModel?.actionableIds {
                         manager.sendMessage(
                             WebSocketClient.MessageTranslation(
                                 translationX: (dragOffset.width) / (inertiaContainerSize.width / 2),
@@ -918,17 +918,17 @@ struct InertiaEditable<Content: View>: View {
     var wrappedContent: some View {
         ZStack(alignment: .center) {
             content
-                .disabled(vibeDataModel?.isActionable ?? false)
+                .disabled(inertiaDataModel?.isActionable ?? false)
 //                .modifier(BindableSize(size: $contentSize))
         }
         
         .onTapGesture {
             print("tapped \(content)")
-            guard let vibeDataModel else {
+            guard let inertiaDataModel else {
                 return
             }
             
-            guard vibeDataModel.isActionable else {
+            guard inertiaDataModel.isActionable else {
                 return
             }
             
@@ -936,15 +936,15 @@ struct InertiaEditable<Content: View>: View {
                 return
             }
 
-            if vibeDataModel.actionableIds.contains(hierarchyId) {
-                vibeDataModel.actionableIds.remove(hierarchyId)
+            if inertiaDataModel.actionableIds.contains(hierarchyId) {
+                inertiaDataModel.actionableIds.remove(hierarchyId)
             } else {
-                vibeDataModel.actionableIds.insert(hierarchyId)
+                inertiaDataModel.actionableIds.insert(hierarchyId)
             }
             
             if let ip = getHostIPAddressFromResolvConf() {
                 let uri = URL(string: "ws://\(ip):8060")!
-//                    let data: [String: Tree?] = ["tree": vibeDataModel?.tree]
+//                    let data: [String: Tree?] = ["tree": inertiaDataModel?.tree]
                 
                 NSLog("[INERTIA_LOG]: Tapped: Starting to send data...")
                 
@@ -952,14 +952,14 @@ struct InertiaEditable<Content: View>: View {
                     manager.connect(uri: uri)
                 }
                 
-                let tree = vibeDataModel.tree
-                let actionableIds = vibeDataModel.actionableIds
+                let tree = inertiaDataModel.tree
+                let actionableIds = inertiaDataModel.actionableIds
                 let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
                 manager.sendMessage(message)
             }
         }
         .overlay {
-            if showSelectedBorder && vibeDataModel?.isActionable ?? false {
+            if showSelectedBorder && inertiaDataModel?.isActionable ?? false {
                 Rectangle()
                     .stroke(Color.green)
             }
@@ -973,11 +973,11 @@ struct InertiaEditable<Content: View>: View {
         let frame = CGRect(origin: .zero, size: inertiaContainerSize)
         let device = vm.device
         NSLog("[INERTIA_LOG]:  enter backgroundView")
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return AnyView(EmptyView())
         }
                 
-        let object = vibeDataModel.inertiaSchema.objects.first(where: { element in
+        let object = inertiaDataModel.inertiaSchema.objects.first(where: { element in
             element.objectType == .shape
         })
         
@@ -998,8 +998,8 @@ struct InertiaEditable<Content: View>: View {
 //            return AnyView(EmptyView())
 //        }
         
-//        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
-        let zUnderObjects = vibeDataModel.inertiaSchema.objects.filter({$0.objectType == .shape})
+//        let zUnderObjects = inertiaDataModel.inertiaSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
+        let zUnderObjects = inertiaDataModel.inertiaSchema.objects.filter({$0.objectType == .shape})
 
         if !zUnderObjects.isEmpty {
             NSLog("[INERTIA_LOG]:  enter zUnderObjects")
@@ -1111,7 +1111,7 @@ struct InertiaEditable<Content: View>: View {
                 }
             }
         })
-        .onChange(of: vibeDataModel?.tree, { oldValue, newValue in
+        .onChange(of: inertiaDataModel?.tree, { oldValue, newValue in
             if let tree = newValue {
                 for node in tree.nodeMap.values {
                     node.tree = tree
@@ -1129,8 +1129,8 @@ struct InertiaEditable<Content: View>: View {
                 return
             }
             NSLog("[INERTIA_LOG]:  adding relationship: hierarchyId: \(hierarchyId) inertiaParentID: \(inertiaParentID), isInertiaContainer: \(isInertiaContainer)")
-            vibeDataModel?.tree.addRelationship(id: hierarchyId, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
-            if let tree = vibeDataModel?.tree {
+            inertiaDataModel?.tree.addRelationship(id: hierarchyId, parentId: inertiaParentID, parentIsContainer: isInertiaContainer)
+            if let tree = inertiaDataModel?.tree {
                 for node in tree.nodeMap.values {
                     node.tree = tree
                     node.link()
@@ -1145,14 +1145,14 @@ struct InertiaEditable<Content: View>: View {
                     manager.connect(uri: uri)
                 }
                 
-                if let tree = vibeDataModel?.tree, let actionableIds = vibeDataModel?.actionableIds {
+                if let tree = inertiaDataModel?.tree, let actionableIds = inertiaDataModel?.actionableIds {
                     let message = WebSocketClient.MessageActionables(tree: tree, actionableIds: actionableIds)
                     manager.sendMessage(message)
                 }
             }
         }
         .onDisappear {
-            if let zIndex = vibeDataModel?.inertiaSchema.objects.first(where: { element in
+            if let zIndex = inertiaDataModel?.inertiaSchema.objects.first(where: { element in
                 element.objectType == .shape
             })?.zIndex {
                 vm.layerOwner[zIndex]?.removeAll()
@@ -1161,8 +1161,8 @@ struct InertiaEditable<Content: View>: View {
     }
     
     var getAnimation: InertiaAnimationSchema? {
-        guard let vibeDataModel else {
-            NSLog("[INERTIA_LOG]:  vibeDataModel is nil")
+        guard let inertiaDataModel else {
+            NSLog("[INERTIA_LOG]:  inertiaDataModel is nil")
             return nil
         }
         
@@ -1170,17 +1170,17 @@ struct InertiaEditable<Content: View>: View {
             return nil
         }
 
-        guard let animationId = vibeDataModel.actionableIdToAnimationIdMap[hierarchyId] else {
+        guard let animationId = inertiaDataModel.actionableIdToAnimationIdMap[hierarchyId] else {
             NSLog("[INERTIA_LOG]:  animationId is nil")
             return nil
         }
         NSLog("[INERTIA_LOG]:  hierarchyId: \(hierarchyId) animationId: \(animationId)")
-        let animation = vibeDataModel.inertiaSchema.objects.first(where: { $0.animation.id == animationId })?.animation
+        let animation = inertiaDataModel.inertiaSchema.objects.first(where: { $0.animation.id == animationId })?.animation
         
         if let animation {
             return animation
         } else {
-            NSLog("\(vibeDataModel.inertiaSchema.objects)")
+            NSLog("\(inertiaDataModel.inertiaSchema.objects)")
             NSLog("[INERTIA_LOG]:  animation is nil")
             return nil
         }
@@ -1192,22 +1192,22 @@ struct InertiaEditable<Content: View>: View {
     
     func handleMessage(selectedIds: Set<String>) {
         NSLog("[INERTIA_LOG]: handleMessage(selectedIds) \(selectedIds)")
-        vibeDataModel?.actionableIds = selectedIds
+        inertiaDataModel?.actionableIds = selectedIds
     }
     
     func handleMessageSchema(schemaWrappers: [InertiaSchemaWrapper]) {
         for schemaWrapper in schemaWrappers {
-            if schemaWrapper.container.containerId == vibeDataModel?.containerId {
+            if schemaWrapper.container.containerId == inertiaDataModel?.containerId {
                 
-                vibeDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId
-                vibeDataModel?.inertiaSchema = schemaWrapper.schema
+                inertiaDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId
+                inertiaDataModel?.inertiaSchema = schemaWrapper.schema
                 NSLog("[INERTIA_LOG]:  animationId: \(schemaWrapper.animationId) actionableId: \(schemaWrapper.actionableId)")
             }
         }
     }
     
     func handleMessageActionable(isActionable: Bool) {
-        vibeDataModel?.isActionable = isActionable
+        inertiaDataModel?.isActionable = isActionable
     }
 }
 

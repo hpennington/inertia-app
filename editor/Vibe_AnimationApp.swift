@@ -1,6 +1,6 @@
 //
-//  Vibe_AnimationApp.swift
-//  Vibe Animation
+//  Inertia_AnimationApp.swift
+//  Inertia Animation
 //
 //  Created by Hayden Pennington on 7/17/24.
 //
@@ -8,9 +8,9 @@
 import SwiftUI
 
 @main
-struct Vibe_AnimationApp: App {
+struct Inertia_AnimationApp: App {
     @NSApplicationDelegateAdaptor var delegate: AppDelegate
-    @StateObject private var vm = VibeAppVM()
+    @StateObject private var vm = InertiaAppVM()
     
     func setWindowPositionForSize(x: CGFloat, y: CGFloat) {
         guard let window = NSApp.mainWindow else {

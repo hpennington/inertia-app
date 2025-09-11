@@ -1,7 +1,7 @@
 import XCTest
-@testable import Vibe
+@testable import Inertia
 
-final class VibeTests: XCTestCase {
+final class InertiaTests: XCTestCase {
     func testExample() throws {
         // XCTest Documentation
         // https://developer.apple.com/documentation/xctest
