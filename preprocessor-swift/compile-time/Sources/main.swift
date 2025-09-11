@@ -25,7 +25,7 @@
 //     return swiftFiles
 // }
 
-// func appendVibeModifier(of fileURL: URL) throws {
+// func appendInertiaModifier(of fileURL: URL) throws {
 //     let sourceFileContent = try String(contentsOf: fileURL)
 //     let sourceFile = Parser.parse(source: sourceFileContent)
     
@@ -43,7 +43,7 @@
 //             }
             
 //             let accessors = accessorBlock.accessors
-//             let newAccessors = accessors.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".vibeHello()")))
+//             let newAccessors = accessors.with(\.trailingTrivia, Trivia(arrayLiteral: .unexpectedText(".inertiaHello()")))
 //             let newAccessorBlock = accessorBlock.with(\.accessors, newAccessors)
 //             let newBinding = binding.with(\.accessorBlock, newAccessorBlock)
 //             let newBindings = PatternBindingListSyntax(arrayLiteral: newBinding)
@@ -90,7 +90,7 @@
 // for file in swiftFiles {
 //     print("Processing file: \(file.path)")
 //     do {
-//         try appendVibeModifier(of: file)
+//         try appendInertiaModifier(of: file)
 //     } catch {
 //         print("Error parsing file \(file.path): \(error)")
 //     }
@@ -122,7 +122,7 @@ func findSwiftFiles(in directory: URL) -> [URL] {
     return swiftFiles
 }
 
-func appendVibeModifier(of fileURL: URL) throws {
+func appendInertiaModifier(of fileURL: URL) throws {
     var sourceFileContent = try String(contentsOf: fileURL)
     let sourceFile = Parser.parse(source: sourceFileContent)
     
@@ -267,7 +267,7 @@ let swiftFiles = findSwiftFiles(in: directoryURL)
 for file in swiftFiles {
     print("Processing file: \(file.path)")
     do {
-        try appendVibeModifier(of: file)
+        try appendInertiaModifier(of: file)
     } catch {
         print("Error parsing file \(file.path): \(error)")
     }

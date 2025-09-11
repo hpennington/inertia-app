@@ -11,7 +11,7 @@ graph TD
     IsReactSelected -->|Yes| ReactConfig[React Project Configuration - URLs]
     IsReactSelected -->|No| SwiftUICompilationMode{Choose Compilation Mode}
     
-    ReactConfig --> CreateVibeFile[Create Vibe File]
+    ReactConfig --> CreateInertiaFile[Create Inertia File]
     
     SwiftUICompilationMode -->|Local| SwiftUILocalSetup[Local Mode]
     SwiftUILocalSetup --> XcodeCheck[Xcode Installed?]
@@ -19,9 +19,9 @@ graph TD
     
     SwiftUIConfig --> SwiftUICopying[SwiftUI Setup - Copying Project]
     SwiftUICopying --> SwiftUISetupProgress[SwiftUI Setup - Loading/Progress]
-    SwiftUISetupProgress --> CreateVibeFile
+    SwiftUISetupProgress --> CreateInertiaFile
     
-    CreateVibeFile --> LoadProject
+    CreateInertiaFile --> LoadProject
     
     SwiftUICompilationMode -->|Remote Unavailable| RemoteUnavailable[Remote Mode]
     SwiftUICompilationMode -->|Self-hosted Unavailable| SelfHostedUnavailable[Self-hosted Mode]

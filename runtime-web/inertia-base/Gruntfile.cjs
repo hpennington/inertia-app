@@ -14,7 +14,7 @@ module.exports = function(grunt) {
       }
     },
     uglify: {
-      vibe: {
+      inertia: {
         files: {
           'dist/index.min.js': ['dist/index.js']
         }

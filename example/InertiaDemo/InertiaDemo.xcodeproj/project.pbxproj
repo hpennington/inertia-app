@@ -1,0 +1,561 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F80DC08A2E607AC600D0F196 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F80DC0882E607AC600D0F196 /* Inertia */; };
+		F80DC08C2E607AC600D0F196 /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
+		F80DC08D2E607AC600D0F196 /* animation.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation.json */; };
+		F80DC08E2E607AC600D0F196 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
+		F80DC08F2E607AC600D0F196 /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
+		F80DC0922E607AC600D0F196 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
+		F80DC0942E607AC600D0F196 /* InertiaDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* InertiaDemoApp.swift */; };
+		F80DC0952E607AC600D0F196 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
+		F80DC0962E607AC600D0F196 /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
+		F81FD6232E5FE3CC0017016E /* InertiaDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* InertiaDemoApp.swift */; };
+		F81FD6242E5FE3CC0017016E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
+		F81FD6252E5FE3CC0017016E /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
+		F8DB1C192E5FDA9A00C8E09C /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8DB1C132E5FDA9A00C8E09C /* Inertia */; };
+		F8DB1C1B2E5FDA9A00C8E09C /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
+		F8DB1C1C2E5FDA9A00C8E09C /* animation.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation.json */; };
+		F8DB1C1D2E5FDA9A00C8E09C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
+		F8DB1C1E2E5FDA9A00C8E09C /* landing_image_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */; };
+		F8DB1C212E5FDA9A00C8E09C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317EF2C66DF06001DEE60 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F80DC09A2E607AC600D0F196 /* InertiaDemo (Inertia).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "InertiaDemo (Inertia).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F827B7302D1E496300A8A27A /* CircleImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImage.swift; sourceTree = "<group>"; };
+		F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = landing_image_2.jpeg; sourceTree = "<group>"; };
+		F827B7332D1E49D800A8A27A /* landing_image_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landing_image_1.png; sourceTree = "<group>"; };
+		F852BF242CE7F9C90099FB2D /* animation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = animation.json; path = ../demo.inertia/animations/animation.json; sourceTree = "<group>"; };
+		F86317EB2C66DF05001DEE60 /* InertiaDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InertiaDemoApp.swift; sourceTree = "<group>"; };
+		F86317ED2C66DF05001DEE60 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F86317EF2C66DF06001DEE60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F8DB1C252E5FDA9A00C8E09C /* InertiaDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InertiaDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F80DC0892E607AC600D0F196 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F80DC08A2E607AC600D0F196 /* Inertia in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8DB1C182E5FDA9A00C8E09C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8DB1C192E5FDA9A00C8E09C /* Inertia in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F86317DF2C66DF05001DEE60 = {
+			isa = PBXGroup;
+			children = (
+				F852BF242CE7F9C90099FB2D /* animation.json */,
+				F86317EA2C66DF05001DEE60 /* InertiaDemo */,
+				F8CEB2112CFCE28800FB16F3 /* Frameworks */,
+				F86317E92C66DF05001DEE60 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F86317E92C66DF05001DEE60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F8DB1C252E5FDA9A00C8E09C /* InertiaDemo.app */,
+				F80DC09A2E607AC600D0F196 /* InertiaDemo (Inertia).app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F86317EA2C66DF05001DEE60 /* InertiaDemo */ = {
+			isa = PBXGroup;
+			children = (
+				F86317EB2C66DF05001DEE60 /* InertiaDemoApp.swift */,
+				F86317ED2C66DF05001DEE60 /* ContentView.swift */,
+				F827B7302D1E496300A8A27A /* CircleImage.swift */,
+				F86317EF2C66DF06001DEE60 /* Assets.xcassets */,
+				F827B7332D1E49D800A8A27A /* landing_image_1.png */,
+				F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */,
+				F86317F12C66DF06001DEE60 /* Preview Content */,
+			);
+			path = InertiaDemo;
+			sourceTree = "<group>";
+		};
+		F86317F12C66DF06001DEE60 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F8CEB2112CFCE28800FB16F3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F80DC0872E607AC600D0F196 /* InertiaDemo (Inertia) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "InertiaDemo (Inertia)" */;
+			buildPhases = (
+				F80DC0892E607AC600D0F196 /* Frameworks */,
+				F80DC08B2E607AC600D0F196 /* Resources */,
+				F80DC0932E607AC600D0F196 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "InertiaDemo (Inertia)";
+			packageProductDependencies = (
+				F80DC0882E607AC600D0F196 /* Inertia */,
+			);
+			productName = InertiaDemo;
+			productReference = F80DC09A2E607AC600D0F196 /* InertiaDemo (Inertia).app */;
+			productType = "com.apple.product-type.application";
+		};
+		F8DB1C122E5FDA9A00C8E09C /* InertiaDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "InertiaDemo" */;
+			buildPhases = (
+				F8DB1C182E5FDA9A00C8E09C /* Frameworks */,
+				F8DB1C1A2E5FDA9A00C8E09C /* Resources */,
+				F81FD6222E5FE3C50017016E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = InertiaDemo;
+			packageProductDependencies = (
+				F8DB1C132E5FDA9A00C8E09C /* Inertia */,
+			);
+			productName = InertiaDemo;
+			productReference = F8DB1C252E5FDA9A00C8E09C /* InertiaDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F86317E02C66DF05001DEE60 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+			};
+			buildConfigurationList = F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "InertiaDemo" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F86317DF2C66DF05001DEE60;
+			packageReferences = (
+				F8F8BAB32D08AEA1006CE7A5 /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */,
+			);
+			productRefGroup = F86317E92C66DF05001DEE60 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F8DB1C122E5FDA9A00C8E09C /* InertiaDemo */,
+				F80DC0872E607AC600D0F196 /* InertiaDemo (Inertia) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F80DC08B2E607AC600D0F196 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F80DC08C2E607AC600D0F196 /* landing_image_1.png in Resources */,
+				F80DC08D2E607AC600D0F196 /* animation.json in Resources */,
+				F80DC08E2E607AC600D0F196 /* Preview Assets.xcassets in Resources */,
+				F80DC08F2E607AC600D0F196 /* landing_image_2.jpeg in Resources */,
+				F80DC0922E607AC600D0F196 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8DB1C1A2E5FDA9A00C8E09C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8DB1C1B2E5FDA9A00C8E09C /* landing_image_1.png in Resources */,
+				F8DB1C1C2E5FDA9A00C8E09C /* animation.json in Resources */,
+				F8DB1C1D2E5FDA9A00C8E09C /* Preview Assets.xcassets in Resources */,
+				F8DB1C1E2E5FDA9A00C8E09C /* landing_image_2.jpeg in Resources */,
+				F8DB1C212E5FDA9A00C8E09C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F80DC0932E607AC600D0F196 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F80DC0942E607AC600D0F196 /* InertiaDemoApp.swift in Sources */,
+				F80DC0952E607AC600D0F196 /* ContentView.swift in Sources */,
+				F80DC0962E607AC600D0F196 /* CircleImage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F81FD6222E5FE3C50017016E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F81FD6232E5FE3CC0017016E /* InertiaDemoApp.swift in Sources */,
+				F81FD6242E5FE3CC0017016E /* ContentView.swift in Sources */,
+				F81FD6252E5FE3CC0017016E /* CircleImage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F80DC0982E607AC600D0F196 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"InertiaDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.InertiaDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = "$(inherited) INERTIA_EDITOR";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F80DC0992E607AC600D0F196 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"InertiaDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.InertiaDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = INERTIA_EDITOR;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		F86317F42C66DF06001DEE60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F86317F52C66DF06001DEE60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F8DB1C232E5FDA9A00C8E09C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"InertiaDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.InertiaDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F8DB1C242E5FDA9A00C8E09C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"InertiaDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = 3EZ5UQTGVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INERTIA = true;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vectorstudio.InertiaDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "InertiaDemo (Inertia)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F80DC0982E607AC600D0F196 /* Debug */,
+				F80DC0992E607AC600D0F196 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "InertiaDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F86317F42C66DF06001DEE60 /* Debug */,
+				F86317F52C66DF06001DEE60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "InertiaDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8DB1C232E5FDA9A00C8E09C /* Debug */,
+				F8DB1C242E5FDA9A00C8E09C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		F8F8BAB32D08AEA1006CE7A5 /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../runtime-swift/Inertia";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F80DC0882E607AC600D0F196 /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F8DB1C132E5FDA9A00C8E09C /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F86317E02C66DF05001DEE60 /* Project object */;
+}

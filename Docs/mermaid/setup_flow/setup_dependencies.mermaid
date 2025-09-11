@@ -1,9 +1,9 @@
 graph TD;
     subgraph React
         LaunchProjectReadyReact[Ready]
-        LaunchProjectReadyReact[Ready] --> CreateVibeFileReact[CreateVibeFile]
-        CreateVibeFileReact --> ReactURL[URL]
-        CreateVibeFileReact --> ReactTitle[Title]
+        LaunchProjectReadyReact[Ready] --> CreateInertiaFileReact[CreateInertiaFile]
+        CreateInertiaFileReact --> ReactURL[URL]
+        CreateInertiaFileReact --> ReactTitle[Title]
     end
 
     subgraph SwiftUI
@@ -12,8 +12,8 @@ graph TD;
         XCodeProjectURL[XCode Project URL]
         EntryStructName[Entry Struct Name]
         SwiftUITitle[Title]
-        LaunchProjectReady --> CreateVibeFile[CreateVibeFile]
-        CreateVibeFile[CreateVibeFile] --> CompilingSwiftCodebase[Compiling Codebase]
+        LaunchProjectReady --> CreateInertiaFile[CreateInertiaFile]
+        CreateInertiaFile[CreateInertiaFile] --> CompilingSwiftCodebase[Compiling Codebase]
         
         CompilingSwiftCodebase --> MutateSwiftCodebase[Mutate Codebase]
         MutateSwiftCodebase --> CopySwiftCodebase[Copy Codebase]

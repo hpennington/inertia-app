@@ -25,7 +25,7 @@
 		F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */; };
 		F84A605B2CE3D3D900070036 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F84A605A2CE3D3D900070036 /* Inertia */; };
 		F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */; };
-		F8641C442C978AA500E43338 /* VibeAppVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8641C432C978AA500E43338 /* VibeAppVM.swift */; };
+		F8641C442C978AA500E43338 /* InertiaAppVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8641C432C978AA500E43338 /* InertiaAppVM.swift */; };
 		F86E02AC2C96DF1B005F6254 /* SetupFlowContainerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */; };
 		F86E02AE2C96DF39005F6254 /* SetupFlowStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86E02AD2C96DF39005F6254 /* SetupFlowStartScreen.swift */; };
 		F8744E342CDB06D300921BF9 /* AddressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8744E332CDB06D300921BF9 /* AddressBar.swift */; };
@@ -39,7 +39,7 @@
 		F899B9CA2C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899B9C92C88D9EC00633B83 /* SetupFlowInstallXcodeScreen.swift */; };
 		F899B9CC2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899B9CB2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift */; };
 		F899B9CE2C88E21700633B83 /* SetupFlowCopyingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */; };
-		F89BA0AC2C48C85A0006603C /* Vibe_AnimationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AB2C48C85A0006603C /* Vibe_AnimationApp.swift */; };
+		F89BA0AC2C48C85A0006603C /* Inertia_AnimationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AB2C48C85A0006603C /* Inertia_AnimationApp.swift */; };
 		F89BA0AE2C48C85A0006603C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AD2C48C85A0006603C /* EditorView.swift */; };
 		F89BA0B02C48C85B0006603C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F89BA0AF2C48C85B0006603C /* Assets.xcassets */; };
 		F89BA0B32C48C85B0006603C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F89BA0B22C48C85B0006603C /* Preview Assets.xcassets */; };
@@ -60,8 +60,8 @@
 		F8ACA5F42D1E01FA00D0B878 /* TimelineHierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ACA5F32D1E01FA00D0B878 /* TimelineHierarchy.swift */; };
 		F8ACA5F62D1E094600D0B878 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ACA5F52D1E094600D0B878 /* TimelineView.swift */; };
 		F8ACA5F72D1E11AA00D0B878 /* Assets.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AF2C48C85B0006603C /* Assets.xcassets */; };
-		F8B495682C87BBB90076A42C /* VibeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495672C87BBB90076A42C /* VibeTextField.swift */; };
-		F8B4956A2C87BC010076A42C /* VibeTextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495692C87BC010076A42C /* VibeTextContainer.swift */; };
+		F8B495682C87BBB90076A42C /* InertiaTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495672C87BBB90076A42C /* InertiaTextField.swift */; };
+		F8B4956A2C87BC010076A42C /* InertiaTextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B495692C87BC010076A42C /* InertiaTextContainer.swift */; };
 		F8B4956C2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B4956B2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift */; };
 		F8C2A8792CAB75D50054B165 /* AnimationsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C2A8782CAB75D50054B165 /* AnimationsList.swift */; };
 		F8C2A87B2CAB75DF0054B165 /* AnimationsAttachedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C2A87A2CAB75DF0054B165 /* AnimationsAttachedList.swift */; };
@@ -96,7 +96,7 @@
 		F82483432E6FC79D0009682E /* WebSocketServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketServer.swift; sourceTree = "<group>"; };
 		F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlow.swift; sourceTree = "<group>"; };
 		F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCompilationModeScreen.swift; sourceTree = "<group>"; };
-		F8641C432C978AA500E43338 /* VibeAppVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeAppVM.swift; sourceTree = "<group>"; };
+		F8641C432C978AA500E43338 /* InertiaAppVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InertiaAppVM.swift; sourceTree = "<group>"; };
 		F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupFlowContainerScreen.swift; sourceTree = "<group>"; };
 		F86E02AD2C96DF39005F6254 /* SetupFlowStartScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupFlowStartScreen.swift; sourceTree = "<group>"; };
 		F8744E332CDB06D300921BF9 /* AddressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBar.swift; sourceTree = "<group>"; };
@@ -111,7 +111,7 @@
 		F899B9CB2C88DBB000633B83 /* SetupFlowSwiftUIConfigurationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowSwiftUIConfigurationScreen.swift; sourceTree = "<group>"; };
 		F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowCopyingScreen.swift; sourceTree = "<group>"; };
 		F89BA0A82C48C85A0006603C /* Inertia App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Inertia App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F89BA0AB2C48C85A0006603C /* Vibe_AnimationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vibe_AnimationApp.swift; sourceTree = "<group>"; };
+		F89BA0AB2C48C85A0006603C /* Inertia_AnimationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inertia_AnimationApp.swift; sourceTree = "<group>"; };
 		F89BA0AD2C48C85A0006603C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		F89BA0AF2C48C85B0006603C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F89BA0B22C48C85B0006603C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -132,8 +132,8 @@
 		F8ACA5F12D1E016D00D0B878 /* TimelineTransformBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineTransformBar.swift; sourceTree = "<group>"; };
 		F8ACA5F32D1E01FA00D0B878 /* TimelineHierarchy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHierarchy.swift; sourceTree = "<group>"; };
 		F8ACA5F52D1E094600D0B878 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
-		F8B495672C87BBB90076A42C /* VibeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeTextField.swift; sourceTree = "<group>"; };
-		F8B495692C87BC010076A42C /* VibeTextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeTextContainer.swift; sourceTree = "<group>"; };
+		F8B495672C87BBB90076A42C /* InertiaTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InertiaTextField.swift; sourceTree = "<group>"; };
+		F8B495692C87BC010076A42C /* InertiaTextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InertiaTextContainer.swift; sourceTree = "<group>"; };
 		F8B4956B2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupFlowWebConfigurationScreen.swift; sourceTree = "<group>"; };
 		F8C2A8782CAB75D50054B165 /* AnimationsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationsList.swift; sourceTree = "<group>"; };
 		F8C2A87A2CAB75DF0054B165 /* AnimationsAttachedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationsAttachedList.swift; sourceTree = "<group>"; };
@@ -212,8 +212,8 @@
 				F81073402C962A3B0061B761 /* Project File Format */,
 				F84E8F1B2C65312C00DC20D6 /* web */,
 				F8F4035B2C588910001BE9FB /* Inertia-Pro-Info.plist */,
-				F89BA0AB2C48C85A0006603C /* Vibe_AnimationApp.swift */,
-				F8641C432C978AA500E43338 /* VibeAppVM.swift */,
+				F89BA0AB2C48C85A0006603C /* Inertia_AnimationApp.swift */,
+				F8641C432C978AA500E43338 /* InertiaAppVM.swift */,
 				F8DD5AB82C7D5E88003A3330 /* ProjectButton.swift */,
 				F8808EE62C86168D00713AAD /* RadioGroup.swift */,
 				F81316DE2CBCE36300266728 /* AttachAnimationButton.swift */,
@@ -272,8 +272,8 @@
 				F89C08682C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift */,
 				F89C08642C875ABB00F58F9A /* SetupFlowInfoScreen.swift */,
 				F89C085B2C87317300F58F9A /* SetupActionButton.swift */,
-				F8B495692C87BC010076A42C /* VibeTextContainer.swift */,
-				F8B495672C87BBB90076A42C /* VibeTextField.swift */,
+				F8B495692C87BC010076A42C /* InertiaTextContainer.swift */,
+				F8B495672C87BBB90076A42C /* InertiaTextField.swift */,
 				F89C08662C875AD700F58F9A /* SetupFlowBase.swift */,
 				F87582402CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift */,
 				F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */,
@@ -322,7 +322,7 @@
 				F8EB6FCF2CD9D7F3001D978C /* Inertia */,
 				F84A605A2CE3D3D900070036 /* Inertia */,
 			);
-			productName = "Vibe Animation";
+			productName = "Inertia Animation";
 			productReference = F89BA0A82C48C85A0006603C /* Inertia App.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -398,11 +398,11 @@
 				F87681252CA22AD90065CB6C /* SearchField.swift in Sources */,
 				F8ACA5E72D1DFFFE00D0B878 /* PlaybackControls.swift in Sources */,
 				F824833C2E6E024B0009682E /* Playhead.swift in Sources */,
-				F8641C442C978AA500E43338 /* VibeAppVM.swift in Sources */,
+				F8641C442C978AA500E43338 /* InertiaAppVM.swift in Sources */,
 				F89C08672C875AD700F58F9A /* SetupFlowBase.swift in Sources */,
 				F8C4A0262C95E619004386D4 /* SetupFlowProjectLoad.swift in Sources */,
 				F89C085E2C8734DB00F58F9A /* SetupTitleView.swift in Sources */,
-				F8B4956A2C87BC010076A42C /* VibeTextContainer.swift in Sources */,
+				F8B4956A2C87BC010076A42C /* InertiaTextContainer.swift in Sources */,
 				F89C08692C875B1400F58F9A /* SetupFlowChooseFrameworkScreen.swift in Sources */,
 				F8932C8B2C51D6AF00546975 /* MacRenderView.swift in Sources */,
 				F82483442E6FC79D0009682E /* WebSocketServer.swift in Sources */,
@@ -415,13 +415,13 @@
 				F8DD5AB32C7D5AD0003A3330 /* ProjectsListView.swift in Sources */,
 				F89BA0BD2C48CBE10006603C /* MainLayout.swift in Sources */,
 				F8DD5AB92C7D5E89003A3330 /* ProjectButton.swift in Sources */,
-				F8B495682C87BBB90076A42C /* VibeTextField.swift in Sources */,
+				F8B495682C87BBB90076A42C /* InertiaTextField.swift in Sources */,
 				F86E02AE2C96DF39005F6254 /* SetupFlowStartScreen.swift in Sources */,
 				F8932C8D2C51D6F800546975 /* VirtualMachineView.swift in Sources */,
 				F8ACA5F42D1E01FA00D0B878 /* TimelineHierarchy.swift in Sources */,
 				F8DD5AB52C7D5B38003A3330 /* LaunchLogo.swift in Sources */,
 				F87582412CD3F1F500AEEAAE /* SetupFlowInstallImageScreen.swift in Sources */,
-				F89BA0AC2C48C85A0006603C /* Vibe_AnimationApp.swift in Sources */,
+				F89BA0AC2C48C85A0006603C /* Inertia_AnimationApp.swift in Sources */,
 				F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */,
 				F8C2A87D2CAB7C290054B165 /* AnimationsAvailableColumn.swift in Sources */,
 				F8744E342CDB06D300921BF9 /* AddressBar.swift in Sources */,
