@@ -15,7 +15,7 @@ final class VibeAppVM: ObservableObject {
     @Published private(set) var stateMachine = SetupFlowStateMachine()
     @Published var navigationPath = NavigationPath()
     @Published var setupFlowManager = SetupFlowManager()
-    @Published var animations: [VibeSchema] = []
+    @Published var animations: [InertiaSchema] = []
     
     private var anyCancellable: Set<AnyCancellable> = Set()
     private var event: SetupFlowEvent? = nil

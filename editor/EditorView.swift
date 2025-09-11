@@ -55,7 +55,7 @@ struct EditorView: View {
     init(
         url: Binding<String>,
         framework: Binding<SetupFlowFramework>,
-        animations: Binding<[VibeSchema]>,
+        animations: Binding<[InertiaSchema]>,
         webView: WKWebView,
         coordinator: WKWebViewWrapper.Coordinator,
         selectedActionableIDTracker: SelectedActionableIDTracker?,
@@ -95,7 +95,7 @@ struct EditorView: View {
     
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
-    @Binding var animations: [VibeSchema]
+    @Binding var animations: [InertiaSchema]
     let webView: WKWebView
     let coordinator: WKWebViewWrapper.Coordinator
     let contentController: WKUserContentController
@@ -125,7 +125,7 @@ struct EditorView: View {
         return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
     }
     
-    func executeVibeSwiftWebsocketFunction(schemaWrappers: [VibeSchemaWrapper]) async -> Result<Int, VibeSwiftWebsocketError> {
+    func executeVibeSwiftWebsocketFunction(schemaWrappers: [InertiaSchemaWrapper]) async -> Result<Int, InertiaSwiftWebsocketError> {
         guard let server = servers[framework] else {
             return .failure(.serverNil)
         }
@@ -163,7 +163,7 @@ struct EditorView: View {
         })
         .flatMap({$0}))
         
-        let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> VibeSchemaWrapper? in
+        let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> InertiaSchemaWrapper? in
             guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
                 return nil
             }
@@ -172,7 +172,7 @@ struct EditorView: View {
                 return nil
             }
             
-            let updateSchema = VibeSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
+            let updateSchema = InertiaSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
             
             return updateSchema
         }
@@ -224,7 +224,7 @@ struct EditorView: View {
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     @State private var isPlaying: Bool = false
     @State private var rowData: [String: [Int]] = [:]
-    @State private var keyframes: [VibeAnimationKeyframe] = []
+    @State private var keyframes: [InertiaAnimationKeyframe] = []
     
     @ViewBuilder
     var treeView: some View {
@@ -327,7 +327,7 @@ struct EditorView: View {
         print(message)
         print(animations)
         
-        let values = VibeAnimationValues(
+        let values = InertiaAnimationValues(
             scale: 1.0,
             translate: .init(width: message.translationX, height: message.translationY),
             rotate: .zero,
@@ -335,10 +335,10 @@ struct EditorView: View {
             opacity: 1.0
         )
 
-        let newKeyframe = VibeAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
+        let newKeyframe = InertiaAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
         keyframes.append(newKeyframe)
 
-        let rectangle = VibeShape(
+        let rectangle = InertiaShape(
             id: "bird2",
             containerId: "animation", // or "animation123schema" if you want a new container
             width: 200,
@@ -350,7 +350,7 @@ struct EditorView: View {
             zIndex: 0,
             animation: .init(
                 id: "test123321anim",
-                initialValues: VibeAnimationValues(
+                initialValues: InertiaAnimationValues(
                     scale: 1.0,
                     translate: .zero,
                     rotate: .zero,
@@ -364,9 +364,9 @@ struct EditorView: View {
         if let animationIndex = animations.firstIndex(where: { schema in
             schema.id == "animation"
         }) {
-            animations[animationIndex] = VibeSchema(id: "animation", objects: [rectangle])
+            animations[animationIndex] = InertiaSchema(id: "animation", objects: [rectangle])
         } else {
-            animations.append(VibeSchema(id: "animation", objects: [rectangle]))
+            animations.append(InertiaSchema(id: "animation", objects: [rectangle]))
             editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation", animationId: "test123321anim"))
         }
         

@@ -1,5 +1,5 @@
 //
-//  VibeShapes.swift
+//  InertiaShapes.swift
 //  
 //
 //  Created by Hayden Pennington on 7/5/24.
@@ -8,12 +8,12 @@
 import SwiftUI
 
 public struct TriangleNode: MetalCanvasNode {
-    public let id: VibeID
-    public let animationValues: VibeAnimationValues
+    public let id: InertiaID
+    public let animationValues: InertiaAnimationValues
     public let vertices: [Vertex]
     public let zIndex: Int
     
-    public init(id: VibeID, animationValues: VibeAnimationValues, zIndex: Int, size: CGFloat, center: CGPoint, color: CGColor) {
+    public init(id: InertiaID, animationValues: InertiaAnimationValues, zIndex: Int, size: CGFloat, center: CGPoint, color: CGColor) {
         self.id = id
         self.animationValues = animationValues
         self.zIndex = zIndex
@@ -31,12 +31,12 @@ public struct TriangleNode: MetalCanvasNode {
 }
 
 public struct SquareNode: MetalCanvasNode {
-    public let id: VibeID
-    public let animationValues: VibeAnimationValues
+    public let id: InertiaID
+    public let animationValues: InertiaAnimationValues
     public let vertices: [Vertex]
     public let zIndex: Int
     
-    public init(id: VibeID, animationValues: VibeAnimationValues, zIndex: Int, size: CGFloat, center: CGPoint = .zero, color: CGColor) {
+    public init(id: InertiaID, animationValues: InertiaAnimationValues, zIndex: Int, size: CGFloat, center: CGPoint = .zero, color: CGColor) {
         self.id = id
         self.animationValues = animationValues
         self.zIndex = zIndex

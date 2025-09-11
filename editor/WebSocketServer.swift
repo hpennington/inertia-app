@@ -9,7 +9,7 @@ import Foundation
 import Network
 import Inertia
 
-enum VibeSwiftWebsocketError: Error {
+enum InertiaSwiftWebsocketError: Error {
     case didFailToEval(Error)
     case serverNil
 }
@@ -217,7 +217,7 @@ final class WebSocketServer {
         send(type: .actionables, payload: WebSocketClient.MessageActionables(tree: tree, actionableIds: ids), to: clientId)
     }
 
-    func sendSchema(_ schemaWrappers: [VibeSchemaWrapper], to clientId: UUID) {
+    func sendSchema(_ schemaWrappers: [InertiaSchemaWrapper], to clientId: UUID) {
         send(type: .schema, payload: WebSocketClient.MessageSchema(schemaWrappers: schemaWrappers), to: clientId)
     }
 

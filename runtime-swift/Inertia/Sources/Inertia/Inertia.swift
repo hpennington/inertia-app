@@ -1,5 +1,5 @@
 //
-// Vibe SwiftUI animation library
+// Inertia SwiftUI animation library
 // Created by Hayden Pennington
 //
 // Copyright (c) 2024 Vector Studio. All rights reserved.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public typealias VibeID = String
+public typealias InertiaID = String
 
 public class Node: Identifiable, Hashable, Codable, Equatable, CustomStringConvertible {
     public static func == (lhs: Node, rhs: Node) -> Bool {
@@ -146,7 +146,7 @@ public class Tree: Identifiable, Hashable, Codable, CustomStringConvertible, Equ
 }
 
 
-private struct VibeDataModelKey: EnvironmentKey {
+private struct InertiaDataModelKey: EnvironmentKey {
     static let defaultValue: InertiaDataModel? = nil
 }
 
@@ -163,9 +163,9 @@ private struct IsInertiaContainerKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var vibeDataModel: InertiaDataModel? {
-        get { self[VibeDataModelKey.self] }
-        set { self[VibeDataModelKey.self] = newValue }
+    var inertiaDataModel: InertiaDataModel? {
+        get { self[InertiaDataModelKey.self] }
+        set { self[InertiaDataModelKey.self] = newValue }
     }
     
     var inertiaParentID: String? {
@@ -196,47 +196,47 @@ extension EnvironmentValues {
     }
 }
 
-//public protocol VibeDataModel: Equatable {
-//    public var objects: [VibeID: VibeShape] { get set }
-//    public var states: [VibeID: VibeAnimationState] { get set }
+//public protocol InertiaDataModel: Equatable {
+//    public var objects: [InertiaID: InertiaShape] { get set }
+//    public var states: [InertiaID: InertiaAnimationState] { get set }
 //}
 
-public final class VibeViewModel: ObservableObject {
-//    public let id: VibeID
+public final class InertiaViewModel: ObservableObject {
+//    public let id: InertiaID
     @Published public var device: MTLDevice = MTLCreateSystemDefaultDevice()!
-    public var layerOwner: [Int: VibeID] = [:]
+    public var layerOwner: [Int: InertiaID] = [:]
     
     public init() {
     }
     
-    public func updateState(id: VibeID, isCancelled: Bool? = nil, trigger: Bool? = nil) {
+    public func updateState(id: InertiaID, isCancelled: Bool? = nil, trigger: Bool? = nil) {
 //        if let currentState = self.dataModel.states[id] {
 //            if let isCancelled, let trigger {
-//                self.dataModel.states.updateValue(VibeAnimationState(id: currentState.id, trigger: trigger, isCancelled: isCancelled), forKey: currentState.id)
+//                self.dataModel.states.updateValue(InertiaAnimationState(id: currentState.id, trigger: trigger, isCancelled: isCancelled), forKey: currentState.id)
 //            } else if let isCancelled {
-//                self.dataModel.states.updateValue(VibeAnimationState(id: currentState.id, trigger: currentState.trigger, isCancelled: isCancelled), forKey: currentState.id)
+//                self.dataModel.states.updateValue(InertiaAnimationState(id: currentState.id, trigger: currentState.trigger, isCancelled: isCancelled), forKey: currentState.id)
 //            } else if let trigger {
-//                self.dataModel.states.updateValue(VibeAnimationState(id: currentState.id, trigger: trigger, isCancelled: currentState.isCancelled), forKey: currentState.id)
+//                self.dataModel.states.updateValue(InertiaAnimationState(id: currentState.id, trigger: trigger, isCancelled: currentState.isCancelled), forKey: currentState.id)
 //            }
 //        }
     }
     
-    public func trigger(_ id: VibeID) {
+    public func trigger(_ id: InertiaID) {
         self.updateState(id: id, trigger: true)
     }
 
-    public func cancel(_ id: VibeID) {
+    public func cancel(_ id: InertiaID) {
         self.updateState(id: id, isCancelled: true)
     }
 
-    public func restart(_ id: VibeID) {
+    public func restart(_ id: InertiaID) {
         self.updateState(id: id, isCancelled: false)
     }
 }
 
 #if os(iOS)
 import UIKit
-public struct VibeViewRepresentable: UIViewRepresentable {
+public struct InertiaViewRepresentable: UIViewRepresentable {
     public typealias UIViewType = UIView
     
     let view: () -> UIViewType
@@ -254,7 +254,7 @@ public struct VibeViewRepresentable: UIViewRepresentable {
 }
 #else
 import AppKit
-public struct VibeViewRepresentable: NSViewRepresentable {
+public struct InertiaViewRepresentable: NSViewRepresentable {
     public typealias NSViewType = NSView
     
     let view: () -> NSViewType
@@ -274,18 +274,18 @@ public struct VibeViewRepresentable: NSViewRepresentable {
 
 @Observable
 public final class InertiaDataModel{
-    public let containerId: VibeID
-    public var vibeSchema: VibeSchema
+    public let containerId: InertiaID
+    public var inertiaSchema: InertiaSchema
     public var tree: Tree
     public var actionableIds: Set<String>
-    public var states: [VibeID: VibeAnimationState]
+    public var states: [InertiaID: InertiaAnimationState]
     public var actionableIdToAnimationIdMap: [String: String] = [:]
     
     public var isActionable: Bool = false
     
-    public init(containerId: VibeID, vibeSchema: VibeSchema, tree: Tree, actionableIds: Set<String>) {
+    public init(containerId: InertiaID, vibeSchema: InertiaSchema, tree: Tree, actionableIds: Set<String>) {
         self.containerId = containerId
-        self.vibeSchema = vibeSchema
+        self.inertiaSchema = vibeSchema
         self.tree = tree
         self.actionableIds = actionableIds
         self.states = [:]
@@ -312,7 +312,7 @@ extension View {
 public struct InertiaContainer<Content: View>: View {
     let bundle: Bundle
     let dev: Bool
-    let id: VibeID
+    let id: InertiaID
     let hierarchyId: String
     @State private var vibeDataModel: InertiaDataModel
     @ViewBuilder let content: () -> Content
@@ -320,7 +320,7 @@ public struct InertiaContainer<Content: View>: View {
     public init(
         bundle: Bundle = Bundle.main,
         dev: Bool,
-        id: VibeID,
+        id: InertiaID,
         hierarchyId: String,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -333,13 +333,13 @@ public struct InertiaContainer<Content: View>: View {
         // TODO: - Solve error handling when file is missing or schema is wrong
         if dev {
             self._vibeDataModel = State(
-                wrappedValue: InertiaDataModel(containerId: id, vibeSchema: VibeSchema(id: id, objects: []), tree: Tree(id: id), actionableIds: Set())
+                wrappedValue: InertiaDataModel(containerId: id, vibeSchema: InertiaSchema(id: id, objects: []), tree: Tree(id: id), actionableIds: Set())
             )
         } else {
             if let url = bundle.url(forResource: id, withExtension: "json") {
                 let schemaText = try! String(contentsOf: url, encoding: .utf8)
                 if let data = schemaText.data(using: .utf8),
-                   let schema = decodeVibeSchema(json: data) {
+                   let schema = decodeInertiaSchema(json: data) {
                     NSLog("[INERTIA_LOG]: InertiaDataModel instantiated for container: \(id)")
                     self._vibeDataModel = State(
                         wrappedValue: InertiaDataModel(containerId: id, vibeSchema: schema, tree: Tree(id: id), actionableIds: Set())
@@ -360,7 +360,7 @@ public struct InertiaContainer<Content: View>: View {
             ZStack(alignment: .center) {
                 content()
                     .environment(\.inertiaParentID, hierarchyId)
-                    .environment(\.vibeDataModel, self.vibeDataModel)
+                    .environment(\.inertiaDataModel, self.vibeDataModel)
                     .environment(\.isInertiaContainer, true)
                     .environment(\.inertiaContainerSize, proxy.size)
                     .environment(\.inertiaContainerId, hierarchyId)
@@ -378,7 +378,7 @@ public class WebSocketClient {
     var task: URLSessionWebSocketTask? = nil
     var isConnected: Bool = false
     public var messageReceived: ((_ selectedIds: Set<String>) -> Void)? = nil
-    public var messageReceivedSchema: ((_ schemas: [VibeSchemaWrapper]) -> Void)? = nil
+    public var messageReceivedSchema: ((_ schemas: [InertiaSchemaWrapper]) -> Void)? = nil
     public var messageReceivedIsActionable: ((_ isActionable: Bool) -> Void)? = nil
     static let shared = WebSocketClient()
 
@@ -441,9 +441,9 @@ public class WebSocketClient {
     }
     
     public struct MessageSchema: Codable {
-        public let schemaWrappers: [VibeSchemaWrapper]
+        public let schemaWrappers: [InertiaSchemaWrapper]
         
-        public init(schemaWrappers: [VibeSchemaWrapper]) {
+        public init(schemaWrappers: [InertiaSchemaWrapper]) {
             self.schemaWrappers = schemaWrappers
         }
     }
@@ -645,21 +645,21 @@ struct ParentPath: PreferenceKey {
 
 let manager = WebSocketClient.shared
 
-struct VibeCanvasSizeKey: EnvironmentKey {
+struct InertiaCanvasSizeKey: EnvironmentKey {
     static let defaultValue: CGSize = .zero
 }
 
 extension EnvironmentValues {
     var inertiaContainerSize: CGSize {
-        get { self[VibeCanvasSizeKey.self] }
-        set { self[VibeCanvasSizeKey.self] = newValue }
+        get { self[InertiaCanvasSizeKey.self] }
+        set { self[InertiaCanvasSizeKey.self] = newValue }
     }
 }
 
 struct InertiaActionable<Content: View>: View {
-    @State private var animation: VibeAnimationSchema? = nil
+    @State private var animation: InertiaAnimationSchema? = nil
     @State private var contentSize: CGSize = .zero
-    @State private var vm = VibeViewModel()
+    @State private var vm = InertiaViewModel()
     @State private var hierarchyId: String? = nil
     
     private weak var indexManager = SharedIndexManager.shared
@@ -671,7 +671,7 @@ struct InertiaActionable<Content: View>: View {
         self.content = content
     }
     
-    @Environment(\.vibeDataModel) var vibeDataModel
+    @Environment(\.inertiaDataModel) var vibeDataModel
     @Environment(\.inertiaParentID) var inertiaParentID
     @Environment(\.inertiaContainerId) var inertiaContainerId
     @Environment(\.isInertiaContainer) var isInertiaContainer
@@ -692,7 +692,7 @@ struct InertiaActionable<Content: View>: View {
             return AnyView(EmptyView())
         }
                 
-        let object = vibeDataModel.vibeSchema.objects.first(where: { element in
+        let object = vibeDataModel.inertiaSchema.objects.first(where: { element in
             element.objectType == .shape
         })
         
@@ -714,12 +714,12 @@ struct InertiaActionable<Content: View>: View {
 //        }
         
 //        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
-        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape})
+        let zUnderObjects = vibeDataModel.inertiaSchema.objects.filter({$0.objectType == .shape})
 
         if !zUnderObjects.isEmpty {
             NSLog("[INERTIA_LOG]:  enter zUnderObjects")
             let uiview = TouchForwardingComponent(interactive: false, component: {
-                VibeViewRepresentable {
+                InertiaViewRepresentable {
                     let vertices = zUnderObjects.flatMap {
                         let node = TriangleNode(
                             id: $0.id,
@@ -738,7 +738,7 @@ struct InertiaActionable<Content: View>: View {
             
             
             return AnyView(
-                VibeViewRepresentable {
+                InertiaViewRepresentable {
                     return uiview
                 }
             )
@@ -805,7 +805,7 @@ struct InertiaActionable<Content: View>: View {
             vibeDataModel?.actionableIdToAnimationIdMap[hierarchyId] = hierarchyIdPrefix
         }
         .onDisappear {
-            if let zIndex = vibeDataModel?.vibeSchema.objects.first(where: { element in
+            if let zIndex = vibeDataModel?.inertiaSchema.objects.first(where: { element in
                 element.objectType == .shape
             })?.zIndex {
                 vm.layerOwner[zIndex]?.removeAll()
@@ -813,7 +813,7 @@ struct InertiaActionable<Content: View>: View {
         }
     }
     
-    var getAnimation: VibeAnimationSchema? {
+    var getAnimation: InertiaAnimationSchema? {
         guard let vibeDataModel else {
             NSLog("[INERTIA_LOG]:  vibeDataModel is nil")
             return nil
@@ -828,12 +828,12 @@ struct InertiaActionable<Content: View>: View {
             return nil
         }
         NSLog("[INERTIA_LOG]:  hierarchyId: \(hierarchyId) animationId: \(animationId)")
-        let animation = vibeDataModel.vibeSchema.objects.first(where: { $0.animation.id == animationId })?.animation
+        let animation = vibeDataModel.inertiaSchema.objects.first(where: { $0.animation.id == animationId })?.animation
         
         if let animation {
             return animation
         } else {
-            NSLog("\(vibeDataModel.vibeSchema.objects)")
+            NSLog("\(vibeDataModel.inertiaSchema.objects)")
             NSLog("[INERTIA_LOG]:  animation is nil")
             return nil
         }
@@ -858,9 +858,9 @@ final class SharedIndexManager {
 
 struct InertiaEditable<Content: View>: View {
     @State private var dragOffset: CGSize = .zero
-    @State private var animation: VibeAnimationSchema? = nil
+    @State private var animation: InertiaAnimationSchema? = nil
     @State private var contentSize: CGSize = .zero
-    @State private var vm = VibeViewModel()
+    @State private var vm = InertiaViewModel()
     @State private var hierarchyId: String? = nil
     
     private weak var indexManager = SharedIndexManager.shared
@@ -872,7 +872,7 @@ struct InertiaEditable<Content: View>: View {
         self.content = content
     }
     
-    @Environment(\.vibeDataModel) var vibeDataModel
+    @Environment(\.inertiaDataModel) var vibeDataModel
     @Environment(\.inertiaParentID) var inertiaParentID
     @Environment(\.inertiaContainerId) var inertiaContainerId
     @Environment(\.isInertiaContainer) var isInertiaContainer
@@ -977,7 +977,7 @@ struct InertiaEditable<Content: View>: View {
             return AnyView(EmptyView())
         }
                 
-        let object = vibeDataModel.vibeSchema.objects.first(where: { element in
+        let object = vibeDataModel.inertiaSchema.objects.first(where: { element in
             element.objectType == .shape
         })
         
@@ -999,12 +999,12 @@ struct InertiaEditable<Content: View>: View {
 //        }
         
 //        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape && $0.zIndex == currentViewZIndex - 1})
-        let zUnderObjects = vibeDataModel.vibeSchema.objects.filter({$0.objectType == .shape})
+        let zUnderObjects = vibeDataModel.inertiaSchema.objects.filter({$0.objectType == .shape})
 
         if !zUnderObjects.isEmpty {
             NSLog("[INERTIA_LOG]:  enter zUnderObjects")
             let uiview = TouchForwardingComponent(interactive: false, component: {
-                VibeViewRepresentable {
+                InertiaViewRepresentable {
                     let vertices = zUnderObjects.flatMap {
                         let node = TriangleNode(
                             id: $0.id,
@@ -1023,7 +1023,7 @@ struct InertiaEditable<Content: View>: View {
             
             
             return AnyView(
-                VibeViewRepresentable {
+                InertiaViewRepresentable {
                     return uiview
                 }
             )
@@ -1152,7 +1152,7 @@ struct InertiaEditable<Content: View>: View {
             }
         }
         .onDisappear {
-            if let zIndex = vibeDataModel?.vibeSchema.objects.first(where: { element in
+            if let zIndex = vibeDataModel?.inertiaSchema.objects.first(where: { element in
                 element.objectType == .shape
             })?.zIndex {
                 vm.layerOwner[zIndex]?.removeAll()
@@ -1160,7 +1160,7 @@ struct InertiaEditable<Content: View>: View {
         }
     }
     
-    var getAnimation: VibeAnimationSchema? {
+    var getAnimation: InertiaAnimationSchema? {
         guard let vibeDataModel else {
             NSLog("[INERTIA_LOG]:  vibeDataModel is nil")
             return nil
@@ -1175,12 +1175,12 @@ struct InertiaEditable<Content: View>: View {
             return nil
         }
         NSLog("[INERTIA_LOG]:  hierarchyId: \(hierarchyId) animationId: \(animationId)")
-        let animation = vibeDataModel.vibeSchema.objects.first(where: { $0.animation.id == animationId })?.animation
+        let animation = vibeDataModel.inertiaSchema.objects.first(where: { $0.animation.id == animationId })?.animation
         
         if let animation {
             return animation
         } else {
-            NSLog("\(vibeDataModel.vibeSchema.objects)")
+            NSLog("\(vibeDataModel.inertiaSchema.objects)")
             NSLog("[INERTIA_LOG]:  animation is nil")
             return nil
         }
@@ -1195,12 +1195,12 @@ struct InertiaEditable<Content: View>: View {
         vibeDataModel?.actionableIds = selectedIds
     }
     
-    func handleMessageSchema(schemaWrappers: [VibeSchemaWrapper]) {
+    func handleMessageSchema(schemaWrappers: [InertiaSchemaWrapper]) {
         for schemaWrapper in schemaWrappers {
             if schemaWrapper.container.containerId == vibeDataModel?.containerId {
                 
                 vibeDataModel?.actionableIdToAnimationIdMap[schemaWrapper.actionableId] = schemaWrapper.animationId
-                vibeDataModel?.vibeSchema = schemaWrapper.schema
+                vibeDataModel?.inertiaSchema = schemaWrapper.schema
                 NSLog("[INERTIA_LOG]:  animationId: \(schemaWrapper.animationId) actionableId: \(schemaWrapper.actionableId)")
             }
         }
@@ -1211,12 +1211,12 @@ struct InertiaEditable<Content: View>: View {
     }
 }
 
-public struct VibeAnimationState: Identifiable, Equatable, Codable {
-    public let id: VibeID
+public struct InertiaAnimationState: Identifiable, Equatable, Codable {
+    public let id: InertiaID
     public let trigger: Bool?
     public let isCancelled: Bool
     
-    public init(id: VibeID, trigger: Bool? = nil, isCancelled: Bool = false) {
+    public init(id: InertiaID, trigger: Bool? = nil, isCancelled: Bool = false) {
         self.id = id
         self.trigger = trigger
         self.isCancelled = isCancelled
@@ -1247,13 +1247,13 @@ public struct InertiaAnimation: Codable, Hashable {
     }
 }
 
-public struct VibeSchemaWrapper: Codable {
-    public let schema: VibeSchema
+public struct InertiaSchemaWrapper: Codable {
+    public let schema: InertiaSchema
     public let actionableId: String
     public let container: AnimationContainer
     public let animationId: String
     
-    public init(schema: VibeSchema, actionableId: String, container: AnimationContainer, animationId: String) {
+    public init(schema: InertiaSchema, actionableId: String, container: AnimationContainer, animationId: String) {
         self.schema = schema
         self.actionableId = actionableId
         self.container = container
@@ -1281,21 +1281,21 @@ extension View {
         InertiaDecider(hierarchyId: hierarchyId, content: self)
     }
     
-    public func inertiaContainer(dev: Bool, id: VibeID, hierarchyId: String) -> some View {
+    public func inertiaContainer(dev: Bool, id: InertiaID, hierarchyId: String) -> some View {
         InertiaContainer(dev: dev, id: id, hierarchyId: hierarchyId) {
             self
         }
     }
 }
 
-public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equatable, CustomStringConvertible {
+public struct InertiaAnimationValues: VectorArithmetic, Animatable, Codable, Equatable, CustomStringConvertible {
     public var description: String {
 """
 {"scale": \(scale), "translate": \(translate), "rotate": \(rotate), "rotateCenter": \(rotateCenter), "opacity": \(opacity)}
 """
     }
     
-    public static var zero = VibeAnimationValues(scale: .zero, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: .zero)
+    public static var zero = InertiaAnimationValues(scale: .zero, translate: .zero, rotate: .zero, rotateCenter: .zero, opacity: .zero)
     
     public init(scale: CGFloat, translate: CGSize, rotate: CGFloat, rotateCenter: CGFloat, opacity: CGFloat) {
         self.scale = scale
@@ -1325,7 +1325,7 @@ public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equata
         opacity *= CGFloat(rhs)
     }
 
-    public static func += (lhs: inout VibeAnimationValues, rhs: VibeAnimationValues) {
+    public static func += (lhs: inout InertiaAnimationValues, rhs: InertiaAnimationValues) {
         lhs.scale += rhs.scale
         lhs.translate.width += rhs.translate.width
         lhs.translate.height += rhs.translate.height
@@ -1334,7 +1334,7 @@ public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equata
         lhs.opacity += rhs.opacity
     }
 
-    public static func -= (lhs: inout VibeAnimationValues, rhs: VibeAnimationValues) {
+    public static func -= (lhs: inout InertiaAnimationValues, rhs: InertiaAnimationValues) {
         lhs.scale -= rhs.scale
         lhs.translate.width -= rhs.translate.width
         lhs.translate.height -= rhs.translate.height
@@ -1343,50 +1343,50 @@ public struct VibeAnimationValues: VectorArithmetic, Animatable, Codable, Equata
         lhs.opacity -= rhs.opacity
     }
 
-    public static func * (lhs: VibeAnimationValues, rhs: Double) -> VibeAnimationValues {
+    public static func * (lhs: InertiaAnimationValues, rhs: Double) -> InertiaAnimationValues {
         var result = lhs
         result.scale(by: rhs)
         return result
     }
 
-    public static func + (lhs: VibeAnimationValues, rhs: VibeAnimationValues) -> VibeAnimationValues {
+    public static func + (lhs: InertiaAnimationValues, rhs: InertiaAnimationValues) -> InertiaAnimationValues {
         var result = lhs
         result += rhs
         return result
     }
 
-    public static func - (lhs: VibeAnimationValues, rhs: VibeAnimationValues) -> VibeAnimationValues {
+    public static func - (lhs: InertiaAnimationValues, rhs: InertiaAnimationValues) -> InertiaAnimationValues {
         var result = lhs
         result -= rhs
         return result
     }
 }
 
-public struct VibeAnimationKeyframe: Identifiable, Codable, Equatable, CustomStringConvertible {
+public struct InertiaAnimationKeyframe: Identifiable, Codable, Equatable, CustomStringConvertible {
     public var description: String {
 """
 {"id": \(id), "values": \(values), "duration": \(duration)}
 """
     }
     
-    public let id: VibeID
-    public let values: VibeAnimationValues
+    public let id: InertiaID
+    public let values: InertiaAnimationValues
     public let duration: CGFloat
     
-    public init(id: VibeID, values: VibeAnimationValues, duration: CGFloat) {
+    public init(id: InertiaID, values: InertiaAnimationValues, duration: CGFloat) {
         self.id = id
         self.values = values
         self.duration = duration
     }
     
-    public static func == (lhs: VibeAnimationKeyframe, rhs: VibeAnimationKeyframe) -> Bool {
+    public static func == (lhs: InertiaAnimationKeyframe, rhs: InertiaAnimationKeyframe) -> Bool {
         lhs.id == rhs.id &&
         lhs.values == rhs.values &&
         lhs.duration == rhs.duration
     }
 }
 
-public enum VibeObjectType: String, Codable, Equatable, CustomStringConvertible {
+public enum InertiaObjectType: String, Codable, Equatable, CustomStringConvertible {
     public var description: String {
         "\(self.rawValue)"
     }
@@ -1394,25 +1394,25 @@ public enum VibeObjectType: String, Codable, Equatable, CustomStringConvertible 
     case shape, animation
 }
 
-public struct VibeShape: Codable, Identifiable, Equatable, CustomStringConvertible {
+public struct InertiaShape: Codable, Identifiable, Equatable, CustomStringConvertible {
     public var description: String {
 """
 {"id": "\(id)", "containerId": "\(containerId.description)", "width": \(width.description), "height": \(height.description), "position": \(position.debugDescription), "color": \(color.description), "shape": \(shape.description), "objectType": \(objectType.description), "zIndex": \(zIndex), "animation": \(animation.description)}
 """
     }
     
-    public let id: VibeID
-    public let containerId: VibeID
+    public let id: InertiaID
+    public let containerId: InertiaID
     public let width: CGFloat
     public let height: CGFloat
     public let position: CGPoint
     public let color: [CGFloat]
     public let shape: String
-    public let objectType: VibeObjectType
+    public let objectType: InertiaObjectType
     public let zIndex: Int
-    public let animation: VibeAnimationSchema
+    public let animation: InertiaAnimationSchema
     
-    public init(id: VibeID, containerId: VibeID, width: CGFloat, height: CGFloat, position: CGPoint, color: [CGFloat], shape: String, objectType: VibeObjectType, zIndex: Int, animation: VibeAnimationSchema) {
+    public init(id: InertiaID, containerId: InertiaID, width: CGFloat, height: CGFloat, position: CGPoint, color: [CGFloat], shape: String, objectType: InertiaObjectType, zIndex: Int, animation: InertiaAnimationSchema) {
         self.id = id
         self.containerId = containerId
         self.width = width
@@ -1426,23 +1426,23 @@ public struct VibeShape: Codable, Identifiable, Equatable, CustomStringConvertib
     }
 }
 
-public struct VibeSchema: Codable, Equatable, CustomStringConvertible {
+public struct InertiaSchema: Codable, Equatable, CustomStringConvertible {
     public var description: String {
 """
 {"id": "\(id)", objects: \(objects)}
 """
     }
     
-    public let id: VibeID
-    public let objects: [VibeShape]
+    public let id: InertiaID
+    public let objects: [InertiaShape]
     
-    public init(id: VibeID, objects: [VibeShape]) {
+    public init(id: InertiaID, objects: [InertiaShape]) {
         self.id = id
         self.objects = objects
     }
 }
 
-public enum VibeAnimationInvokeType: String, Codable, CustomStringConvertible {
+public enum InertiaAnimationInvokeType: String, Codable, CustomStringConvertible {
     public var description: String {
         "\(self.rawValue)"
     }
@@ -1450,19 +1450,19 @@ public enum VibeAnimationInvokeType: String, Codable, CustomStringConvertible {
     case trigger, auto
 }
 
-public struct VibeAnimationSchema: Codable, Identifiable, Equatable, CustomStringConvertible {
+public struct InertiaAnimationSchema: Codable, Identifiable, Equatable, CustomStringConvertible {
     public var description: String {
 """
 {"id": \(id), "initialValues": \(initialValues), "invokeType": \(invokeType), "keyframes": \(keyframes)}
 """
     }
     
-    public let id: VibeID
-    public let initialValues: VibeAnimationValues
-    public let invokeType: VibeAnimationInvokeType
-    public let keyframes: [VibeAnimationKeyframe]
+    public let id: InertiaID
+    public let initialValues: InertiaAnimationValues
+    public let invokeType: InertiaAnimationInvokeType
+    public let keyframes: [InertiaAnimationKeyframe]
     
-    public init(id: VibeID, initialValues: VibeAnimationValues, invokeType: VibeAnimationInvokeType, keyframes: [VibeAnimationKeyframe]) {
+    public init(id: InertiaID, initialValues: InertiaAnimationValues, invokeType: InertiaAnimationInvokeType, keyframes: [InertiaAnimationKeyframe]) {
         self.id = id
         self.initialValues = initialValues
         self.invokeType = invokeType
@@ -1470,9 +1470,9 @@ public struct VibeAnimationSchema: Codable, Identifiable, Equatable, CustomStrin
     }
 }
 
-func decodeVibeSchema(json: Data) -> VibeSchema? {
+func decodeInertiaSchema(json: Data) -> InertiaSchema? {
     do {
-        let schema = try JSONDecoder().decode(VibeSchema.self, from: json)
+        let schema = try JSONDecoder().decode(InertiaSchema.self, from: json)
         return schema
     } catch {
         print("Failed to decode JSON: \(error.localizedDescription)")

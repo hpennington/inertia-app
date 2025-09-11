@@ -1,5 +1,5 @@
 //
-//  VibeCanvas.swift
+//  InertiaCanvas.swift
 //
 //
 //  Created by Hayden Pennington on 7/5/24.
@@ -13,9 +13,9 @@ typealias ViewRepresentable = NSViewRepresentable
 typealias ViewRepresentable = UIViewRepresentable
 #endif
 
-public struct VibeCanvas: ViewRepresentable {
+public struct InertiaCanvas: ViewRepresentable {
     
-    @Environment(\.vibeDataModel) var vibeDataModel
+    @Environment(\.inertiaDataModel) var inertiaDataModel
     #if os(macOS)
     public typealias NSViewType = NSView
     
@@ -30,13 +30,13 @@ public struct VibeCanvas: ViewRepresentable {
         
         var topViewVertices: [Vertex] = []
         
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return rootView
         }
         
-        for object in vibeDataModel.vibeSchema.objects {
+        for object in inertiaDataModel.inertiaSchema.objects {
             if object.objectType == .shape {
-                let maxZIndex = vibeDataModel.vibeSchema.objects.map {
+                let maxZIndex = inertiaDataModel.inertiaSchema.objects.map {
                     $0.zIndex
                 }.max() ?? .zero
                 
@@ -89,14 +89,14 @@ public struct VibeCanvas: ViewRepresentable {
     public func updateNSView(_ nsView: NSViewType, context: Context) {
         let frame = CGRect(origin: .zero, size: self.size)
         
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return
         }
         
         var topViewVertices: [Vertex] = []
-        for object in vibeDataModel.vibeSchema.objects {
+        for object in inertiaDataModel.inertiaSchema.objects {
             if object.objectType == .shape {
-                let maxZIndex = vibeDataModel.vibeSchema.objects.map {
+                let maxZIndex = inertiaDataModel.inertiaSchema.objects.map {
                     $0.zIndex
                 }.max() ?? .zero
                 
@@ -128,14 +128,14 @@ public struct VibeCanvas: ViewRepresentable {
         let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.hitTest(sender:)))
         rootView.addGestureRecognizer(tapGesture)
         
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return rootView
         }
         
         var topViewVertices: [Vertex] = []
-        for object in vibeDataModel.vibeSchema.objects {
+        for object in inertiaDataModel.inertiaSchema.objects {
             if object.objectType == .shape {
-                let maxZIndex = vibeDataModel.vibeSchema.objects.map {
+                let maxZIndex = inertiaDataModel.inertiaSchema.objects.map {
                     $0.zIndex
                 }.max() ?? .zero
                 
@@ -188,14 +188,14 @@ public struct VibeCanvas: ViewRepresentable {
     public func updateUIView(_ uiView: UIViewType, context: Context) {
         let frame = CGRect(origin: .zero, size: self.size)
         
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return
         }
         
         var topViewVertices: [Vertex] = []
-        for object in vibeDataModel.vibeSchema.objects {
+        for object in inertiaDataModel.inertiaSchema.objects {
             if object.objectType == .shape {
-                let maxZIndex = vibeDataModel.vibeSchema.objects.map {
+                let maxZIndex = inertiaDataModel.inertiaSchema.objects.map {
                     $0.zIndex
                 }.max() ?? .zero
                 
@@ -218,11 +218,11 @@ public struct VibeCanvas: ViewRepresentable {
     #endif
     
     private let size: CGSize
-    private let vm: VibeViewModel
+    private let vm: InertiaViewModel
     private let view: AnyView
     private let commandQueue: MTLCommandQueue
     
-    public init(size: CGSize, vm: VibeViewModel, view: AnyView) {
+    public init(size: CGSize, vm: InertiaViewModel, view: AnyView) {
         self.size = size
         self.vm = vm
         self.view = view
@@ -234,11 +234,11 @@ public struct VibeCanvas: ViewRepresentable {
     }
     
     private func collateZIndices() -> [Int] {
-        guard let vibeDataModel else {
+        guard let inertiaDataModel else {
             return []
         }
         
-        return Set(vibeDataModel.vibeSchema.objects.map({$0.zIndex})).sorted(by: <)
+        return Set(inertiaDataModel.inertiaSchema.objects.map({$0.zIndex})).sorted(by: <)
     }
     
     public class Coordinator: NSObject {
@@ -257,8 +257,8 @@ public struct VibeCanvas: ViewRepresentable {
 }
 
 public protocol MetalCanvasNode {
-    var id: VibeID { get }
-    var animationValues: VibeAnimationValues { get }
+    var id: InertiaID { get }
+    var animationValues: InertiaAnimationValues { get }
     var vertices: [Vertex] { get }
     var zIndex: Int { get }
 }
