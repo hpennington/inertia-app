@@ -454,14 +454,23 @@ export interface DraggableProps {
   children: React.ReactNode;
   handleClick: () => void;
   vibeDataModel?: VibeDataModel;
+  pos: { x: number; y: number };
+  setPos: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
   moved?: React.MutableRefObject<boolean>;
 }
 
 // ------------------ HOC ------------------
-export function withDrag<T extends DraggableProps>(WrappedComponent: React.ComponentType<T>) {
-  return function Draggable(props: T) {
-    const { isSelected, actionableIds } = props;
-    const [pos, setPos] = useState({ x: 0, y: 0 });
+export interface DraggableInjectedProps {
+  pos: { x: number; y: number };
+  setPos: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
+  moved: React.MutableRefObject<boolean>;
+}
+
+export function withDrag<T extends DraggableProps>(
+  WrappedComponent: React.ComponentType<T & Partial<DraggableInjectedProps>>
+) {
+  return function Draggable(props: T & { pos: { x: number; y: number }; setPos: React.Dispatch<React.SetStateAction<{ x: number; y: number }>> }) {
+    const { isSelected, actionableIds, pos, setPos } = props;
     const dragging = useRef(false);
     const moved = useRef(false);
     const offset = useRef({ x: 0, y: 0 });
@@ -534,7 +543,6 @@ export function withDrag<T extends DraggableProps>(WrappedComponent: React.Compo
   };
 }
 
-
 // ------------------ VibeableGuts ------------------
 const VibeableGuts: React.FC<DraggableProps> = React.memo(
   ({ hierarchyId, handleClick, isSelected, containerRef, children, vibeDataModel, moved }) => {
@@ -602,6 +610,7 @@ export const Vibeable: React.FC<VibeableProps> = ({ children, hierarchyIdPrefix 
   const indexManager = SharedIndexManager.shared;
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const [hierarchyId, setHierarchyId] = useState<string>();
 
   useEffect(() => {
@@ -616,6 +625,10 @@ export const Vibeable: React.FC<VibeableProps> = ({ children, hierarchyIdPrefix 
       vibeDataModel?.tree.addRelationship(hierarchyId, vibeParentId, vibeIsContainer);
     }
   }, [hierarchyId, vibeParentId, vibeIsContainer]);
+
+  useEffect(() => {
+    setPos({x: 0, y: 0})
+  }, [vibeDataModel?.vibeSchema?.objects])
 
   const isSelected = hierarchyId ? vibeDataModel?.actionableIds.has(hierarchyId) ?? false : false;
 
@@ -649,6 +662,8 @@ export const Vibeable: React.FC<VibeableProps> = ({ children, hierarchyIdPrefix 
       children={children}
       vibeDataModel={vibeDataModel}
       actionableIds={vibeDataModel?.actionableIds}
+      pos={pos}
+      setPos={setPos}
     />
   );
 };
