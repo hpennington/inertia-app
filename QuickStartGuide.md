@@ -1,33 +1,52 @@
-Inertia Animation Library
+# Inertia Animation Library
+
 Welcome to Inertia, a cross-platform animation library for SwiftUI, Jetpack Compose, and React.
+
 Inertia bridges designers and developers with a keyframe editor that exports animation files, which integrate directly into your native UI code.
+
 Unlike other libraries, Inertia lets you animate real UI components on each platform while leveraging native animation engines:
-SwiftUI → built on iOS 17+ keyframe animations
-Jetpack Compose → powered by Compose's animation APIs
-React → hooks and components for smooth keyframe-driven animations
-Features
-🌍 Cross-platform: SwiftUI, Jetpack Compose, React
-🎨 Keyframe editor with JSON export
-🔐 Strongly typed IDs for safe animation references
-🎛️ Control lifecycle: trigger, cancel, restart
-⚡ Minimal boilerplate
-🎯 Editor mode for live design and testing
-Installation
-SwiftUI (iOS)
-swift
+- SwiftUI → built on iOS 17+ keyframe animations
+- Jetpack Compose → powered by Compose's animation APIs
+- React → hooks and components for smooth keyframe-driven animations
+
+## Features
+
+🌍 Cross-platform: SwiftUI, Jetpack Compose, React  
+🎨 Keyframe editor with JSON export  
+🔐 Strongly typed IDs for safe animation references  
+🎛️ Control lifecycle: trigger, cancel, restart  
+⚡ Minimal boilerplate  
+🎯 Editor mode for live design and testing  
+
+## Installation
+
+### SwiftUI (iOS)
+
+```swift
 import Inertia
-Jetpack Compose (Android)
-kotlin
+```
+
+### Jetpack Compose (Android)
+
+```kotlin
 implementation("com.inertia:inertia-compose:<version>")
-React (Web)
-bash
+```
+
+### React (Web)
+
+```bash
 npm install inertia-animations
 # or
 yarn add inertia-animations
-Usage
-1. Define Animation IDs (SwiftUI)
+```
+
+## Usage
+
+### 1. Define Animation IDs (SwiftUI)
+
 Animation IDs can be simple strings:
-swift
+
+```swift
 // Simple string approach
 let birdAnimationId = "bird"
 let carAnimationId = "car"
@@ -36,9 +55,13 @@ let carAnimationId = "car"
 enum AnimationID: String, CaseIterable {
     case car, planeTop, planeBottom, homeCard, bird
 }
-2. Set Up the Animation Container
+```
+
+### 2. Set Up the Animation Container
+
 Wrap your app's root view in an InertiaContainer. The container loads animations and provides the animation context to child views.
-swift
+
+```swift
 import SwiftUI
 import Inertia
 
@@ -64,9 +87,13 @@ struct InertiaDemoApp: App {
         }
     }
 }
-3. Apply Animations to Views
-Use the .inertia() modifier to make any view animatable:
-swift
+```
+
+### 3. Apply Animations to Views
+
+Use the `.inertia()` modifier to make any view animatable:
+
+```swift
 struct ContentView: View {
     var body: some View {
         VStack {
@@ -84,9 +111,13 @@ struct ContentView: View {
         .padding()
     }
 }
-4. Animation Control (Optional)
+```
+
+### 4. Animation Control (Optional)
+
 For programmatic control, access the InertiaViewModel through the environment:
-swift
+
+```swift
 struct ContentView: View {
     @EnvironmentObject private var inertia: InertiaViewModel
     
@@ -113,9 +144,13 @@ struct ContentView: View {
         }
     }
 }
-Animation File Structure
+```
+
+## Animation File Structure
+
 Create a JSON file (e.g., animation.json) in your app bundle:
-json
+
+```json
 {
   "id": "animation",
   "objects": [
@@ -167,27 +202,38 @@ json
     }
   ]
 }
-Animation Properties
-scale: Scale factor (1.0 = normal size)
-translate: Position offset as percentage of container size
-rotate: Rotation from top-left anchor (degrees)
-rotateCenter: Rotation from center anchor (degrees)
-opacity: Transparency (0.0 = invisible, 1.0 = opaque)
-duration: Keyframe duration in seconds
-Invoke Types
-"auto": Animation starts automatically when view appears
-"trigger": Animation waits for programmatic trigger
-Editor Mode
+```
+
+## Animation Properties
+
+- `scale`: Scale factor (1.0 = normal size)
+- `translate`: Position offset as percentage of container size
+- `rotate`: Rotation from top-left anchor (degrees)
+- `rotateCenter`: Rotation from center anchor (degrees)
+- `opacity`: Transparency (0.0 = invisible, 1.0 = opaque)
+- `duration`: Keyframe duration in seconds
+
+## Invoke Types
+
+- `"auto"`: Animation starts automatically when view appears
+- `"trigger"`: Animation waits for programmatic trigger
+
+## Editor Mode
+
 Enable editor mode during development by:
-Adding INERTIA_EDITOR build flag
-Setting dev: true in InertiaContainer
-Running your app - you'll see:
-Selection borders around animatable views
-Live editing capabilities
-Real-time animation preview
+
+1. Adding INERTIA_EDITOR build flag
+2. Setting `dev: true` in InertiaContainer
+3. Running your app - you'll see:
+   - Selection borders around animatable views
+   - Live editing capabilities
+   - Real-time animation preview
+
 The editor connects via WebSocket to design tools for live collaboration.
-Complete Example
-swift
+
+## Complete Example
+
+```swift
 import SwiftUI
 import Inertia
 
@@ -243,15 +289,22 @@ struct InertiaDemoApp: App {
         }
     }
 }
-Key Differences from Other Animation Libraries
-Design-First: Animations are defined in JSON, enabling designer-developer collaboration
-Cross-Platform: Same animation files work across SwiftUI, Compose, and React
-Native Performance: Uses each platform's native animation engines
-Live Editing: Editor mode enables real-time animation tweaking
-Minimal Code: Apply animations with a single modifier
-Roadmap
-✅ SwiftUI support
-✅ Jetpack Compose support
-✅ React support
-Inertia Team • 2025
+```
 
+## Key Differences from Other Animation Libraries
+
+- **Design-First**: Animations are defined in JSON, enabling designer-developer collaboration
+- **Cross-Platform**: Same animation files work across SwiftUI, Compose, and React
+- **Native Performance**: Uses each platform's native animation engines
+- **Live Editing**: Editor mode enables real-time animation tweaking
+- **Minimal Code**: Apply animations with a single modifier
+
+## Roadmap
+
+✅ SwiftUI support  
+✅ Jetpack Compose support  
+✅ React support  
+
+---
+
+*Inertia Team • 2025*
