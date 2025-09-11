@@ -481,12 +481,14 @@ export function withDrag<T extends DraggableProps>(WrappedComponent: React.Compo
       setPos({ x: clientX - offset.current.x, y: clientY - offset.current.y });
     };
 
+    const vibeCanvasSize = useContext(VibeCanvasSizeContext);
+
     const stopDrag = () => {
-      if (dragging.current && actionableIds) {
+      if (dragging.current && actionableIds && vibeCanvasSize) {
         manager.sendMessageTranslation({
           actionableIds: Array.from(actionableIds),
-          translationX: pos.x,
-          translationY: pos.y,
+          translationX: pos.x / vibeCanvasSize.width,
+          translationY: pos.y / vibeCanvasSize.height,
         });
       }
       dragging.current = false;
@@ -530,15 +532,17 @@ const VibeableGuts: React.FC<DraggableProps> = React.memo(
       if (!moved?.current) handleClick();
     };
 
+    const vibeCanvasSize = useContext(VibeCanvasSizeContext);
+
     // Keyframe animation
     useEffect(() => {
-      if (!containerRef.current || !vibeDataModel || !hierarchyId) return;
+      if (!containerRef.current || !vibeDataModel || !hierarchyId || !vibeCanvasSize) return;
       const animationId = vibeDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
       const animation = vibeDataModel.vibeSchema?.objects.find(obj => obj.animation?.id === animationId)?.animation;
       if (!animation) return;
 
       const keyframesWebAPI = [animation.initialValues, ...(animation.keyframes || []).map(k => k.values)].map(values => ({
-        transform: `translateX(${values.translate[0]}px) translateY(${values.translate[1]}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
+        transform: `translateX(${values.translate[0] * vibeCanvasSize.width}px) translateY(${values.translate[1] * vibeCanvasSize.height}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
         transformOrigin: "center",
         opacity: values.opacity,
       }));
