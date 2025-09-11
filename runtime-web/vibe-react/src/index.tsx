@@ -466,6 +466,8 @@ export function withDrag<T extends DraggableProps>(WrappedComponent: React.Compo
     const moved = useRef(false);
     const offset = useRef({ x: 0, y: 0 });
 
+    const vibeCanvasSize = useContext(VibeCanvasSizeContext);
+
     const startDrag = (clientX: number, clientY: number) => {
       if (!isSelected) return;
       dragging.current = true;
@@ -480,8 +482,6 @@ export function withDrag<T extends DraggableProps>(WrappedComponent: React.Compo
       if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved.current = true;
       setPos({ x: clientX - offset.current.x, y: clientY - offset.current.y });
     };
-
-    const vibeCanvasSize = useContext(VibeCanvasSizeContext);
 
     const stopDrag = () => {
       if (dragging.current && actionableIds && vibeCanvasSize) {
@@ -505,12 +505,21 @@ export function withDrag<T extends DraggableProps>(WrappedComponent: React.Compo
 
     return (
       <div
-        onMouseMove={(e) => { e.stopPropagation(); doDrag(e.clientX, e.clientY); }}
-        onMouseUp={(e) => { e.stopPropagation(); stopDrag(); }}
-        onTouchMove={(e) => { e.stopPropagation(); e.preventDefault(); doDrag(e.touches[0].clientX, e.touches[0].clientY); }}
-        onTouchEnd={(e) => { e.stopPropagation(); e.preventDefault(); stopDrag(); }}
-        onMouseDown={(e) => { e.stopPropagation(); startDrag(e.clientX, e.clientY); }}
-        onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); startDrag(e.touches[0].clientX, e.touches[0].clientY); }}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          if (isSelected) {
+            (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+            startDrag(e.clientX, e.clientY);
+          }
+        }}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          doDrag(e.clientX, e.clientY);
+        }}
+        onPointerUp={(e) => {
+          e.stopPropagation();
+          stopDrag();
+        }}
         onClickCapture={handleClickCapture}
         style={{
           transform: transformStyle,
@@ -524,6 +533,7 @@ export function withDrag<T extends DraggableProps>(WrappedComponent: React.Compo
     );
   };
 }
+
 
 // ------------------ VibeableGuts ------------------
 const VibeableGuts: React.FC<DraggableProps> = React.memo(
