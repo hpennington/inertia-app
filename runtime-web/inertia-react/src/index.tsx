@@ -72,67 +72,15 @@ const useInertiaIsContainer = () => {
     return inertiaIsContainer
 }
 
-// Helper to convert JSON received from WebSocket into MessageActionables
-export function messageActionablesFromJSON(json: any): MessageActionables {
-    return {
-        tree: Tree.fromJSON(json.tree),                // convert tree JSON to Tree instance
-        actionableIds: new Array<string>(json.actionableIds) // convert array to Set
-    };
-}
-
-// Helper to convert MessageActionables to JSON for sending over WebSocket
-export function messageActionablesToJSON(msg: MessageActionables): any {
-    return {
-        tree: msg.tree.toJSON(),               // convert Tree instance to JSON
-        actionableIds: Array.from(msg.actionableIds) // convert Set to array
-    };
-}
-
-export function messageActionableFromJSON(json: any): MessageActionable {
-    return {
-        isActionable: json.isActionable,
-    };
-}
-
-export function messageActionableToJSON(msg: MessageActionable): any {
-    return {
-        isActionable: msg.isActionable,
-    };
-}
-
 // --- MessageSelected ---
 export type MessageSelected = {
     selectedIds: Set<string>;
 };
 
-export function messageSelectedFromJSON(json: any): MessageSelected {
-    return {
-        selectedIds: new Set<string>(json.selectedIds),
-    };
-}
-
-export function messageSelectedToJSON(msg: MessageSelected): any {
-    return {
-        selectedIds: Array.from(msg.selectedIds),
-    };
-}
-
 // --- MessageSchema ---
 export type MessageSchema = {
     schemaWrappers: Array<InertiaSchemaWrapper>;
 };
-
-export function messageSchemaFromJSON(json: any): MessageSchema {
-    return {
-        schemaWrappers: json.schemaWrappers, // assuming schemaWrappers are already plain objects
-    };
-}
-
-export function messageSchemaToJSON(msg: MessageSchema): any {
-    return {
-        schemaWrappers: msg.schemaWrappers,
-    };
-}
 
 // --- Basic Types ---
 export type CGPoint = { x: number; y: number };
@@ -149,84 +97,6 @@ export type AnimationContainer = {
     actionableId: InertiaID;
     containerId: InertiaID;
 };
-
-export function animationContainerFromJSON(json: any): AnimationContainer {
-    return {
-        actionableId: json.actionableId,
-        containerId: json.containerId,
-    };
-}
-
-export function animationContainerToJSON(container: AnimationContainer): any {
-    return {
-        actionableId: container.actionableId,
-        containerId: container.containerId,
-    };
-}
-
-export function inertiaShapeFromJSON(json: {
-    id: string, container: AnimationContainer, width: number, height: number, position: {x: number, y: number}, color: number[], shape: string, zIndex: number, animation: InertiaAnimationSchema}
-): InertiaShape {
-    return {
-        id: json.id,
-        container: json.container,
-        width: json.width,
-        height: json.height,
-        position: { x: json.position.x, y: json.position.y },
-        color: json.color,
-        shape: json.shape,
-        zIndex: json.zIndex,
-        animation: json.animation,
-    };
-}
-
-export function inertiaShapeToJSON(shape: InertiaShape): any {
-    return {
-        id: shape.id,
-        containerId: shape.id,
-        width: shape.width,
-        height: shape.height,
-        position: { x: shape.position.x, y: shape.position.y },
-        color: shape.color,
-        shape: shape.shape,
-        objectType: "",
-        zIndex: shape.zIndex,
-        animation: shape.animation,
-    };
-}
-
-export function inertiaSchemaFromJSON(json: any): InertiaSchema {
-    return {
-        id: json.id,
-        objects: (json.objects ?? []).map(inertiaShapeFromJSON),
-    };
-}
-
-export function inertiaSchemaToJSON(schema: InertiaSchema): any {
-    return {
-        id: schema.id,
-        objects: schema.objects.map(inertiaShapeToJSON),
-    };
-}
-
-export function inertiaSchemaWrapperFromJSON(json: any): InertiaSchemaWrapper {
-    return {
-        schema: inertiaSchemaFromJSON(json.schema),
-        actionableId: json.actionableId,
-        container: animationContainerFromJSON(json.container),
-        animationId: json.animationId,
-    };
-}
-
-export function inertiaSchemaWrapperToJSON(wrapper: InertiaSchemaWrapper): any {
-    return {
-        schema: inertiaSchemaToJSON(wrapper.schema),
-        actionableId: wrapper.actionableId,
-        container: animationContainerToJSON(wrapper.container),
-        animationId: wrapper.animationId,
-    };
-}
-
 
 // --- InertiaAnimationValues ---
 export type InertiaAnimationValues = {
@@ -246,83 +116,12 @@ export const zeroInertiaAnimationValues: InertiaAnimationValues = {
     opacity: 0,
 };
 
-// Arithmetic helpers
-export function addInertiaAnimationValues(
-    a: InertiaAnimationValues,
-    b: InertiaAnimationValues
-): InertiaAnimationValues {
-    return {
-        scale: a.scale + b.scale,
-        translate: { width: a.translate.width + b.translate.width, height: a.translate.height + b.translate.height },
-        rotate: a.rotate + b.rotate,
-        rotateCenter: a.rotateCenter + b.rotateCenter,
-        opacity: a.opacity + b.opacity,
-    };
-}
-
-export function subtractInertiaAnimationValues(
-    a: InertiaAnimationValues,
-    b: InertiaAnimationValues
-): InertiaAnimationValues {
-    return {
-        scale: a.scale - b.scale,
-        translate: { width: a.translate.width - b.translate.width, height: a.translate.height - b.translate.height },
-        rotate: a.rotate - b.rotate,
-        rotateCenter: a.rotateCenter - b.rotateCenter,
-        opacity: a.opacity - b.opacity,
-    };
-}
-
-export function scaleInertiaAnimationValues(v: InertiaAnimationValues, factor: number): InertiaAnimationValues {
-    return {
-        scale: v.scale * factor,
-        translate: { width: v.translate.width * factor, height: v.translate.height * factor },
-        rotate: v.rotate * factor,
-        rotateCenter: v.rotateCenter * factor,
-        opacity: v.opacity * factor,
-    };
-}
-
 // --- InertiaAnimationKeyframe ---
 export type InertiaAnimationKeyframe = {
     id: InertiaID;
     values: InertiaAnimationValues;
     duration: number;
 };
-
-export function inertiaAnimationKeyframeFromJSON(json: any): InertiaAnimationKeyframe {
-    return {
-        id: json.id,
-        values: json.values,
-        duration: json.duration,
-    };
-}
-
-export function inertiaAnimationKeyframeToJSON(keyframe: InertiaAnimationKeyframe): any {
-    return {
-        id: keyframe.id,
-        values: keyframe.values,
-        duration: keyframe.duration,
-    };
-}
-
-export function inertiaAnimationSchemaFromJSON(json: any): InertiaAnimationSchema {
-    return {
-        id: json.id,
-        initialValues: json.initialValues,
-        invokeType: json.invokeType as InertiaAnimationInvokeType,
-        keyframes: (json.keyframes ?? []).map(inertiaAnimationKeyframeFromJSON),
-    };
-}
-
-// export function inertiaAnimationSchemaToJSON(schema: InertiaAnimationSchema): any {
-//     return {
-//         id: schema.id,
-//         initialValues: schema.initialValues,
-//         invokeType: schema.invokeType,
-//         keyframes: schema.keyframes.map(inertiaAnimationKeyframeToJSON),
-//     };
-// }
 
 class SharedIndexManager {
     // The singleton instance
