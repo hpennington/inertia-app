@@ -235,7 +235,7 @@ function base64Encode(str: string): string {
 
 export interface MessageActionables {
     tree: Tree;
-    actionableIds: string[]; // Use array for JSON compatibility
+    actionableIds: Array<string>;
 }
 
 export interface MessageActionable {
@@ -249,7 +249,7 @@ export interface MessageSchema {
 export type MessageTranslation = {
     translationX: number;
     translationY: number;
-    actionableIds: Set<string>;
+    actionableIds: Array<string>;
 }
 
 export class WebSocketClient {
@@ -439,7 +439,7 @@ export class WebSocketClient {
                 case MessageType.translationEnded:
                     const translationMSG: MessageTranslation = payload
                     console.log("[INERTIA_LOG]: Received translationEnded:", translationMSG);
-                    this.messageReceivedTranslationEnded?.(translationMSG.actionableIds, translationMSG.translationX, translationMSG.translationY)
+                    this.messageReceivedTranslationEnded?.(new Set(translationMSG.actionableIds), translationMSG.translationX, translationMSG.translationY)
                     break
             }
         } catch (error) {

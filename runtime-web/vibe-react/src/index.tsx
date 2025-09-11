@@ -415,10 +415,6 @@ export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps
                 setVibeDataModel(prev => ({ ...prev, isActionable: msg }));
             };
 
-            ws.messageReceivedTranslationEnded = (actionableIds, translationX, translationY) => {
-                // setVibeDataModel(prev => ({ ...prev, isActionable: msg }));
-            };
-
             ws.sendMessageActionables({
                 tree: vibeDataModel.tree,
                 actionableIds: Array.from(vibeDataModel.actionableIds),
@@ -444,28 +440,37 @@ export const VibeContainer = ({ children, id, baseURL, dev }: VibeContainerProps
 };
 
 
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback, useContext, useEffect } from "react";
 
 const VibeCanvasSizeContext = React.createContext<VibeCanvasSize | null>(null)
 const manager = WebSocketClient.shared
 
-export function withDrag(WrappedComponent: any) {
-  return function Draggable(props: any) {
-    const { isSelected, hierarchyId, actionableIds } = props; 
-    // actionableIds: Set<string> reference
+// ------------------ Draggable Props ------------------
+export interface DraggableProps {
+  hierarchyId?: string;
+  isSelected: boolean;
+  actionableIds?: Set<string>;
+  containerRef: React.RefObject<HTMLDivElement>;
+  children: React.ReactNode;
+  handleClick: () => void;
+  vibeDataModel?: VibeDataModel;
+  moved?: React.MutableRefObject<boolean>;
+}
+
+// ------------------ HOC ------------------
+export function withDrag<T extends DraggableProps>(WrappedComponent: React.ComponentType<T>) {
+  return function Draggable(props: T) {
+    const { isSelected, actionableIds } = props;
     const [pos, setPos] = useState({ x: 0, y: 0 });
     const dragging = useRef(false);
     const moved = useRef(false);
     const offset = useRef({ x: 0, y: 0 });
 
     const startDrag = (clientX: number, clientY: number) => {
-      if (!isSelected) return; // only allow dragging if selected
+      if (!isSelected) return;
       dragging.current = true;
       moved.current = false;
-      offset.current = {
-        x: clientX - pos.x,
-        y: clientY - pos.y,
-      };
+      offset.current = { x: clientX - pos.x, y: clientY - pos.y };
     };
 
     const doDrag = (clientX: number, clientY: number) => {
@@ -473,23 +478,21 @@ export function withDrag(WrappedComponent: any) {
       const dx = clientX - offset.current.x - pos.x;
       const dy = clientY - offset.current.y - pos.y;
       if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved.current = true;
-      setPos({
-        x: clientX - offset.current.x,
-        y: clientY - offset.current.y,
-      });
+      setPos({ x: clientX - offset.current.x, y: clientY - offset.current.y });
     };
 
     const stopDrag = () => {
       if (dragging.current && actionableIds) {
         manager.sendMessageTranslation({
-          actionableIds: actionableIds,
-          translationX: pos.x, translationY: pos.y,
+          actionableIds: Array.from(actionableIds),
+          translationX: pos.x,
+          translationY: pos.y,
         });
       }
       dragging.current = false;
     };
 
-    const handleClickCapture = (e: any) => {
+    const handleClickCapture = (e: React.MouseEvent) => {
       if (moved.current) {
         e.stopPropagation();
         e.preventDefault();
@@ -520,26 +523,40 @@ export function withDrag(WrappedComponent: any) {
   };
 }
 
-
 // ------------------ VibeableGuts ------------------
-const VibeableGuts = React.memo(
-  ({ hierarchyId, handleClick, isSelected, containerRef, children, vibeDataModel, moved }: any) => {
+const VibeableGuts: React.FC<DraggableProps> = React.memo(
+  ({ hierarchyId, handleClick, isSelected, containerRef, children, vibeDataModel, moved }) => {
     const onClick = (e: React.MouseEvent) => {
-      if (!moved?.current) {
-        handleClick();
-      }
+      if (!moved?.current) handleClick();
     };
+
+    // Keyframe animation
+    useEffect(() => {
+      if (!containerRef.current || !vibeDataModel || !hierarchyId) return;
+      const animationId = vibeDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
+      const animation = vibeDataModel.vibeSchema?.objects.find(obj => obj.animation?.id === animationId)?.animation;
+      if (!animation) return;
+
+      const keyframesWebAPI = [animation.initialValues, ...(animation.keyframes || []).map(k => k.values)].map(values => ({
+        transform: `translateX(${values.translate[0]}px) translateY(${values.translate[1]}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
+        transformOrigin: "center",
+        opacity: values.opacity,
+      }));
+
+      const totalDuration = (animation.keyframes || []).reduce((acc, k) => acc + k.duration * 1000, 0) || 1000;
+      containerRef.current.animate(keyframesWebAPI, {
+        duration: totalDuration,
+        iterations: Infinity,
+        easing: "ease-in-out",
+      });
+    }, [containerRef, vibeDataModel, hierarchyId]);
 
     return (
       <div
         data-vibe-id={hierarchyId}
         ref={containerRef}
         onClick={onClick}
-        style={{
-          display: "inline-block",
-          cursor: "pointer",
-          position: "relative",
-        }}
+        style={{ display: "inline-block", cursor: "pointer", position: "relative" }}
       >
         {children}
         {isSelected && vibeDataModel?.isActionable && (
@@ -558,73 +575,66 @@ const VibeableGuts = React.memo(
         )}
       </div>
     );
-  },
-  (prev, next) =>
-    prev.isSelected === next.isSelected &&
-    prev.hierarchyId === next.hierarchyId
+  }
 );
 
-const DraggableVibeableGuts = React.memo(withDrag(VibeableGuts));
+export const DraggableVibeableGuts = React.memo(withDrag(VibeableGuts));
 
-// ------------------ Vibeable Component ------------------
-export const Vibeable = ({ children, hierarchyIdPrefix }: { children: React.ReactElement; hierarchyIdPrefix: string }) => {
-  const { vibeDataModel, setVibeDataModel } = React.useContext(VibeContext)!;
-  const vibeParentId = React.useContext(VibeParentIdContext)!;
-  const vibeIsContainer = React.useContext(VibeIsContainerContext)!;
+// ------------------ Vibeable ------------------
+export const Vibeable: React.FC<VibeableProps> = ({ children, hierarchyIdPrefix }) => {
+  const { vibeDataModel, setVibeDataModel } = useContext(VibeContext)!;
+  const vibeParentId = useContext(VibeParentIdContext)!;
+  const vibeIsContainer = useContext(VibeIsContainerContext)!;
   const indexManager = SharedIndexManager.shared;
-
-  const [hierarchyId, setHierarchyId] = useState<string>();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Assign hierarchyId once
-  React.useEffect(() => {
+  const [hierarchyId, setHierarchyId] = useState<string>();
+
+  useEffect(() => {
     const indexValue = indexManager.indexMap[hierarchyIdPrefix] ?? 0;
     const newId = `${hierarchyIdPrefix}--${indexValue}`;
     indexManager.indexMap[hierarchyIdPrefix] = indexValue + 1;
     setHierarchyId(newId);
   }, [hierarchyIdPrefix]);
 
-  // Add tree relationship
-  React.useEffect(() => {
+  useEffect(() => {
     if (hierarchyId) {
       vibeDataModel?.tree.addRelationship(hierarchyId, vibeParentId, vibeIsContainer);
     }
   }, [hierarchyId, vibeParentId, vibeIsContainer]);
 
-  // Compute selected state directly from actionableIds
-  const isSelected = hierarchyId ? vibeDataModel.actionableIds.has(hierarchyId) : false;
+  const isSelected = hierarchyId ? vibeDataModel?.actionableIds.has(hierarchyId) ?? false : false;
 
-  // Toggle selection on tap
-  const handleClick = useCallback(() => {
-    if (!hierarchyId) return;
+  const handleClick = () => {
+      if (!hierarchyId || !vibeDataModel?.isActionable) return;
 
-    setVibeDataModel(prev => {
-      if (!prev.isActionable) return prev;
+      const newActionableIds = new Set(vibeDataModel.actionableIds);
+      if (newActionableIds.has(hierarchyId)) {
+        newActionableIds.delete(hierarchyId);
+      } else {
+        newActionableIds.add(hierarchyId);
+      }
 
-      const newActionableIds = new Set(prev.actionableIds);
-      if (newActionableIds.has(hierarchyId)) newActionableIds.delete(hierarchyId);
-      else newActionableIds.add(hierarchyId);
-
-      const newModel = { ...prev, actionableIds: newActionableIds };
-      WebSocketClient.shared.sendMessageActionables({
-        tree: prev.tree,
-        actionableIds: Array.from(newActionableIds),
+      // Update UI immediately
+      setVibeDataModel(prev => ({ ...prev, actionableIds: newActionableIds }));
+      
+      // Sync to server separately (maybe debounced)
+      manager.sendMessageActionables({ 
+        tree: vibeDataModel.tree, 
+        actionableIds: Array.from(newActionableIds)
       });
-
-      return newModel;
-    });
-  }, [hierarchyId]);
+    }
 
   return (
     <DraggableVibeableGuts
+      key={hierarchyId}
       hierarchyId={hierarchyId}
       handleClick={handleClick}
       isSelected={isSelected}
       containerRef={containerRef}
       children={children}
       vibeDataModel={vibeDataModel}
-      actionableIds={vibeDataModel.actionableIds}
+      actionableIds={vibeDataModel?.actionableIds}
     />
-
   );
 };
