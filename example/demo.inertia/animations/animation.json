@@ -3,7 +3,7 @@
   "objects" : [
     {
       "animation" : {
-        "id" : "test123321anim",
+        "id" : "card0",
         "initialValues" : {
           "opacity" : 1,
           "rotate" : 0,
@@ -18,29 +18,29 @@
         "keyframes" : [
           {
             "duration" : 1,
-            "id" : "39E60695-6D8A-4688-8411-9BA867330B87",
+            "id" : "ADC3E556-DFF1-4B66-BB1F-4C77CA0E3727",
             "values" : {
               "opacity" : 1,
               "rotate" : 0,
               "rotateCenter" : 0,
               "scale" : 1,
               "translate" : [
-                -0.7337868489583333,
-                0
+                -0.016666666666666666,
+                0.06620209059233449
               ]
             }
           },
           {
             "duration" : 1,
-            "id" : "2F38982A-AA39-4C52-A581-8568B0916F3D",
+            "id" : "3117F4DE-3BEC-44F4-93CC-1ADC735083DE",
             "values" : {
               "opacity" : 1,
               "rotate" : 0,
               "rotateCenter" : 0,
               "scale" : 1,
               "translate" : [
-                0.46386028645833327,
-                -0.005090332031249898
+                -0.02,
+                0.627177700348432
               ]
             }
           }
