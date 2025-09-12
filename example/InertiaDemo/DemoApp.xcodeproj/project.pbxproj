@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,7 +18,9 @@
 		F81FD6232E5FE3CC0017016E /* InertiaDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317EB2C66DF05001DEE60 /* InertiaDemoApp.swift */; };
 		F81FD6242E5FE3CC0017016E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86317ED2C66DF05001DEE60 /* ContentView.swift */; };
 		F81FD6252E5FE3CC0017016E /* CircleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F827B7302D1E496300A8A27A /* CircleImage.swift */; };
-		F8531A702E74C75B0089909A /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8531A6F2E74C75B0089909A /* Inertia */; };
+		F8D0C93B2E74C8C400897C9E /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8DB1C132E5FDA9A00C8E09C /* Inertia */; };
+		F8D0C9422E74CA9600897C9E /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8D0C9412E74CA9600897C9E /* Inertia */; };
+		F8D0C9442E74CA9F00897C9E /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8D0C9432E74CA9F00897C9E /* Inertia */; };
 		F8DB1C1B2E5FDA9A00C8E09C /* landing_image_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F827B7332D1E49D800A8A27A /* landing_image_1.png */; };
 		F8DB1C1C2E5FDA9A00C8E09C /* animation.json in Resources */ = {isa = PBXBuildFile; fileRef = F852BF242CE7F9C90099FB2D /* animation.json */; };
 		F8DB1C1D2E5FDA9A00C8E09C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */; };
@@ -27,7 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F80DC09A2E607AC600D0F196 /* InertiaDemo (Inertia).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "InertiaDemo (Inertia).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F80DC09A2E607AC600D0F196 /* DemoAppInertiaEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoAppInertiaEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F827B7302D1E496300A8A27A /* CircleImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImage.swift; sourceTree = "<group>"; };
 		F827B7322D1E49D700A8A27A /* landing_image_2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = landing_image_2.jpeg; sourceTree = "<group>"; };
 		F827B7332D1E49D800A8A27A /* landing_image_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landing_image_1.png; sourceTree = "<group>"; };
@@ -36,7 +38,7 @@
 		F86317ED2C66DF05001DEE60 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F86317EF2C66DF06001DEE60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F86317F22C66DF06001DEE60 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		F8DB1C252E5FDA9A00C8E09C /* InertiaDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InertiaDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8DB1C252E5FDA9A00C8E09C /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8D0C9442E74CA9F00897C9E /* Inertia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,7 +54,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8531A702E74C75B0089909A /* Inertia in Frameworks */,
+				F8D0C93B2E74C8C400897C9E /* Inertia in Frameworks */,
+				F8D0C9422E74CA9600897C9E /* Inertia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,8 +75,8 @@
 		F86317E92C66DF05001DEE60 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F8DB1C252E5FDA9A00C8E09C /* InertiaDemo.app */,
-				F80DC09A2E607AC600D0F196 /* InertiaDemo (Inertia).app */,
+				F8DB1C252E5FDA9A00C8E09C /* DemoApp.app */,
+				F80DC09A2E607AC600D0F196 /* DemoAppInertiaEditor.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -109,9 +113,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F80DC0872E607AC600D0F196 /* InertiaDemo (Inertia) */ = {
+		F80DC0872E607AC600D0F196 /* DemoAppInertiaEditor */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "InertiaDemo (Inertia)" */;
+			buildConfigurationList = F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "DemoAppInertiaEditor" */;
 			buildPhases = (
 				F80DC0892E607AC600D0F196 /* Frameworks */,
 				F80DC08B2E607AC600D0F196 /* Resources */,
@@ -121,17 +125,17 @@
 			);
 			dependencies = (
 			);
-			name = "InertiaDemo (Inertia)";
+			name = DemoAppInertiaEditor;
 			packageProductDependencies = (
-				F80DC0882E607AC600D0F196 /* Inertia */,
+				F8D0C9432E74CA9F00897C9E /* Inertia */,
 			);
 			productName = InertiaDemo;
-			productReference = F80DC09A2E607AC600D0F196 /* InertiaDemo (Inertia).app */;
+			productReference = F80DC09A2E607AC600D0F196 /* DemoAppInertiaEditor.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F8DB1C122E5FDA9A00C8E09C /* InertiaDemo */ = {
+		F8DB1C122E5FDA9A00C8E09C /* DemoApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "InertiaDemo" */;
+			buildConfigurationList = F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "DemoApp" */;
 			buildPhases = (
 				F8DB1C182E5FDA9A00C8E09C /* Frameworks */,
 				F8DB1C1A2E5FDA9A00C8E09C /* Resources */,
@@ -141,13 +145,13 @@
 			);
 			dependencies = (
 			);
-			name = InertiaDemo;
+			name = DemoApp;
 			packageProductDependencies = (
 				F8DB1C132E5FDA9A00C8E09C /* Inertia */,
-				F8531A6F2E74C75B0089909A /* Inertia */,
+				F8D0C9412E74CA9600897C9E /* Inertia */,
 			);
 			productName = InertiaDemo;
-			productReference = F8DB1C252E5FDA9A00C8E09C /* InertiaDemo.app */;
+			productReference = F8DB1C252E5FDA9A00C8E09C /* DemoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -160,7 +164,7 @@
 				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1520;
 			};
-			buildConfigurationList = F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "InertiaDemo" */;
+			buildConfigurationList = F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "DemoApp" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -170,14 +174,14 @@
 			);
 			mainGroup = F86317DF2C66DF05001DEE60;
 			packageReferences = (
-				F8531A6E2E74C75B0089909A /* XCRemoteSwiftPackageReference "inertia" */,
+				F8D0C9402E74CA9600897C9E /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */,
 			);
 			productRefGroup = F86317E92C66DF05001DEE60 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F8DB1C122E5FDA9A00C8E09C /* InertiaDemo */,
-				F80DC0872E607AC600D0F196 /* InertiaDemo (Inertia) */,
+				F8DB1C122E5FDA9A00C8E09C /* DemoApp */,
+				F80DC0872E607AC600D0F196 /* DemoAppInertiaEditor */,
 			);
 		};
 /* End PBXProject section */
@@ -509,7 +513,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "InertiaDemo (Inertia)" */ = {
+		F80DC0972E607AC600D0F196 /* Build configuration list for PBXNativeTarget "DemoAppInertiaEditor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F80DC0982E607AC600D0F196 /* Debug */,
@@ -518,7 +522,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "InertiaDemo" */ = {
+		F86317E32C66DF05001DEE60 /* Build configuration list for PBXProject "DemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F86317F42C66DF06001DEE60 /* Debug */,
@@ -527,7 +531,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "InertiaDemo" */ = {
+		F8DB1C222E5FDA9A00C8E09C /* Build configuration list for PBXNativeTarget "DemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F8DB1C232E5FDA9A00C8E09C /* Debug */,
@@ -538,25 +542,21 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		F8531A6E2E74C75B0089909A /* XCRemoteSwiftPackageReference "inertia" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:hpennington/inertia.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		F8D0C9402E74CA9600897C9E /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../runtime-swift/Inertia";
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F80DC0882E607AC600D0F196 /* Inertia */ = {
+		F8D0C9412E74CA9600897C9E /* Inertia */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Inertia;
 		};
-		F8531A6F2E74C75B0089909A /* Inertia */ = {
+		F8D0C9432E74CA9F00897C9E /* Inertia */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F8531A6E2E74C75B0089909A /* XCRemoteSwiftPackageReference "inertia" */;
+			package = F8D0C9402E74CA9600897C9E /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */;
 			productName = Inertia;
 		};
 		F8DB1C132E5FDA9A00C8E09C /* Inertia */ = {

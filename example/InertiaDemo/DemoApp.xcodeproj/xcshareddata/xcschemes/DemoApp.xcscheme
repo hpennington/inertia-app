@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F8DB1C122E5FDA9A00C8E09C"
-               BuildableName = "InertiaDemo.app"
-               BlueprintName = "InertiaDemo"
-               ReferencedContainer = "container:InertiaDemo.xcodeproj">
+               BuildableName = "DemoApp.app"
+               BlueprintName = "DemoApp"
+               ReferencedContainer = "container:DemoAPp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F8DB1C122E5FDA9A00C8E09C"
-            BuildableName = "InertiaDemo.app"
-            BlueprintName = "InertiaDemo"
-            ReferencedContainer = "container:InertiaDemo.xcodeproj">
+            BuildableName = "DemoApp.app"
+            BlueprintName = "DemoApp"
+            ReferencedContainer = "container:DemoAPp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F8DB1C122E5FDA9A00C8E09C"
-            BuildableName = "InertiaDemo.app"
-            BlueprintName = "InertiaDemo"
-            ReferencedContainer = "container:InertiaDemo.xcodeproj">
+            BuildableName = "DemoApp.app"
+            BlueprintName = "DemoApp"
+            ReferencedContainer = "container:DemoAPp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

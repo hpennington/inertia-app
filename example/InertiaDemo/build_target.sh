@@ -1,10 +1,11 @@
 #!/bin/bash
 
-PROJECT="InertiaDemoInertia"
+PROJECT="DemoApp"
+SCHEME="DemoAppInertiaEditor"
 
 xcodebuild clean archive \
     -allowProvisioningUpdates \
-    -scheme "$PROJECT" \
+    -scheme "$SCHEME" \
     -configuration release \
     -archivePath "$PWD/build/$PROJECT.xcarchive" \
     -destination "generic/platform=iOS" \
@@ -17,4 +18,4 @@ xcodebuild -exportArchive \
     -exportOptionsPlist ExportOptions.plist
 
 
-cp build/ipa/"InertiaDemo (Inertia).ipa" ~/InertiaStorage/
+cp build/ipa/"DemoAppInertiaEditor.ipa" ~/InertiaStorage/
