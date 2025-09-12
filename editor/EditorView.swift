@@ -61,11 +61,13 @@ struct EditorView: View {
         selectedActionableIDTracker: SelectedActionableIDTracker?,
         contentController: WKUserContentController,
         configuration: WKWebViewConfiguration,
-        delegate: AppDelegate
+        delegate: AppDelegate,
+        rowData: Binding<[String: [Int]]>
     ) {
         self._url = url
         self._framework = framework
         self._animations = animations
+        self._rowData = rowData
         self.webView = webView
         self.coordinator = coordinator
         self.selectedActionableIDTracker = selectedActionableIDTracker
@@ -223,16 +225,20 @@ struct EditorView: View {
     @State private var isLinuxVMLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     @State private var isPlaying: Bool = false
-    @State private var rowData: [String: [Int]] = [:]
+    @Binding var rowData: [String: [Int]]
     @State private var keyframes: [InertiaAnimationKeyframe] = []
     
     @ViewBuilder
     var treeView: some View {
         if let server = servers[framework] {
             TreeViewContainer(appMode: framework, isFocused: $isFocused, server: server) { ids in
-                var localRowData: [String: [Int]] = [:]
+                var localRowData: [String: [Int]] = rowData
                 for id in ids {
-                    localRowData[id] = [Int]()
+                    if !localRowData.contains(where: { pair in
+                        pair.key == id
+                    }) {
+                        localRowData[id] = [Int]()
+                    }
                 }
                 
                 self.rowData = localRowData
@@ -283,6 +289,10 @@ struct EditorView: View {
                 Task {
                     await tapPlay()
                 }
+            }
+            .onChange(of: rowData) { oldValue, newValue in
+                print("Row data changed")
+                print(newValue)
             }
     }
     

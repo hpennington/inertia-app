@@ -11,6 +11,7 @@ import SwiftUI
 struct Inertia_AnimationApp: App {
     @NSApplicationDelegateAdaptor var delegate: AppDelegate
     @StateObject private var vm = InertiaAppVM()
+    @State private var rowData: [String: [Int]] = [:]
     
     func setWindowPositionForSize(x: CGFloat, y: CGFloat) {
         guard let window = NSApp.mainWindow else {
@@ -41,7 +42,8 @@ struct Inertia_AnimationApp: App {
                     selectedActionableIDTracker: vm.selectedActionableIDTracker,
                     contentController: vm.contentController,
                     configuration: vm.configuration,
-                    delegate: delegate
+                    delegate: delegate,
+                    rowData: $rowData
                 )
                     .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
                     .task {

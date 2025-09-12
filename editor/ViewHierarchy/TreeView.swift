@@ -241,7 +241,9 @@ struct TreeViewContainer: View {
                                                 self.updateDelegates(treePacket.actionableIds)
                                                 oldActionableIds = treePacket.actionableIds
                                             }
+                                            
                                         }
+                                        
                                         return treePacket.actionableIds
                                     },
                                     set: {

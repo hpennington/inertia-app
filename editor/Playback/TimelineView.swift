@@ -51,6 +51,7 @@ struct TimelineRow: View {
 }
 
 struct TimelineContainer: View {
+    
     @Environment(\.appColors) var appColors
     @State private var isExpanded: Set<String> = []
     @State private var isRecordingKeyframes = false
