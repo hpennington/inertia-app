@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:example/InertiaDemo/DemoApp.xcodeproj">
+      location = "group:editor/inertia-editor/Inertia.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Inertia.xcodeproj">
+      location = "group:example/InertiaDemo/DemoApp.xcodeproj">
    </FileRef>
 </Workspace>

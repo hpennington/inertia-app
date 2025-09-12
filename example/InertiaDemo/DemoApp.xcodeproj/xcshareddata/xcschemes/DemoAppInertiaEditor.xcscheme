@@ -18,7 +18,7 @@
                BlueprintIdentifier = "F80DC0872E607AC600D0F196"
                BuildableName = "DemoAppInertiaEditor.app"
                BlueprintName = "DemoAppInertiaEditor"
-               ReferencedContainer = "container:DemoAPp.xcodeproj">
+               ReferencedContainer = "container:DemoApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "F80DC0872E607AC600D0F196"
             BuildableName = "DemoAppInertiaEditor.app"
             BlueprintName = "DemoAppInertiaEditor"
-            ReferencedContainer = "container:DemoAPp.xcodeproj">
+            ReferencedContainer = "container:DemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "F80DC0872E607AC600D0F196"
             BuildableName = "DemoAppInertiaEditor.app"
             BlueprintName = "DemoAppInertiaEditor"
-            ReferencedContainer = "container:DemoAPp.xcodeproj">
+            ReferencedContainer = "container:DemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
