@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -25,6 +25,7 @@
 		F83C2C302C7F4A1800CF6CFD /* SetupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83C2C2F2C7F4A1800CF6CFD /* SetupFlow.swift */; };
 		F84A605B2CE3D3D900070036 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F84A605A2CE3D3D900070036 /* Inertia */; };
 		F852C9762C88004E00E78285 /* SetupFlowCompilationModeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F852C9752C88004E00E78285 /* SetupFlowCompilationModeScreen.swift */; };
+		F8531A6A2E74C7100089909A /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F8531A692E74C7100089909A /* Inertia */; };
 		F8641C442C978AA500E43338 /* InertiaAppVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8641C432C978AA500E43338 /* InertiaAppVM.swift */; };
 		F86E02AC2C96DF1B005F6254 /* SetupFlowContainerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86E02AB2C96DF1B005F6254 /* SetupFlowContainerScreen.swift */; };
 		F86E02AE2C96DF39005F6254 /* SetupFlowStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86E02AD2C96DF39005F6254 /* SetupFlowStartScreen.swift */; };
@@ -157,6 +158,7 @@
 				F84A605B2CE3D3D900070036 /* Inertia in Frameworks */,
 				F8EB6FD02CD9D7F3001D978C /* Inertia in Frameworks */,
 				F8EB6FCD2CD9D7CB001D978C /* Inertia in Frameworks */,
+				F8531A6A2E74C7100089909A /* Inertia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,6 +323,7 @@
 				F8EB6FCC2CD9D7CB001D978C /* Inertia */,
 				F8EB6FCF2CD9D7F3001D978C /* Inertia */,
 				F84A605A2CE3D3D900070036 /* Inertia */,
+				F8531A692E74C7100089909A /* Inertia */,
 			);
 			productName = "Inertia Animation";
 			productReference = F89BA0A82C48C85A0006603C /* Inertia App.app */;
@@ -351,7 +354,7 @@
 			);
 			mainGroup = F89BA09F2C48C85A0006603C;
 			packageReferences = (
-				F84A60592CE3D3D900070036 /* XCLocalSwiftPackageReference "runtime-swift/Inertia" */,
+				F8531A682E74C7100089909A /* XCRemoteSwiftPackageReference "inertia" */,
 			);
 			productRefGroup = F89BA0A92C48C85A0006603C /* Products */;
 			projectDirPath = "";
@@ -652,16 +655,25 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		F84A60592CE3D3D900070036 /* XCLocalSwiftPackageReference "runtime-swift/Inertia" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "runtime-swift/Inertia";
+/* Begin XCRemoteSwiftPackageReference section */
+		F8531A682E74C7100089909A /* XCRemoteSwiftPackageReference "inertia" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:hpennington/inertia.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		F84A605A2CE3D3D900070036 /* Inertia */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F8531A692E74C7100089909A /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8531A682E74C7100089909A /* XCRemoteSwiftPackageReference "inertia" */;
 			productName = Inertia;
 		};
 		F8EB6FCC2CD9D7CB001D978C /* Inertia */ = {
