@@ -1,0 +1,18 @@
+Copyright © 2025 Inertia Graphics. All rights reserved.
+
+This software (the “Licensed Work”) is made available under the following licensing tiers:
+
+1. Non-Commercial License
+   - Permission is granted to use, view, and study the Licensed Work for educational or personal purposes only.
+   - This includes learning, teaching, hobby projects, or solo experimentation.
+   - Any commercial use, redistribution, modification, or use in revenue-generating projects is strictly prohibited.
+
+2. Commercial License
+   - Any use not covered by the Non-Commercial License requires a separate commercial license from Inertia Graphics.
+   - This includes commercial products, SaaS offerings, team projects, or any revenue-generating use.
+
+To obtain a commercial license, please contact:
+haydenpennington@icloud.com
+
+The Licensed Work is provided “as is,” without warranty of any kind. Inertia Graphics disclaims all liability for damages resulting from the use of the Licensed Work.
+
