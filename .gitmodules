@@ -1,3 +1,6 @@
 [submodule "runtime-swift/Inertia"]
 	path = runtime-swift/Inertia
 	url = git@github.com:hpennington/Inertia.git
+[submodule "runtime-compose/inertia-compose"]
+	path = runtime-compose/inertia-compose
+	url = git@github.com:hpennington/inertia-compose.git
