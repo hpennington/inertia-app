@@ -34,6 +34,7 @@
 		F87681252CA22AD90065CB6C /* SearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87681242CA22AD90065CB6C /* SearchField.swift */; };
 		F87838F62C5886E4009401EF /* WebRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87838F52C5886E4009401EF /* WebRenderView.swift */; };
 		F8808EE72C86168D00713AAD /* RadioGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8808EE62C86168D00713AAD /* RadioGroup.swift */; };
+		F88812592E75B1E40005248C /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F88812582E75B1E40005248C /* Inertia */; };
 		F89023E22CBC70F1000C9282 /* FocusIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89023E12CBC70F1000C9282 /* FocusIndicator.swift */; };
 		F8932C8B2C51D6AF00546975 /* MacRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8932C8A2C51D6AF00546975 /* MacRenderView.swift */; };
 		F8932C8D2C51D6F800546975 /* VirtualMachineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8932C8C2C51D6F800546975 /* VirtualMachineView.swift */; };
@@ -163,6 +164,7 @@
 				F809F47E2E74D8AB00EA6051 /* Inertia in Frameworks */,
 				F8D0C93F2E74CA8700897C9E /* Inertia in Frameworks */,
 				F8D0C9472E74D46000897C9E /* Inertia in Frameworks */,
+				F88812592E75B1E40005248C /* Inertia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +332,7 @@
 				F8D0C93E2E74CA8700897C9E /* Inertia */,
 				F8D0C9462E74D46000897C9E /* Inertia */,
 				F809F47D2E74D8AB00EA6051 /* Inertia */,
+				F88812582E75B1E40005248C /* Inertia */,
 			);
 			productName = "Inertia Animation";
 			productReference = F89BA0A82C48C85A0006603C /* Inertia App.app */;
@@ -360,7 +363,7 @@
 			);
 			mainGroup = F89BA09F2C48C85A0006603C;
 			packageReferences = (
-				F809F47C2E74D8AB00EA6051 /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */,
+				F88812572E75B1E40005248C /* XCLocalSwiftPackageReference "../runtime-swift/Inertia" */,
 			);
 			productRefGroup = F89BA0A92C48C85A0006603C /* Products */;
 			projectDirPath = "";
@@ -662,9 +665,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F809F47C2E74D8AB00EA6051 /* XCLocalSwiftPackageReference "../../runtime-swift/Inertia" */ = {
+		F88812572E75B1E40005248C /* XCLocalSwiftPackageReference "../runtime-swift/Inertia" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../../runtime-swift/Inertia";
+			relativePath = "../runtime-swift/Inertia";
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -674,6 +677,10 @@
 			productName = Inertia;
 		};
 		F84A605A2CE3D3D900070036 /* Inertia */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Inertia;
+		};
+		F88812582E75B1E40005248C /* Inertia */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Inertia;
 		};
