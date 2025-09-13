@@ -1,6 +1,3 @@
 [submodule "runtime-swift/Inertia"]
 	path = runtime-swift/Inertia
 	url = git@github.com:hpennington/Inertia.git
-[submodule "editor/inertia-editor"]
-	path = editor/inertia-editor
-	url = git@github.com:hpennington/inertia-editor.git
