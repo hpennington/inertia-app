@@ -18,14 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
 import okhttp3.*
 import java.util.*
 import org.inertiagraphics.inertia.InertiaContainer
@@ -47,9 +41,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun DemoApp() {
+    var cardColor by remember { mutableStateOf(Color.White) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -62,41 +57,86 @@ fun DemoApp() {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Header row with circular image and text
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(bottom = 20.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .background(Color.Blue),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("👤", fontSize = 30.sp) // placeholder emoji
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = "Inertia Demo",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
+
             Inertiaable(hierarchyIdPrefix = "card0") {
-                DemoCard()
+                DemoCard(cardColor)
             }
             Spacer(modifier = Modifier.height(12.dp))
             Inertiaable(hierarchyIdPrefix = "card1") {
-                DemoCard()
+                DemoCard(cardColor)
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            Inertiaable(hierarchyIdPrefix = "card2") {
-                DemoCard()
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Button to change card color
+            Button(
+                onClick = {
+                    val colors = listOf(
+                        Color.White,
+                        Color.Yellow.copy(alpha = 0.3f),
+                        Color.Blue.copy(alpha = 0.3f),
+                        Color.Green.copy(alpha = 0.3f)
+                    )
+                    val currentIndex = colors.indexOf(cardColor)
+                    cardColor = colors[(currentIndex + 1) % colors.size]
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9500)),
+                shape = RoundedCornerShape(10.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+                modifier = Modifier.padding(bottom = 40.dp)
+            ) {
+                Text("Change Card Color", color = Color.White, fontSize = 16.sp)
             }
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
 @Composable
-fun DemoCard() {
-    var showMessage by remember { mutableStateOf(false) }
+fun DemoCard(cardColor: Color) {
+    var isChecked by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.width(300.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+        modifier = Modifier
+            .width(300.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp)
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.(16.dp)
         ) {
             Text(
                 text = "Welcome",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -111,25 +151,20 @@ fun DemoCard() {
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = { showMessage = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007AFF)),
-                shape = RoundedCornerShape(10.dp),
-                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = "Press Me",
-                    color = Color.White,
-                    fontSize = 15.sp
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = { isChecked = it }
                 )
+                Text(text = "Check Me")
             }
 
-            if (showMessage) {
-                Spacer(modifier = Modifier.height(8.dp))
+            if (isChecked) {
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Button pressed!",
+                    text = "Checked!",
                     color = Color(0xFF34C759),
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.fillMaxWidth(),
