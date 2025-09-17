@@ -37,6 +37,9 @@ struct Card: View {
         .background(cardColor)
         .cornerRadius(16)
         .shadow(radius: 4)
+        .onTapGesture {
+            isChecked.toggle()
+        }
     }
 }
 

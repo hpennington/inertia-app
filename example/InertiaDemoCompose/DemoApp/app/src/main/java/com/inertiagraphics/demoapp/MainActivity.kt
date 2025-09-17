@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -123,7 +124,8 @@ fun DemoCard(cardColor: Color) {
 
     Card(
         modifier = Modifier
-            .width(300.dp),
+            .width(300.dp)
+            .clickable { isChecked = !isChecked }, // make entire card tappable
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -131,7 +133,7 @@ fun DemoCard(cardColor: Color) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.(16.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 text = "Welcome",
@@ -153,10 +155,13 @@ fun DemoCard(cardColor: Color) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Disable default click behavior so the card handles toggling
                 Checkbox(
                     checked = isChecked,
-                    onCheckedChange = { isChecked = it }
+                    onCheckedChange = null
                 )
                 Text(text = "Check Me")
             }
@@ -174,3 +179,4 @@ fun DemoCard(cardColor: Color) {
         }
     }
 }
+

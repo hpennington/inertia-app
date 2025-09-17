@@ -32,14 +32,16 @@ function Card({ id, cardColor }: { id: string; cardColor: string }) {
 
   return (
     <Inertiaable hierarchyIdPrefix={id}>
-      <div style={cardStyle}>
+      <div 
+        style={cardStyle} 
+        onClick={e => setIsChecked(isChecked => !isChecked)}
+      >
         <h1 style={titleStyle}>Welcome</h1>
         <p style={subtitleStyle}>This is a demo app.</p>
         <label>
           <input
             type="checkbox"
             checked={isChecked}
-            onChange={(e) => setIsChecked(e.target.checked)}
             style={{ marginRight: "6px" }}
           />
           Check Me
