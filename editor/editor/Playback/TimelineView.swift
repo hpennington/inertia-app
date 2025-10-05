@@ -17,9 +17,9 @@ struct TimelineRow: View {
     
     var body: some View {
         TimelineBarBackground { locationX in
-            if let proxyWidth {
-                insertKeypoint(Int((locationX * 1000 * 3) / proxyWidth))
-            }
+//            if let proxyWidth {
+//                insertKeypoint(Int((locationX * 1000 * 3) / proxyWidth))
+//            }
         }
         .frame(height: 42)
         .overlay {
@@ -55,14 +55,13 @@ struct TimelineContainer: View {
     @Environment(\.appColors) var appColors
     @State private var isExpanded: Set<String> = []
     @State private var isRecordingKeyframes = false
-    @State private var playheadTime: CGFloat = .zero
+    @Binding var playheadTime: CGFloat
     @State private var dragOffset: CGFloat = .zero
     @State private var isDragging: Bool = false
     @State private var playheadProgress: Int = .zero
     
     let animationDuration = 3.0
     @Binding var isPlaying: Bool
-    @Binding var rowData: [String: [Int]]
 
     var body: some View {
         ScrollView {
@@ -97,9 +96,9 @@ struct TimelineContainer: View {
                 }
                 .frame(maxHeight: .infinity)
                 HStack(alignment: .bottom) {
-                    TimelineHierarchy(ids: rowData.map {$0.0}, isExpanded: $isExpanded)
-//                        .padding(.top, 32)
-                        .frame(minWidth: 256 + 16)
+//                    TimelineHierarchy(ids: rowData.map {$0.0}, isExpanded: $isExpanded)
+////                        .padding(.top, 32)
+//                        .frame(minWidth: 256 + 16)
                     
                     TimelineColumn(playheadProgress: $playheadProgress, playheadLabel: "\(playheadTime.formatted())", tickCount: 300) {
                         Timeline {
@@ -149,22 +148,22 @@ struct TimelineContainer: View {
                             
                     } content: {
                         VStack {
-                            ForEach(Array(rowData.keys.map {String($0)}), id: \.self) { key in
-                                TimelineRow(isExpanded: isExpanded.contains(key), keypoints: rowData[key] ?? []) { millis in
-                                    rowData[key]?.append(millis)
-                                }
-                            }
+//                            ForEach(Array(rowData.keys.map {String($0)}), id: \.self) { key in
+//                                TimelineRow(isExpanded: isExpanded.contains(key), keypoints: rowData[key] ?? []) { millis in
+////                                    rowData[key]?.append(millis)
+//                                }
+//                            }
                         }
                         .padding(.horizontal, 24)
                     } footer: {
                         EmptyView()
                     } playheadReleased: {
-                        // Add keyframe here
-                        if isRecordingKeyframes {
-                            for key in rowData.keys {
-                                rowData[key]?.append(Int(playheadTime * 1000))
-                            }
-                        }
+//                        // Add keyframe here
+//                        if isRecordingKeyframes {
+//                            for key in rowData.keys {
+//                                rowData[key]?.append(Int(playheadTime * 1000))
+//                            }
+//                        }
                     }
                     
                     Spacer(minLength: .zero)

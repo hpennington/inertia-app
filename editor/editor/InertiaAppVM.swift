@@ -23,26 +23,26 @@ final class InertiaAppVM: ObservableObject {
     let configuration = WKWebViewConfiguration()
     let contentController = WKUserContentController()
     
-    @Published private var selectedActionableIDTrackers: [SetupFlowFramework: SelectedActionableIDTracker] = [:]
+//    @Published private var selectedActionableIDTrackers: [SetupFlowFramework: SelectedActionableIDTracker] = [:]
 //    @State private var
     @Published var coordinator: WKWebViewWrapper.Coordinator
     
-    var selectedActionableIDTracker: SelectedActionableIDTracker? {
-        get {
-            return self.selectedActionableIDTrackers[framework]
-        }
-    }
-    
+//    var selectedActionableIDTracker: SelectedActionableIDTracker? {
+//        get {
+//            return self.selectedActionableIDTrackers[framework]
+//        }
+//    }
+//    
     lazy var webView: WKWebView = {
         WKWebView(frame: .zero, configuration: configuration)
     }()
     
     init() {
-        let selectedActionableIDTracker = SelectedActionableIDTracker()
-        coordinator = WKWebViewWrapper.Coordinator(selectedActionableIDTracker: selectedActionableIDTracker)
-        selectedActionableIDTrackers[.react] = selectedActionableIDTracker
-        selectedActionableIDTrackers[.compose] = SelectedActionableIDTracker()
-        selectedActionableIDTrackers[.swiftUI] = SelectedActionableIDTracker()
+//        let selectedActionableIDTracker = SelectedActionableIDTracker()
+        coordinator = WKWebViewWrapper.Coordinator()
+//        selectedActionableIDTrackers[.react] = selectedActionableIDTracker
+//        selectedActionableIDTrackers[.compose] = SelectedActionableIDTracker()
+//        selectedActionableIDTrackers[.swiftUI] = SelectedActionableIDTracker()
         configuration.userContentController = contentController
         webView.underPageBackgroundColor = .black
         

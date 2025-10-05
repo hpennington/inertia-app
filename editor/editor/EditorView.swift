@@ -12,27 +12,27 @@ import Virtualization
 import Foundation
 import Observation
 
-@Observable
-final class SelectedActionableIDTracker {
-    var selectedActionableIds: Set<String> = []
-}
+//@Observable
+//final class SelectedActionableIDTracker {
+//    var selectedActionableIds: Set<String> = []
+//}
 
 @Observable
 public final class EditorModel {
-    public var containers: [ActionableContainerAssociater] = []
-    public var animations: [ActionableAnimationAssociater] = []
+//    public var containers: [ActionableContainerAssociater] = []
+//    public var animations: [ActionableAnimationAssociater] = []
 }
 
-public struct ActionableAnimationAssociater: Hashable {
-    public let actionableIds: Set<String>
-    public let containerId: String
-    public let animationId: String
-}
-
-public struct ActionableContainerAssociater: Hashable {
-    public let actionableIds: Set<String>
-    public let containerId: String
-}
+//public struct ActionableAnimationAssociater: Hashable {
+//    public let actionableIds: Set<String>
+//    public let containerId: String
+//    public let animationId: String
+//}
+//
+//public struct ActionableContainerAssociater: Hashable {
+//    public let actionableIds: Set<String>
+//    public let containerId: String
+//}
 
 @MainActor
 struct EditorView: View {
@@ -58,19 +58,15 @@ struct EditorView: View {
         animations: Binding<[InertiaSchema]>,
         webView: WKWebView,
         coordinator: WKWebViewWrapper.Coordinator,
-        selectedActionableIDTracker: SelectedActionableIDTracker?,
         contentController: WKUserContentController,
         configuration: WKWebViewConfiguration,
-        delegate: AppDelegate,
-        rowData: Binding<[String: [Int]]>
+        delegate: AppDelegate
     ) {
         self._url = url
         self._framework = framework
         self._animations = animations
-        self._rowData = rowData
         self.webView = webView
         self.coordinator = coordinator
-        self.selectedActionableIDTracker = selectedActionableIDTracker
         self.contentController = contentController
         self.configuration = configuration
         self.delegate = delegate
@@ -89,10 +85,10 @@ struct EditorView: View {
     @State private var virtualMachineLinux: VZVirtualMachine? = nil
 //    @State private var installerFatory: MacOSVMInstalledFactory? = nil
     @State private var installerFactoryLinux: LinuxVMFactory? = nil
+    @State private var playheadTime: CGFloat = .zero
     
 //    @State private var server: WebSocketServer? = nil
     @State private var servers: [SetupFlowFramework: WebSocketServer] = [:]
-    let selectedActionableIDTracker: SelectedActionableIDTracker?
 
     
     @Binding var url: String
@@ -144,50 +140,51 @@ struct EditorView: View {
     }
     
     private func runInvokePlayback() async -> Bool {
-        let relavantAnimations = Set(editorModel.animations.compactMap({element in
-            let containerId = element.containerId
-            let actionableIds = element.actionableIds
-            
-            if let container = editorModel.containers.first(where: { container in
-                container.containerId == containerId
-            }) {
-                return actionableIds.map {
-                    InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
-                }
-                .compactMap({$0})
-            } else {
-                return actionableIds.map {
-                    InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
-                }
-                .compactMap({$0})
-            }
-            
-        })
-        .flatMap({$0}))
-        
-        let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> InertiaSchemaWrapper? in
-            guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
-                return nil
-            }
-            
-            guard let container = self.animations.first(where: {$0.id == schema.id}) else {
-                return nil
-            }
-            
-            let updateSchema = InertiaSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
-            
-            return updateSchema
-        }
-        
-        let result = await executeInertiaSwiftWebsocketFunction(schemaWrappers: animationArgs)
-        
-        switch result {
-        case .success(let success):
-            return success == 1
-        case .failure(let failure):
-            print(failure)
-            return false
-        }
+//        let relavantAnimations = Set(editorModel.animations.compactMap({element in
+//            let containerId = element.containerId
+//            let actionableIds = element.actionableIds
+//            
+//            if let container = editorModel.containers.first(where: { container in
+//                container.containerId == containerId
+//            }) {
+//                return actionableIds.map {
+//                    InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
+//                }
+//                .compactMap({$0})
+//            } else {
+//                return actionableIds.map {
+//                    InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
+//                }
+//                .compactMap({$0})
+//            }
+//            
+//        })
+//        .flatMap({$0}))
+//        
+//        let animationArgs = relavantAnimations.compactMap { (element: InertiaAnimation) -> InertiaSchemaWrapper? in
+//            guard let schema = self.animations.first(where: {element.containerId == $0.id}) else {
+//                return nil
+//            }
+//            
+//            guard let container = self.animations.first(where: {$0.id == schema.id}) else {
+//                return nil
+//            }
+//            
+//            let updateSchema = InertiaSchemaWrapper(schema: schema, actionableId: element.actionableId, container: AnimationContainer(actionableId: element.containerActionableId, containerId: container.id), animationId: element.animationId)
+//            
+//            return updateSchema
+//        }
+//        
+//        let result = await executeInertiaSwiftWebsocketFunction(schemaWrappers: animationArgs)
+//        
+//        switch result {
+//        case .success(let success):
+//            return success == 1
+//        case .failure(let failure):
+//            print(failure)
+//            return false
+//        }
+        return true
     }
     
     private func tapPlay() async {
@@ -225,23 +222,23 @@ struct EditorView: View {
     @State private var isLinuxVMLoaded = false
     @State private var installerFactory: MacOSVMInstalledFactory? = nil
     @State private var isPlaying: Bool = false
-    @Binding var rowData: [String: [Int]]
     @State private var keyframes: [InertiaAnimationKeyframe] = []
     
     @ViewBuilder
     var treeView: some View {
         if let server = servers[framework] {
             TreeViewContainer(appMode: framework, isFocused: $isFocused, server: server) { ids in
-                var localRowData: [String: [Int]] = rowData
-                for id in ids {
-                    if !localRowData.contains(where: { pair in
-                        pair.key == id
-                    }) {
-                        localRowData[id] = [Int]()
-                    }
-                }
                 
-                self.rowData = localRowData
+//                var localRowData: [String: [Int]] = rowData
+//                for id in ids {
+//                    if !localRowData.contains(where: { pair in
+//                        pair.key == id
+//                    }) {
+//                        localRowData[id] = [Int]()
+//                    }
+//                }
+//                
+//                self.rowData = localRowData
             }
             .id(server.clients.keys.description)
         }
@@ -249,50 +246,46 @@ struct EditorView: View {
     }
     
     func attachAnimation(id: String, actionableIds: Set<String>) {
-        let containers = self.animations
-        let animations = self.animations.flatMap({$0.objects})
-        
-        if let container = containers.first(where: { container in container.id == id }) {
-            
-            editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
-        } else if let animation = animations.first(where: { animation in animation.id == id }) {
-            editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
-            
-            if let server = servers[framework] {
-                for treePacket in server.treePackets {
-                    for id in treePacket.actionableIds {
-                        selectedActionableIDTracker?.selectedActionableIds.insert(id)
-                    }
-                }
-                
-                if let selectedActionableIds = selectedActionableIDTracker?.selectedActionableIds {
-                    editorModel.animations.append(
-                        ActionableAnimationAssociater(
-                            actionableIds: selectedActionableIds,
-                            containerId: animation.containerId,
-                            animationId: animation.id
-                        )
-                    )
-                }
-                   
-            }
-        }
+//        let containers = self.animations
+//        let animations = self.animations.flatMap({$0.objects})
+//        
+//        if let container = containers.first(where: { container in container.id == id }) {
+//            
+//            editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
+//        } else if let animation = animations.first(where: { animation in animation.id == id }) {
+//            editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
+//            
+//            if let server = servers[framework] {
+//                for treePacket in server.treePackets {
+//                    for id in treePacket.actionableIds {
+//                        selectedActionableIDTracker?.selectedActionableIds.insert(id)
+//                    }
+//                }
+//                
+//                if let selectedActionableIds = selectedActionableIDTracker?.selectedActionableIds {
+//                    editorModel.animations.append(
+//                        ActionableAnimationAssociater(
+//                            actionableIds: selectedActionableIds,
+//                            containerId: animation.containerId,
+//                            animationId: animation.id
+//                        )
+//                    )
+//                }
+//                   
+//            }
+//        }
     }
     
     var timelineView: some View {
         PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
             .frame(height: timelineViewHeight)
             .overlay {
-                TimelineContainer(isPlaying: $isPlaying, rowData: $rowData)
+                TimelineContainer(playheadTime: $playheadTime, isPlaying: $isPlaying)
             }
             .onChange(of: isPlaying) { oldValue, newValue in
                 Task {
                     await tapPlay()
                 }
-            }
-            .onChange(of: rowData) { oldValue, newValue in
-                print("Row data changed")
-                print(newValue)
             }
     }
     
@@ -333,52 +326,63 @@ struct EditorView: View {
         }
     }
     
-    func createKeyframe(message: WebSocketClient.MessageTranslation) {
-        print(message)
-        print(animations)
-        
-        let values = InertiaAnimationValues(
-            scale: 1.0,
-            translate: .init(width: message.translationX, height: message.translationY),
-            rotate: .zero,
-            rotateCenter: .zero,
-            opacity: 1.0
-        )
-
-        let newKeyframe = InertiaAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
-        keyframes.append(newKeyframe)
-
-        let rectangle = InertiaShape(
-            id: "bird2",
-            containerId: "animation", // or "animation123schema" if you want a new container
-            width: 200,
-            height: 100,
-            position: .zero,
-            color: [127, 244, 122],
-            shape: "rectangle",
-            objectType: .animation, // ✅ was .animation
-            zIndex: 0,
-            animation: .init(
-                id: "card0",
-                initialValues: InertiaAnimationValues(
-                    scale: 1.0,
-                    translate: .zero,
-                    rotate: .zero,
-                    rotateCenter: .zero,
-                    opacity: 1.0),
-                invokeType: .auto,
-                keyframes: keyframes
-            )
-        )
-        
-        if let animationIndex = animations.firstIndex(where: { schema in
-            schema.id == "animation"
-        }) {
-            animations[animationIndex] = InertiaSchema(id: "animation", objects: [rectangle])
-        } else {
-            animations.append(InertiaSchema(id: "animation", objects: [rectangle]))
-            editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation", animationId: "card0"))
-        }
+    func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
+//        print(message)
+//        print(animations)
+//        
+//        
+//        
+//        let values = InertiaAnimationValues(
+//            scale: 1.0,
+//            translate: .init(width: message.translationX, height: message.translationY),
+//            rotate: .zero,
+//            rotateCenter: .zero,
+//            opacity: 1.0
+//        )
+//
+//        let newKeyframe = InertiaAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
+//        keyframes.append(newKeyframe)
+//        
+//        
+//        let initialValues = initialValues ?? InertiaAnimationValues(
+//            scale: 1.0,
+//            translate: .zero,
+//            rotate: .zero,
+//            rotateCenter: .zero,
+//            opacity: 1.0
+//        )
+//        
+//        
+//        for id in message.actionableIds {
+//            let rectangle = InertiaShape(
+//                id: "bird2",
+//                containerId: "animation", // or "animation123schema" if you want a new container
+//                width: 200,
+//                height: 100,
+//                position: .zero,
+//                color: [127, 244, 122],
+//                shape: "rectangle",
+//                objectType: .animation, // ✅ was .animation
+//                zIndex: 0,
+//                animation: .init(
+//                    id: "card0",
+//                    actionableid: id,
+//                    initialValues: initialValues,
+//                    invokeType: .auto,
+//                    keyframes: keyframes
+//                )
+//            )
+//            
+//            if let animationIndex = animations.firstIndex(where: { schema in
+//                schema.id == "animation"
+//            }) {
+//                animations[animationIndex] = InertiaSchema(id: "animation", objects: [rectangle])
+//            } else {
+//                animations.append(InertiaSchema(id: "animation", objects: [rectangle]))
+//                editorModel.animations.append(ActionableAnimationAssociater(actionableIds: message.actionableIds, containerId: "animation", animationId: id))
+//            }
+//        }
+//        
         
     }
     
@@ -469,8 +473,18 @@ struct EditorView: View {
                         .onAppear {
                             if servers[.swiftUI] == nil {
                                 if let server = try? WebSocketServer(port: 8060) { message in
-                                    createKeyframe(message: message)
-                                    
+                                    if playheadTime == .zero {
+                                        let initialValues = InertiaAnimationValues(
+                                            scale: 1.0,
+                                            translate: .zero,
+                                            rotate: .zero,
+                                            rotateCenter: .zero,
+                                            opacity: 1.0
+                                        )
+                                        createKeyframe(message: message, initialValues: initialValues)
+                                    } else {
+                                        createKeyframe(message: message)
+                                    }
                                 } {
                                     server.start()
                                     servers[.swiftUI] = server
@@ -533,7 +547,18 @@ struct EditorView: View {
                     .onAppear {
                         if servers[.react] == nil {
                             if let server = try? WebSocketServer(port: 8080) { message in
-                                createKeyframe(message: message)
+                                if playheadTime == .zero {
+                                    let initialValues = InertiaAnimationValues(
+                                        scale: 1.0,
+                                        translate: .init(width: message.translationX, height: message.translationY),
+                                        rotate: .zero,
+                                        rotateCenter: .zero,
+                                        opacity: 1.0
+                                    )
+                                    createKeyframe(message: message, initialValues: initialValues)
+                                } else {
+                                    createKeyframe(message: message)
+                                }
                             } {
                                 server.start()
                                 servers[.react] = server
@@ -583,7 +608,7 @@ struct EditorView: View {
                     AnimationsAvailableColumn(
                         animations: animationsAvailableContents,
                         selected: $selectedAnimation,
-                        actionableIds: selectedActionableIDTracker?.selectedActionableIds,
+                        actionableIds: Set(),
                         disabled: false,
                         actionTitle: attachActionTitle, attachAnimation: self.attachAnimation)
                         .padding(.vertical)

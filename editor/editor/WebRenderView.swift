@@ -47,14 +47,9 @@ struct WKWebViewWrapper: NSViewRepresentable, Equatable {
     
     @Observable
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
-        let selectedActionableIDTracker: SelectedActionableIDTracker
         
         var currentURL: URL? = nil
         private weak var webView: WKWebView?
-        
-        init(selectedActionableIDTracker: SelectedActionableIDTracker) {
-            self.selectedActionableIDTracker = selectedActionableIDTracker
-        }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation) {
             self.webView = webView
@@ -76,13 +71,13 @@ struct WKWebViewWrapper: NSViewRepresentable, Equatable {
                     return
                 }
                 
-                let contains = selectedActionableIDTracker.selectedActionableIds.contains(busMessage.id)
+//                let contains = selectedActionableIDTracker.selectedActionableIds.contains(busMessage.id)
                 
-                if busMessage.isSelected && !contains {
-                    selectedActionableIDTracker.selectedActionableIds.insert(busMessage.id)
-                } else if !busMessage.isSelected && contains {
-                    selectedActionableIDTracker.selectedActionableIds.remove(busMessage.id)
-                }
+//                if busMessage.isSelected && !contains {
+//                    selectedActionableIDTracker.selectedActionableIds.insert(busMessage.id)
+//                } else if !busMessage.isSelected && contains {
+//                    selectedActionableIDTracker.selectedActionableIds.remove(busMessage.id)
+//                }
             }
         }
     }
