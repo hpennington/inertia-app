@@ -23,7 +23,7 @@ struct InertiaDemoApp: App {
             InertiaContainer(
                 dev: AppEnvironment.isInertiaEditor,
                 id: "animation",
-                hierarchyId: "animation2"
+                hierarchyId: "animation"
             ) {
                 ContentView()
             }
