@@ -1,6 +1,13 @@
-export interface InertiaSchema {
+export interface InertiaAnimationSchema {
     id: string;
-    objects: Array<InertiaShape>;
+    initialValues: InertiaAnimationValues;
+    invokeType: InertiaAnimationInvokeType;
+    keyframes: Array<InertiaAnimationKeyframe>;
+}
+
+export type AnimationContainer = {
+    actionableId: string;
+    containerId: string;
 }
 
 export type InertiaCanvasSize = {
@@ -34,32 +41,9 @@ export enum InertiaAnimationInvokeType {
 }
 
 export type InertiaAnimationKeyframe = {
+    id: string;
     values: InertiaAnimationValues;
     duration: number;
-}
-
-export type InertiaAnimationSchema = {
-    id: string;
-    initialValues: InertiaAnimationValues;
-    invokeType: InertiaAnimationInvokeType;
-    keyframes: Array<InertiaAnimationKeyframe>;
-}
-
-export type AnimationContainer = {
-    actionableId: string;
-    containerId: string;
-}
-
-export type InertiaShape = {
-    id: string;
-    container: AnimationContainer;
-    width: number;
-    height: number;
-    position: {x: number, y: number};
-    color: Array<number>;
-    shape: string;
-    zIndex: number;
-    animation: InertiaAnimationSchema;
 }
 
 export type InertiaAnimationState = {
@@ -70,16 +54,16 @@ export type InertiaAnimationState = {
 
 export class InertiaDataModel {
     public containerId: string;
-    public inertiaSchema: InertiaSchema;
+    public inertiaSchemas: Map<string, InertiaAnimationSchema>;
     public tree: Tree;
     public actionableIds: Set<string>;
     public states: Map<string, InertiaAnimationState>;
     public actionableIdToAnimationIdMap: Map<string, string>;
     public isActionable: boolean = false
 
-    constructor(containerId: string, inertiaSchema: InertiaSchema, tree: Tree, actionableIds: Set<string>) {
+    constructor(containerId: string, inertiaSchemas: Map<string, InertiaAnimationSchema>, tree: Tree, actionableIds: Set<string>) {
         this.containerId = containerId;
-        this.inertiaSchema = inertiaSchema;
+        this.inertiaSchemas = inertiaSchemas;
         this.tree = tree;
         this.actionableIds = actionableIds;
         this.states = new Map<string, InertiaAnimationState>();
@@ -217,8 +201,8 @@ export class Tree {
 }
 
 export type InertiaSchemaWrapper = {
-    schema: InertiaSchema;
-    actionableId: InertiaID;
+    schema: InertiaAnimationSchema;
+    actionableId: string;
     container: AnimationContainer;
     animationId: string;
 };

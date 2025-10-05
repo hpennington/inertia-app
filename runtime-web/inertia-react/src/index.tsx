@@ -1,5 +1,5 @@
 import React from 'react'
-import {InertiaSchema, MessageTranslation, MessageActionables, MessageActionable, InertiaSchemaWrapper, InertiaAnimationInvokeType, WebSocketClient, InertiaDataModel, InertiaCanvasSize, MessageType, MessageWrapper, InertiaID, InertiaShape, Tree, Node, InertiaAnimationSchema} from 'inertia-base'
+import {InertiaAnimationSchema, MessageTranslation, MessageActionables, MessageActionable, InertiaSchemaWrapper, InertiaAnimationInvokeType, WebSocketClient, InertiaDataModel, InertiaCanvasSize, MessageType, MessageWrapper, InertiaID, Tree, Node} from 'inertia-base'
 
 export type InertiaContainerProps = {
     children: React.ReactElement,
@@ -152,29 +152,36 @@ function handleMessageSchema(
     if (!inertiaDataModel) return;
 
     for (const schemaWrapper of schemaWrappers) {
+        console.log(
+            `[INERTIA_LOG]: [handleMessageSchema] wrapper - containerId: ${schemaWrapper.container.containerId}, actionableId: ${schemaWrapper.actionableId}, animationId: ${schemaWrapper.animationId}`
+        );
+        console.log(`[INERTIA_LOG]: [handleMessageSchema] my containerId: ${inertiaDataModel.containerId}`);
+
         if (schemaWrapper.container.containerId === inertiaDataModel.containerId) {
             setInertiaDataModel(prev => {
                 const updated = { ...prev };
 
-                // Update schema
-                updated.inertiaSchema = schemaWrapper.schema;
-
-                // Update actionableId -> animationId map
-                updated.actionableIdToAnimationIdMap.set(schemaWrapper.actionableId, schemaWrapper.animationId)
+                // Store the mapping from actionable ID to animation ID
+                updated.actionableIdToAnimationIdMap.set(schemaWrapper.actionableId, schemaWrapper.animationId);
+                // Store the schema by its animation ID
+                updated.inertiaSchemas.set(schemaWrapper.animationId, schemaWrapper.schema);
 
                 console.log(
-                    `[INERTIA_LOG]: animationId: ${schemaWrapper.animationId} actionableId: ${schemaWrapper.actionableId}`
+                    `[INERTIA_LOG]: ✅ stored schema - animationId: ${schemaWrapper.animationId} actionableId: ${schemaWrapper.actionableId}`
                 );
+                console.log(`[INERTIA_LOG]: map now:`, Object.fromEntries(updated.actionableIdToAnimationIdMap));
 
                 return updated;
             });
+        } else {
+            console.log(`[INERTIA_LOG]: ❌ skipped - container mismatch`);
         }
     }
 }
 
 export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContainerProps): React.ReactElement => {
     const [inertiaDataModel, setInertiaDataModel] = React.useState(
-        new InertiaDataModel(id, { id: id, objects: [] }, new Tree(id), new Set())
+        new InertiaDataModel(id, new Map(), new Tree(id), new Set())
     );
     const [bounds, setBounds] = React.useState<InertiaCanvasSize | null>(null);
     const ref = React.useRef<HTMLDivElement | null>(null);
@@ -351,35 +358,84 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
 
     const inertiaCanvasSize = useContext(InertiaCanvasSizeContext);
 
-    // Keyframe animation
     useEffect(() => {
-      if (!containerRef.current || !inertiaDataModel || !hierarchyId || !inertiaCanvasSize) return;
-      const animationId = inertiaDataModel.actionableIdToAnimationIdMap?.get(hierarchyId);
-      const animation = inertiaDataModel.inertiaSchema?.objects.find(obj => obj.animation?.id === animationId)?.animation;
-      if (!animation) return;
+      const element = containerRef.current;
+      if (!element || !inertiaDataModel || !hierarchyId || !inertiaCanvasSize)
+        return;
 
-      const keyframesWebAPI = [animation.initialValues, ...(animation.keyframes || []).map(k => k.values)].map(values => ({
-        transform: `translateX(${values.translate[0] * inertiaCanvasSize.width}px) translateY(${values.translate[1] * inertiaCanvasSize.height}px) rotate(${values.rotateCenter}deg) scale(${values.scale})`,
-        transformOrigin: "center",
-        opacity: values.opacity,
-      }));
+      console.log(`[INERTIA_LOG]: [InertiaableGuts.animation] hierarchyId: ${hierarchyId}`);
+      console.log(`[INERTIA_LOG]: [InertiaableGuts.animation] actionableIdToAnimationIdMap:`, Object.fromEntries(inertiaDataModel.actionableIdToAnimationIdMap));
+      console.log(`[INERTIA_LOG]: [InertiaableGuts.animation] available schema IDs:`, Array.from(inertiaDataModel.inertiaSchemas.keys()));
 
-      const totalDuration = (animation.keyframes || []).reduce((acc, k) => acc + k.duration * 1000, 0) || 1000;
-      containerRef.current.animate(keyframesWebAPI, {
+      // First try to get the animation ID from the map
+      const animationId = inertiaDataModel.actionableIdToAnimationIdMap.get(hierarchyId);
+      if (!animationId) {
+        console.log(`[INERTIA_LOG]: no mapping for hierarchyId: ${hierarchyId}`);
+        return;
+      }
+
+      // Look up the animation using the mapped animation ID
+      const schema = inertiaDataModel.inertiaSchemas.get(animationId);
+      if (!schema) {
+        console.log(`[INERTIA_LOG]: animation not found for animationId: ${animationId}`);
+        return;
+      }
+
+      console.log(`[INERTIA_LOG]: found animation - hierarchyId: ${hierarchyId} -> animationId: ${animationId}`);
+
+      const keyframesWebAPI = [
+        schema.initialValues,
+        ...(schema.keyframes || []).map((k) => k.values),
+      ].map((values) => {
+        const tx = values.translate[0];
+        const ty = values.translate[1];
+
+        return {
+          transform: `
+            translateX(${tx * inertiaCanvasSize.width}px)
+            translateY(${ty * inertiaCanvasSize.height}px)
+            rotate(${values.rotateCenter}deg)
+            scale(${values.scale})
+          `,
+          transformOrigin: "center",
+          opacity: values.opacity,
+        };
+      });
+
+      const totalDuration =
+        (schema.keyframes || []).reduce(
+          (acc, k) => acc + k.duration * 1000,
+          0
+        ) || 1000;
+
+      console.log("[INERTIA_LOG] Running animation:", keyframesWebAPI);
+
+      const animationHandle = element.animate(keyframesWebAPI, {
         duration: totalDuration,
         iterations: Infinity,
         easing: "ease-in-out",
       });
-    }, [containerRef, inertiaDataModel, hierarchyId]);
+
+      return () => animationHandle.cancel();
+    }, [
+      hierarchyId,
+      inertiaDataModel,
+      inertiaCanvasSize,
+    ]);
 
     return (
       <div
         data-inertia-id={hierarchyId}
         ref={containerRef}
         onClick={onClick}
-        style={{ display: "inline-block", cursor: "pointer", position: "relative" }}
+        style={{
+          display: "inline-block",
+          cursor: "pointer",
+          position: "relative",
+        }}
       >
         {children}
+
         {isSelected && inertiaDataModel?.isActionable && (
           <div
             style={{
@@ -398,6 +454,7 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
     );
   }
 );
+
 
 export const DraggableInertiaableGuts = React.memo(withDrag(InertiaableGuts));
 
@@ -426,8 +483,8 @@ export const Inertiaable: React.FC<InertiaableProps> = ({ children, hierarchyIdP
   }, [hierarchyId, inertiaParentId, inertiaIsContainer]);
 
   useEffect(() => {
-    setPos({x: 0, y: 0})
-  }, [inertiaDataModel?.inertiaSchema?.objects])
+    setPos({x: 0, y: 0});
+  }, [inertiaDataModel])
 
   const isSelected = hierarchyId ? inertiaDataModel?.actionableIds.has(hierarchyId) ?? false : false;
 
