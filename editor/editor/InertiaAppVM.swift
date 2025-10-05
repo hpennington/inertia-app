@@ -15,7 +15,7 @@ final class InertiaAppVM: ObservableObject {
     @Published private(set) var stateMachine = SetupFlowStateMachine()
     @Published var navigationPath = NavigationPath()
     @Published var setupFlowManager = SetupFlowManager()
-    @Published var animations: [InertiaSchema] = []
+    @Published var animations: [InertiaAnimationSchema] = []
     
     private var anyCancellable: Set<AnyCancellable> = Set()
     private var event: SetupFlowEvent? = nil

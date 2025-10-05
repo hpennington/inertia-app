@@ -19,6 +19,7 @@ import Observation
 
 @Observable
 public final class EditorModel {
+    public var animations: [InertiaID: InertiaAnimationSchema] = [:]
 //    public var containers: [ActionableContainerAssociater] = []
 //    public var animations: [ActionableAnimationAssociater] = []
 }
@@ -55,7 +56,7 @@ struct EditorView: View {
     init(
         url: Binding<String>,
         framework: Binding<SetupFlowFramework>,
-        animations: Binding<[InertiaSchema]>,
+        animations: Binding<[InertiaAnimationSchema]>,
         webView: WKWebView,
         coordinator: WKWebViewWrapper.Coordinator,
         contentController: WKUserContentController,
@@ -93,7 +94,7 @@ struct EditorView: View {
     
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
-    @Binding var animations: [InertiaSchema]
+    @Binding var animations: [InertiaAnimationSchema]
     let webView: WKWebView
     let coordinator: WKWebViewWrapper.Coordinator
     let contentController: WKUserContentController
@@ -140,23 +141,11 @@ struct EditorView: View {
     }
     
     private func runInvokePlayback() async -> Bool {
+        
+        
 //        let relavantAnimations = Set(editorModel.animations.compactMap({element in
-//            let containerId = element.containerId
-//            let actionableIds = element.actionableIds
-//            
-//            if let container = editorModel.containers.first(where: { container in
-//                container.containerId == containerId
-//            }) {
-//                return actionableIds.map {
-//                    InertiaAnimation(actionableId: $0, containerId: container.containerId, containerActionableId: container.actionableIds.first ?? "animation1", animationId: element.animationId)
-//                }
-//                .compactMap({$0})
-//            } else {
-//                return actionableIds.map {
-//                    InertiaAnimation(actionableId: $0, containerId: containerId, containerActionableId: "animation1", animationId: element.animationId)
-//                }
-//                .compactMap({$0})
-//            }
+//            let key = element.key
+//            let v = element.value.id
 //            
 //        })
 //        .flatMap({$0}))
@@ -197,11 +186,11 @@ struct EditorView: View {
     
     var animationsAvailableContents: [String: [String]] {
         var map: [String: [String]] = [:]
-        for animation in animations {
-            map[animation.id] = animation.objects.map {
-                $0.id
-            }.sorted()
-        }
+//        for animation in animations {
+//            map[animation.id] = animation.objects.map {
+//                $0.id
+//            }.sorted()
+//        }
         
         return map
     }
@@ -620,13 +609,13 @@ struct EditorView: View {
                 .frame(minHeight: 600)
                 .cornerRadius(bottomLeft: cornerRadius)
                 .onChange(of: selectedAnimation) { _, newValue in
-                    let containers = self.animations
-                    let animations = self.animations.flatMap({$0.objects})
-                    if let container = containers.first(where: { container in container.id == newValue }) {
-                        attachActionTitle = "Attach Container"
-                    } else if let animation = animations.first(where: { animation in animation.id == newValue }) {
-                        attachActionTitle = "Attach Animation"
-                    }
+//                    let containers = self.animations
+//                    let animations = self.animations.flatMap({$0.objects})
+//                    if let container = containers.first(where: { container in container.id == newValue }) {
+//                        attachActionTitle = "Attach Container"
+//                    } else if let animation = animations.first(where: { animation in animation.id == newValue }) {
+//                        attachActionTitle = "Attach Animation"
+//                    }
                 }
                 
                 Spacer(minLength: spacing)

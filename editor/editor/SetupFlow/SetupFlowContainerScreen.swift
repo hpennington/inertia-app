@@ -12,7 +12,7 @@ struct SetupFlowContainerScreen: View {
     let navigationPath: Binding<NavigationPath>
     let framework: Binding<SetupFlowFramework>
     let setupFlowManager: SetupFlowManager
-    let animations: Binding<[InertiaSchema]>
+    let animations: Binding<[InertiaAnimationSchema]>
     let handleEvent: (SetupFlowEvent) -> Void
     
     @State private var allowFileBrowserOpen = true
@@ -38,7 +38,7 @@ struct SetupFlowContainerScreen: View {
     }
         
     //  TODO: - Easy Cleanup
-    func openProjectFiles(url: URL) -> (Result<[InertiaSchema], ProjectFileError>, Result<MetaFile, ProjectFileError>)  {
+    func openProjectFiles(url: URL) -> (Result<[InertiaAnimationSchema], ProjectFileError>, Result<MetaFile, ProjectFileError>)  {
         let metaFilePath = "meta.json"
         let metaFileURL = url.appending(path: metaFilePath)
         
@@ -50,7 +50,7 @@ struct SetupFlowContainerScreen: View {
         return (animations, meta)
     }
     
-    func loadAnimationFiles(url: URL) -> Result<Array<InertiaSchema>, ProjectFileError> {
+    func loadAnimationFiles(url: URL) -> Result<Array<InertiaAnimationSchema>, ProjectFileError> {
         let fileManager = FileManager.default
         
         do {
@@ -60,7 +60,7 @@ struct SetupFlowContainerScreen: View {
             do {
                 return .success(try jsonFiles.map({ url in
                     let animationData = try Data(contentsOf: url)
-                    let animationJSON = try JSONDecoder().decode(InertiaSchema.self, from: animationData)
+                    let animationJSON = try JSONDecoder().decode(InertiaAnimationSchema.self, from: animationData)
                     return animationJSON
                 }))
             } catch let error {
