@@ -29,7 +29,7 @@ final class KeyframeHandler {
         self.onAnimationsUpdate = handler
     }
 
-    func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
+    func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil, isRecording: Bool) {
         print(message)
         print(animations)
 
@@ -58,20 +58,23 @@ final class KeyframeHandler {
             // Get previous playhead time for this specific actionable
             let previousTime = playbackManager.previousPlayheadTime[inertiaId] ?? 0.0
 
-            let newKeyframe = InertiaAnimationKeyframe(
-                id: UUID().uuidString,
-                values: values,
-                duration: playbackManager.playheadTime - previousTime
-            )
+            // Only create and append keyframe if recording is enabled
+            if isRecording {
+                let newKeyframe = InertiaAnimationKeyframe(
+                    id: UUID().uuidString,
+                    values: values,
+                    duration: playbackManager.playheadTime - previousTime
+                )
 
-            // Update previous playhead time for this actionable
-            playbackManager.previousPlayheadTime[inertiaId] = playbackManager.playheadTime
+                // Update previous playhead time for this actionable
+                playbackManager.previousPlayheadTime[inertiaId] = playbackManager.playheadTime
 
-            // Append keyframe to this actionable's keyframes array
-            if playbackManager.keyframes[inertiaId] == nil {
-                playbackManager.keyframes[inertiaId] = []
+                // Append keyframe to this actionable's keyframes array
+                if playbackManager.keyframes[inertiaId] == nil {
+                    playbackManager.keyframes[inertiaId] = []
+                }
+                playbackManager.keyframes[inertiaId]?.append(newKeyframe)
             }
-            playbackManager.keyframes[inertiaId]?.append(newKeyframe)
 
             // Get keyframes for this specific actionable
             let actionableKeyframes = playbackManager.keyframes[inertiaId] ?? []

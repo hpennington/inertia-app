@@ -127,6 +127,10 @@ struct EditorView: View {
                     isPlaying: Binding(
                         get: { viewModel.playbackManager.isPlaying },
                         set: { viewModel.playbackManager.isPlaying = $0 }
+                    ),
+                    isRecordingKeyframes: Binding(
+                        get: { viewModel.isRecordingKeyframes },
+                        set: { viewModel.isRecordingKeyframes = $0 }
                     )
                 )
                 .onChange(of: viewModel.keyframesVersion) { oldValue, newValue in

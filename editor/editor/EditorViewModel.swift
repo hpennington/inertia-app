@@ -25,6 +25,7 @@ final class EditorViewModel {
     var virtualMachineMacOS: VZVirtualMachine? = nil
     var virtualMachineLinux: VZVirtualMachine? = nil
     var keyframesVersion: Int = 0
+    var isRecordingKeyframes = false
 
     // MARK: - Managers
     var serverManager: WebSocketServerManager
@@ -120,7 +121,7 @@ final class EditorViewModel {
     }
 
     func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
-        keyframeHandler.createKeyframe(message: message, initialValues: initialValues)
+        keyframeHandler.createKeyframe(message: message, initialValues: initialValues, isRecording: isRecordingKeyframes)
     }
 
     func play() async {

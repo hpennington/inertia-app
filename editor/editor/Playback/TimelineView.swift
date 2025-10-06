@@ -53,7 +53,6 @@ struct TimelineContainer: View {
 
     @Environment(\.appColors) var appColors
     @State private var isExpanded: Set<String> = []
-    @State private var isRecordingKeyframes = false
     @Binding var playheadTime: CGFloat
     @State private var dragOffset: CGFloat = .zero
     @State private var isDragging: Bool = false
@@ -64,6 +63,7 @@ struct TimelineContainer: View {
     let keyframesMap: [InertiaID: [InertiaAnimationKeyframe]]
 
     @Binding var isPlaying: Bool
+    @Binding var isRecordingKeyframes: Bool
 
     func keypoints(for actionableId: String) -> [Int] {
         let inertiaId = InertiaID(actionableId)

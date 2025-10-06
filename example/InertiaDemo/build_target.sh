@@ -4,6 +4,7 @@ PROJECT="DemoApp"
 SCHEME="DemoAppInertiaEditor"
 
 xcodebuild clean archive \
+    -project "$PROJECT.xcodeproj" \
     -allowProvisioningUpdates \
     -scheme "$SCHEME" \
     -configuration release \
