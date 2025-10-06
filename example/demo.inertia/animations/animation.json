@@ -1,44 +1,46 @@
-{
-    "id" : "card0",
-    "initialValues" : {
-      "opacity" : 1,
-      "rotate" : 0,
-      "rotateCenter" : 0,
-      "scale" : 1,
-      "translate" : [
-        0,
-        0
-      ]
-    },
-    "invokeType" : "auto",
-    "keyframes" : [
-      {
-        "duration" : 1,
-        "id" : "ADC3E556-DFF1-4B66-BB1F-4C77CA0E3727",
-        "values" : {
-          "opacity" : 1,
-          "rotate" : 0,
-          "rotateCenter" : 0,
-          "scale" : 1,
-          "translate" : [
-            -0.016666666666666666,
-            0.06620209059233449
-          ]
-        }
+[
+  {
+      "id" : "card0",
+      "initialValues" : {
+        "opacity" : 1,
+        "rotate" : 0,
+        "rotateCenter" : 0,
+        "scale" : 1,
+        "translate" : [
+          0,
+          0
+        ]
       },
-      {
-        "duration" : 1,
-        "id" : "3117F4DE-3BEC-44F4-93CC-1ADC735083DE",
-        "values" : {
-          "opacity" : 1,
-          "rotate" : 0,
-          "rotateCenter" : 0,
-          "scale" : 1,
-          "translate" : [
-            -0.02,
-            0.627177700348432
-          ]
+      "invokeType" : "auto",
+      "keyframes" : [
+        {
+          "duration" : 1,
+          "id" : "ADC3E556-DFF1-4B66-BB1F-4C77CA0E3727",
+          "values" : {
+            "opacity" : 1,
+            "rotate" : 0,
+            "rotateCenter" : 0,
+            "scale" : 1,
+            "translate" : [
+              -0.016666666666666666,
+              0.06620209059233449
+            ]
+          }
+        },
+        {
+          "duration" : 1,
+          "id" : "3117F4DE-3BEC-44F4-93CC-1ADC735083DE",
+          "values" : {
+            "opacity" : 1,
+            "rotate" : 0,
+            "rotateCenter" : 0,
+            "scale" : 1,
+            "translate" : [
+              -0.02,
+              0.627177700348432
+            ]
+          }
         }
-      }
-    ]
-}
+      ]
+  }
+]

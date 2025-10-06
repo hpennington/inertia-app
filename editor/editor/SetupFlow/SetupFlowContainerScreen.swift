@@ -56,12 +56,13 @@ struct SetupFlowContainerScreen: View {
         do {
             let fileURLs = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
             let jsonFiles = fileURLs.filter { $0.pathExtension == "json" }
-            
+
             do {
-                return .success(try jsonFiles.map({ url in
+                // Flatten the array since each JSON file now contains an array of schemas
+                return .success(try jsonFiles.flatMap({ url in
                     let animationData = try Data(contentsOf: url)
-                    let animationJSON = try JSONDecoder().decode(InertiaAnimationSchema.self, from: animationData)
-                    return animationJSON
+                    let animationSchemas = try JSONDecoder().decode([InertiaAnimationSchema].self, from: animationData)
+                    return animationSchemas
                 }))
             } catch let error {
                 print(error)
