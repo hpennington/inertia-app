@@ -82,12 +82,12 @@ Animation IDs can be simple strings:
 
 ```swift
 // Simple string approach
-let birdAnimationId = "bird"
+let cardAnimationId = "card0"
 let carAnimationId = "car"
 
 // Or use enum for better organization (optional)
 enum AnimationID: String, CaseIterable {
-    case car, planeTop, planeBottom, homeCard, bird
+    case card0, car, planeTop, planeBottom, homeCard
 }
 ```
 
@@ -131,16 +131,19 @@ Use the `.inertia()` modifier to make any view animatable:
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "bird")
-                .resizable()
-                .frame(width: 48, height: 48)
-                .foregroundStyle(.green)
-                .inertia("bird")  // Apply animation with string ID
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.blue)
+                .frame(width: 200, height: 120)
+                .overlay {
+                    Text("Card")
+                        .foregroundStyle(.white)
+                }
+                .inertia("card0")  // Apply animation with string ID
 
-            Button("Fly Away") {
+            Button("Animate") {
                 // Animation triggers are handled through the JSON configuration
             }
-            .inertia("flyButton")
+            .inertia("animateButton")
         }
         .padding()
     }
@@ -154,22 +157,24 @@ For programmatic control, access the InertiaViewModel through the environment:
 ```swift
 struct ContentView: View {
     @EnvironmentObject private var inertia: InertiaViewModel
-    
+
     var body: some View {
         VStack {
-            Image(systemName: "bird")
-                .inertia("bird")
-            
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.blue)
+                .frame(width: 200, height: 120)
+                .inertia("card0")
+
             Button("Trigger Animation") {
-                trigger("bird")
+                trigger("card0")
             }
         }
     }
-    
+
     private func trigger(_ id: String) {
         inertia.trigger(id)
     }
-    
+
     private func toggle(_ id: String) {
         if inertia.isCancelled(id) {
             inertia.restart(id)
@@ -269,16 +274,19 @@ import Inertia
 struct ContentView: View {
     var body: some View {
         VStack(spacing: 20) {
-            // Animated bird that flies automatically
-            Image(systemName: "bird")
-                .resizable()
-                .frame(width: 48, height: 48)
-                .foregroundStyle(.green)
-                .inertia("bird")
-
-            // Animated card with manual trigger
+            // Animated card that moves automatically
             RoundedRectangle(cornerRadius: 12)
                 .fill(.blue)
+                .frame(width: 200, height: 120)
+                .overlay {
+                    Text("Card")
+                        .foregroundStyle(.white)
+                }
+                .inertia("card0")
+
+            // Another animated card with manual trigger
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.purple)
                 .frame(width: 200, height: 120)
                 .overlay {
                     Text("Home Card")
@@ -293,7 +301,7 @@ struct ContentView: View {
             HStack {
                 Image(systemName: "airplane")
                     .inertia("planeTop")
-                    
+
                 Image(systemName: "airplane")
                     .inertia("planeBottom")
             }
@@ -304,7 +312,7 @@ struct ContentView: View {
     }
 }
 
-@main 
+@main
 struct InertiaDemoApp: App {
     var body: some Scene {
         WindowGroup {
