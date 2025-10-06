@@ -59,8 +59,20 @@ struct LinuxVMView: View {
                             // Linux is already installed, boot normally
                             self.virtualMachine = self.installerFactoryLinux?.createVMForBoot()
                         } else {
-                            // Linux not installed, boot from ISO for installation
-                            self.virtualMachine = self.installerFactoryLinux?.createVMForInstallation(isoURL: URL("/Users/haydenpennington/Downloads/ubuntu-25.04-desktop-arm64.iso")!)
+                            // Linux not installed, show file picker for ISO selection
+                            let panel = NSOpenPanel()
+                            panel.title = "Select Linux ISO"
+                            panel.message = "Choose a Linux ISO file to install"
+                            panel.allowedContentTypes = [.init(filenameExtension: "iso")!]
+                            panel.allowsMultipleSelection = false
+                            panel.canChooseDirectories = false
+
+                            if panel.runModal() == .OK, let isoURL = panel.url {
+                                self.virtualMachine = self.installerFactoryLinux?.createVMForInstallation(isoURL: isoURL)
+                            } else {
+                                print("No ISO selected, cannot proceed with installation")
+                                return
+                            }
                         }
                         self.delegate.vmShutdownManagers.append(VirtualMachineShutdownManager(virtualMachine: self.virtualMachine, paths: paths))
 

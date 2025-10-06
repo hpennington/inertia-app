@@ -430,11 +430,18 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
         onClick={onClick}
         style={{
           display: "inline-block",
-          cursor: "pointer",
+          cursor: inertiaDataModel?.isActionable ? "pointer" : "default",
           position: "relative",
+          pointerEvents: inertiaDataModel?.isActionable ? "auto" : "none",
         }}
       >
-        {children}
+        <div
+          style={{
+            pointerEvents: inertiaDataModel?.isActionable ? "none" : "auto",
+          }}
+        >
+          {children}
+        </div>
 
         {isSelected && inertiaDataModel?.isActionable && (
           <div

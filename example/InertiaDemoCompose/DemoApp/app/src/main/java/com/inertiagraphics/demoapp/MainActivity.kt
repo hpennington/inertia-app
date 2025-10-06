@@ -6,6 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -120,12 +124,9 @@ fun DemoApp() {
 
 @Composable
 fun DemoCard(cardColor: Color) {
-    var isChecked by remember { mutableStateOf(false) }
-
     Card(
         modifier = Modifier
-            .width(300.dp)
-            .clickable { isChecked = !isChecked }, // make entire card tappable
+            .width(300.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -152,30 +153,6 @@ fun DemoCard(cardColor: Color) {
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Disable default click behavior so the card handles toggling
-                Checkbox(
-                    checked = isChecked,
-                    onCheckedChange = null
-                )
-                Text(text = "Check Me")
-            }
-
-            if (isChecked) {
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "Checked!",
-                    color = Color(0xFF34C759),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            }
         }
     }
 }
