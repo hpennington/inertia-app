@@ -39,16 +39,39 @@ import Inertia
 
 ### Jetpack Compose (Android)
 
+Add to your `build.gradle.kts`:
+
 ```kotlin
-implementation("com.inertia:inertia-compose:<version>")
+android {
+    namespace = "org.inertiagraphics.inertia"
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 26
+    }
+
+    buildFeatures {
+        compose = true
+    }
+}
+
+dependencies {
+    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.animation:animation")
+
+    // Add Inertia library
+    implementation("org.inertiagraphics:inertia-compose:<version>")
+}
 ```
 
 ### React (Web)
 
 ```bash
-npm install inertia-animations
+npm install @inertia-graphics/inertia-react
 # or
-yarn add inertia-animations
+yarn add @inertia-graphics/inertia-react
 ```
 
 ## Usage
@@ -159,66 +182,61 @@ struct ContentView: View {
 
 ## Animation File Structure
 
-Create a JSON file (e.g., animation.json) in your app bundle:
+Animations are defined as JSON arrays containing animation objects. Each animation object specifies the element ID to animate along with its keyframes.
+
+Example `animation.json`:
 
 ```json
-{
-  "id": "animation",
-  "objects": [
-    {
-      "id": "bird",
-      "containerId": "animation",
-      "width": 48,
-      "height": 48,
-      "position": {"x": 0, "y": 0},
-      "color": [0.3, 0.5, 1.0, 0.75],
-      "shape": "triangle",
-      "objectType": "animation",
-      "zIndex": 1,
-      "animation": {
-        "id": "bird",
-        "initialValues": {
-          "scale": 1.0,
-          "translate": {"width": 0.0, "height": 0.0},
-          "rotate": 0.0,
-          "rotateCenter": 0.0,
-          "opacity": 1.0
-        },
-        "invokeType": "auto",
-        "keyframes": [
-          {
-            "id": "keyframe1",
-            "values": {
-              "scale": 0.5,
-              "translate": {"width": 0.2, "height": -0.1},
-              "rotate": 0.0,
-              "rotateCenter": 45.0,
-              "opacity": 1.0
-            },
-            "duration": 1.0
-          },
-          {
-            "id": "keyframe2", 
-            "values": {
-              "scale": 1.2,
-              "translate": {"width": -0.3, "height": 0.2},
-              "rotate": 0.0,
-              "rotateCenter": 90.0,
-              "opacity": 0.8
-            },
-            "duration": 1.5
-          }
-        ]
+[
+  {
+    "id": "card0",
+    "initialValues": {
+      "opacity": 1,
+      "rotate": 0,
+      "rotateCenter": 0,
+      "scale": 1,
+      "translate": [0, 0]
+    },
+    "invokeType": "auto",
+    "keyframes": [
+      {
+        "duration": 1,
+        "id": "ADC3E556-DFF1-4B66-BB1F-4C77CA0E3727",
+        "values": {
+          "opacity": 1,
+          "rotate": 0,
+          "rotateCenter": 0,
+          "scale": 1,
+          "translate": [-0.016666666666666666, 0.06620209059233449]
+        }
+      },
+      {
+        "duration": 1,
+        "id": "3117F4DE-3BEC-44F4-93CC-1ADC735083DE",
+        "values": {
+          "opacity": 1,
+          "rotate": 0,
+          "rotateCenter": 0,
+          "scale": 1,
+          "translate": [-0.02, 0.627177700348432]
+        }
       }
-    }
-  ]
-}
+    ]
+  }
+]
 ```
 
 ## Animation Properties
 
+- `id`: Unique identifier matching the view's `.inertia()` modifier
+- `initialValues`: Starting state for all animation properties
+- `invokeType`: Animation trigger mode (`"auto"` or `"trigger"`)
+- `keyframes`: Array of animation steps with values and durations
+
+### Animatable Values
+
 - `scale`: Scale factor (1.0 = normal size)
-- `translate`: Position offset as percentage of container size
+- `translate`: [x, y] position offset as percentage of container size
 - `rotate`: Rotation from top-left anchor (degrees)
 - `rotateCenter`: Rotation from center anchor (degrees)
 - `opacity`: Transparency (0.0 = invisible, 1.0 = opaque)
