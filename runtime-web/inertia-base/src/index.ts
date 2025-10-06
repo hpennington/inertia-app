@@ -56,22 +56,27 @@ export class InertiaDataModel {
     public containerId: string;
     public inertiaSchemas: Map<string, InertiaAnimationSchema>;
     public tree: Tree;
-    public actionableIds: Set<string>;
+    public actionableIdPairs: Set<ActionableIdPair>;
     public states: Map<string, InertiaAnimationState>;
     public actionableIdToAnimationIdMap: Map<string, string>;
     public isActionable: boolean = false
 
-    constructor(containerId: string, inertiaSchemas: Map<string, InertiaAnimationSchema>, tree: Tree, actionableIds: Set<string>) {
+    constructor(containerId: string, inertiaSchemas: Map<string, InertiaAnimationSchema>, tree: Tree, actionableIdPairs: Set<ActionableIdPair>) {
         this.containerId = containerId;
         this.inertiaSchemas = inertiaSchemas;
         this.tree = tree;
-        this.actionableIds = actionableIds;
+        this.actionableIdPairs = actionableIdPairs;
         this.states = new Map<string, InertiaAnimationState>();
         this.actionableIdToAnimationIdMap = new Map<string, string>();
     }
 }
 
 export type InertiaID = string;
+
+export type ActionableIdPair = {
+    hierarchyIdPrefix: string;
+    hierarchyId: string;
+}
 
 export class Node {
     public id: string;
@@ -233,7 +238,7 @@ export interface MessageSchema {
 export type MessageTranslation = {
     translationX: number;
     translationY: number;
-    actionableIds: Array<string>;
+    actionableIds: Array<ActionableIdPair>;
 }
 
 export class WebSocketClient {
@@ -244,7 +249,7 @@ export class WebSocketClient {
     public messageReceived?: (selectedIds: Set<string>) => void;
     public messageReceivedSchema?: (schemas: InertiaSchemaWrapper[]) => void;
     public messageReceivedIsActionable?: (isActionable: boolean) => void;
-    public messageReceivedTranslationEnded?: (actionableIds: Set<string>, translationX: number, translationY: number) => void;
+    public messageReceivedTranslationEnded?: (actionableIds: Set<ActionableIdPair>, translationX: number, translationY: number) => void;
 
     private constructor() {}
 

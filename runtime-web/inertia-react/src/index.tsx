@@ -1,5 +1,5 @@
 import React from 'react'
-import {InertiaAnimationSchema, MessageTranslation, MessageActionables, MessageActionable, InertiaSchemaWrapper, InertiaAnimationInvokeType, WebSocketClient, InertiaDataModel, InertiaCanvasSize, MessageType, MessageWrapper, InertiaID, Tree, Node} from 'inertia-base'
+import {InertiaAnimationSchema, MessageTranslation, MessageActionables, MessageActionable, InertiaSchemaWrapper, InertiaAnimationInvokeType, WebSocketClient, InertiaDataModel, InertiaCanvasSize, MessageType, MessageWrapper, InertiaID, Tree, Node, ActionableIdPair} from 'inertia-base'
 
 export type InertiaContainerProps = {
     children: React.ReactElement,
@@ -210,7 +210,11 @@ export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContaine
 
         ws.connect("ws://127.0.0.1:8080", () => {
             ws.messageReceived = (msg) => {
-                setInertiaDataModel(prev => ({ ...prev, actionableIds: msg }));
+                // Filter existing pairs to keep only those in msg
+                setInertiaDataModel(prev => ({
+                    ...prev,
+                    actionableIdPairs: new Set(Array.from(prev.actionableIdPairs).filter(pair => msg.has(pair.hierarchyId)))
+                }));
             };
 
             ws.messageReceivedSchema = (msg) => {
@@ -223,7 +227,7 @@ export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContaine
 
             ws.sendMessageActionables({
                 tree: inertiaDataModel.tree,
-                actionableIds: Array.from(inertiaDataModel.actionableIds),
+                actionableIds: Array.from(inertiaDataModel.actionableIdPairs).map(pair => pair.hierarchyId),
             });
         });
     }, [inertiaDataModel?.tree]);
@@ -254,8 +258,9 @@ const manager = WebSocketClient.shared
 // ------------------ Draggable Props ------------------
 export interface DraggableProps {
   hierarchyId?: string;
+  hierarchyIdPrefix?: string;
   isSelected: boolean;
-  actionableIds?: Set<string>;
+  actionableIdPairs?: Set<ActionableIdPair>;
   containerRef: React.RefObject<HTMLDivElement>;
   children: React.ReactNode;
   handleClick: () => void;
@@ -276,7 +281,7 @@ export function withDrag<T extends DraggableProps>(
   WrappedComponent: React.ComponentType<T & Partial<DraggableInjectedProps>>
 ) {
   return function Draggable(props: T & { pos: { x: number; y: number }; setPos: React.Dispatch<React.SetStateAction<{ x: number; y: number }>> }) {
-    const { isSelected, actionableIds, pos, setPos } = props;
+    const { isSelected, actionableIdPairs, pos, setPos } = props;
     const dragging = useRef(false);
     const moved = useRef(false);
     const offset = useRef({ x: 0, y: 0 });
@@ -299,9 +304,9 @@ export function withDrag<T extends DraggableProps>(
     };
 
     const stopDrag = () => {
-      if (dragging.current && actionableIds && inertiaCanvasSize) {
+      if (dragging.current && actionableIdPairs && inertiaCanvasSize) {
         manager.sendMessageTranslation({
-          actionableIds: Array.from(actionableIds),
+          actionableIds: Array.from(actionableIdPairs),
           translationX: pos.x / inertiaCanvasSize.width,
           translationY: pos.y / inertiaCanvasSize.height,
         });
@@ -351,7 +356,7 @@ export function withDrag<T extends DraggableProps>(
 
 // ------------------ InertiaableGuts ------------------
 const InertiaableGuts: React.FC<DraggableProps> = React.memo(
-  ({ hierarchyId, handleClick, isSelected, containerRef, children, inertiaDataModel, moved }) => {
+  ({ hierarchyId, hierarchyIdPrefix, handleClick, isSelected, containerRef, children, inertiaDataModel, moved }) => {
     const onClick = (e: React.MouseEvent) => {
       if (!moved?.current) handleClick();
     };
@@ -360,17 +365,17 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
 
     useEffect(() => {
       const element = containerRef.current;
-      if (!element || !inertiaDataModel || !hierarchyId || !inertiaCanvasSize)
+      if (!element || !inertiaDataModel || !hierarchyIdPrefix || !inertiaCanvasSize)
         return;
 
-      console.log(`[INERTIA_LOG]: [InertiaableGuts.animation] hierarchyId: ${hierarchyId}`);
+      console.log(`[INERTIA_LOG]: [InertiaableGuts.animation] hierarchyId: ${hierarchyId}, hierarchyIdPrefix: ${hierarchyIdPrefix}`);
       console.log(`[INERTIA_LOG]: [InertiaableGuts.animation] actionableIdToAnimationIdMap:`, Object.fromEntries(inertiaDataModel.actionableIdToAnimationIdMap));
       console.log(`[INERTIA_LOG]: [InertiaableGuts.animation] available schema IDs:`, Array.from(inertiaDataModel.inertiaSchemas.keys()));
 
-      // First try to get the animation ID from the map
-      const animationId = inertiaDataModel.actionableIdToAnimationIdMap.get(hierarchyId);
+      // First try to get the animation ID from the map using hierarchyIdPrefix
+      const animationId = inertiaDataModel.actionableIdToAnimationIdMap.get(hierarchyIdPrefix);
       if (!animationId) {
-        console.log(`[INERTIA_LOG]: no mapping for hierarchyId: ${hierarchyId}`);
+        console.log(`[INERTIA_LOG]: no mapping for hierarchyIdPrefix: ${hierarchyIdPrefix}`);
         return;
       }
 
@@ -381,7 +386,7 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
         return;
       }
 
-      console.log(`[INERTIA_LOG]: found animation - hierarchyId: ${hierarchyId} -> animationId: ${animationId}`);
+      console.log(`[INERTIA_LOG]: found animation - hierarchyIdPrefix: ${hierarchyIdPrefix} -> animationId: ${animationId}`);
 
       const keyframesWebAPI = [
         schema.initialValues,
@@ -418,7 +423,7 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
 
       return () => animationHandle.cancel();
     }, [
-      hierarchyId,
+      hierarchyIdPrefix,
       inertiaDataModel,
       inertiaCanvasSize,
     ]);
@@ -493,25 +498,28 @@ export const Inertiaable: React.FC<InertiaableProps> = ({ children, hierarchyIdP
     setPos({x: 0, y: 0});
   }, [inertiaDataModel])
 
-  const isSelected = hierarchyId ? inertiaDataModel?.actionableIds.has(hierarchyId) ?? false : false;
+  const isSelected = hierarchyId ? Array.from(inertiaDataModel?.actionableIdPairs ?? []).some(pair => pair.hierarchyId === hierarchyId) : false;
 
   const handleClick = () => {
-      if (!hierarchyId || !inertiaDataModel?.isActionable) return;
+      if (!hierarchyId || !hierarchyIdPrefix || !inertiaDataModel?.isActionable) return;
 
-      const newActionableIds = new Set(inertiaDataModel.actionableIds);
-      if (newActionableIds.has(hierarchyId)) {
-        newActionableIds.delete(hierarchyId);
+      const pair: ActionableIdPair = { hierarchyIdPrefix, hierarchyId };
+      const newActionableIdPairs = new Set(inertiaDataModel.actionableIdPairs);
+
+      const existingPair = Array.from(newActionableIdPairs).find(p => p.hierarchyId === hierarchyId);
+      if (existingPair) {
+        newActionableIdPairs.delete(existingPair);
       } else {
-        newActionableIds.add(hierarchyId);
+        newActionableIdPairs.add(pair);
       }
 
       // Update UI immediately
-      setInertiaDataModel(prev => ({ ...prev, actionableIds: newActionableIds }));
-      
+      setInertiaDataModel(prev => ({ ...prev, actionableIdPairs: newActionableIdPairs }));
+
       // Sync to server separately (maybe debounced)
-      manager.sendMessageActionables({ 
-        tree: inertiaDataModel.tree, 
-        actionableIds: Array.from(newActionableIds)
+      manager.sendMessageActionables({
+        tree: inertiaDataModel.tree,
+        actionableIds: Array.from(newActionableIdPairs).map(p => p.hierarchyId)
       });
     }
 
@@ -519,12 +527,13 @@ export const Inertiaable: React.FC<InertiaableProps> = ({ children, hierarchyIdP
     <DraggableInertiaableGuts
       key={hierarchyId}
       hierarchyId={hierarchyId}
+      hierarchyIdPrefix={hierarchyIdPrefix}
       handleClick={handleClick}
       isSelected={isSelected}
       containerRef={containerRef}
       children={children}
       inertiaDataModel={inertiaDataModel}
-      actionableIds={inertiaDataModel?.actionableIds}
+      actionableIdPairs={inertiaDataModel?.actionableIdPairs}
       pos={pos}
       setPos={setPos}
     />
