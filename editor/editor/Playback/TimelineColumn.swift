@@ -14,12 +14,21 @@ struct TimelineColumn<Header: View, Content: View, Footer: View>: View {
     let header: () -> Header
     let content: () -> Content
     let footer: () -> Footer
-    let playheadReleased: () -> Void
     
     let spacing: CGFloat = 50
     
     @State private var width: CGFloat = .zero
     @State private var playheadOffset: CGFloat = .zero
+    
+    init(playheadProgress: Binding<Int>, playheadLabel: String, tickCount: Int, header: @escaping () -> Header, content: @escaping () -> Content, footer: @escaping () -> Footer) {
+        self._playheadProgress = playheadProgress
+        self.playheadLabel = playheadLabel
+        self.tickCount = tickCount
+        self.header = header
+        self.content = content
+        self.footer = footer
+        
+    }
     
     var tickSpacing: CGFloat {
         width / CGFloat(tickCount)
@@ -55,9 +64,7 @@ struct TimelineColumn<Header: View, Content: View, Footer: View>: View {
                     let (snap, tick) = snapToNearestTick(value: offset)
                     playheadOffset = snap
                     playheadProgress = tick
-                }
-                
-                playheadReleased()
+                }                
             }
     }
     
@@ -66,6 +73,7 @@ struct TimelineColumn<Header: View, Content: View, Footer: View>: View {
         let tick = Int(value / spacing)
         return (spacing * CGFloat(tick), tick)
     }
+    
     var body: some View {
         ZStack(alignment: .topLeading) {
             VStack {

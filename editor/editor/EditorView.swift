@@ -122,8 +122,8 @@ struct EditorView: View {
                         get: { viewModel.playbackManager.playheadTime },
                         set: { viewModel.playbackManager.playheadTime = $0 }
                     ),
-                    actionableIds: Set(viewModel.animations.keys),
-                    keyframes: viewModel.playbackManager.keyframes,
+                    animations: viewModel.animations,
+                    keyframesMap: viewModel.playbackManager.keyframes,
                     isPlaying: Binding(
                         get: { viewModel.playbackManager.isPlaying },
                         set: { viewModel.playbackManager.isPlaying = $0 }

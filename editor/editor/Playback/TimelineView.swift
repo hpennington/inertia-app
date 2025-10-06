@@ -50,7 +50,7 @@ struct TimelineRow: View {
 }
 
 struct TimelineContainer: View {
-    
+
     @Environment(\.appColors) var appColors
     @State private var isExpanded: Set<String> = []
     @State private var isRecordingKeyframes = false
@@ -58,14 +58,17 @@ struct TimelineContainer: View {
     @State private var dragOffset: CGFloat = .zero
     @State private var isDragging: Bool = false
     @State private var playheadProgress: Int = .zero
-    
+
     let animationDuration = 3.0
-    let actionableIds: Set<String>
-    let keyframes: [InertiaAnimationKeyframe]
-    
+    let animations: [InertiaID: InertiaAnimationSchema]
+    let keyframesMap: [InertiaID: [InertiaAnimationKeyframe]]
+
     @Binding var isPlaying: Bool
 
-    var keypoints: [Int] {
+    func keypoints(for actionableId: String) -> [Int] {
+        let inertiaId = InertiaID(actionableId)
+        guard let keyframes = keyframesMap[inertiaId] else { return [] }
+
         var xTime: CGFloat = 0.0
         var keypoints: [Int] = []
         for keyframe in keyframes {
@@ -108,12 +111,13 @@ struct TimelineContainer: View {
                     Spacer(minLength: .zero)
                 }
                 .frame(maxHeight: .infinity)
+                
                 HStack(alignment: .bottom) {
-                    TimelineHierarchy(ids: actionableIds.sorted(), isExpanded: $isExpanded)
+                    TimelineHierarchy(ids:  animations.map { $0.key }.sorted(), isExpanded: $isExpanded)
                         .padding(.top, 32)
                         .frame(minWidth: 256 + 16)
-                    
-                    TimelineColumn(playheadProgress: $playheadProgress, playheadLabel: "\(playheadTime.formatted())", tickCount: 300) {
+
+                    TimelineColumn(playheadProgress: $playheadProgress, playheadLabel: playheadTime.formatted(), tickCount: 300) {
                         Timeline {
                             TimelineRuler()
                                 .padding(.bottom, 8)
@@ -158,34 +162,18 @@ struct TimelineContainer: View {
                         .onChange(of: playheadProgress) { oldValue, newValue in
                             playheadTime = CGFloat(newValue) / 300.0 * animationDuration
                         }
-                            
                     } content: {
                         VStack {
-                            ForEach(actionableIds.sorted(), id: \.self) { id in
+                            ForEach(animations.map { $0.key }.sorted(), id: \.self) { id in
                                 TimelineRow(
                                     isExpanded: isExpanded.contains(id),
-                                    keypoints: keypoints
+                                    keypoints: keypoints(for: id)
                                 )
                             }
-//                            ForEach(actionableIds, id: \.self) { key in
-//                                let keypoints = keyframes.map { keyframe in
-//                                    Int(keyframe.duration)
-//                                }
-                                
-//
-//                                }
-//                            }
                         }
                         .padding(.horizontal, 24)
                     } footer: {
                         EmptyView()
-                    } playheadReleased: {
-//                        // Add keyframe here
-//                        if isRecordingKeyframes {
-//                            for key in rowData.keys {
-//                                rowData[key]?.append(Int(playheadTime * 1000))
-//                            }
-//                        }
                     }
                     
                     Spacer(minLength: .zero)

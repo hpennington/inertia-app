@@ -74,12 +74,12 @@ final class EditorViewModel {
             self.handleKeyframeMessage(message)
         }
 
-        serverManager.startServer(for: .swiftUI, port: 8081) { [weak self] message in
+        serverManager.startServer(for: .swiftUI, port: 8060) { [weak self] message in
             guard let self = self else { return }
             self.handleKeyframeMessage(message)
         }
 
-        serverManager.startServer(for: .compose, port: 8082) { [weak self] message in
+        serverManager.startServer(for: .compose, port: 8070) { [weak self] message in
             guard let self = self else { return }
             self.handleKeyframeMessage(message)
         }

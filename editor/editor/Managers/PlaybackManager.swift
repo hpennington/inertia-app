@@ -14,8 +14,8 @@ import Inertia
 final class PlaybackManager {
     var isPlaying: Bool = false
     var playheadTime: CGFloat = .zero
-    var previousPlayheadTime: CGFloat = .zero
-    var keyframes: [InertiaAnimationKeyframe] = [] {
+    var previousPlayheadTime: [InertiaID: CGFloat] = [:] // Per-actionable previous playhead time
+    var keyframes: [InertiaID: [InertiaAnimationKeyframe]] = [:] {
         didSet {
             onKeyframesChanged?()
         }

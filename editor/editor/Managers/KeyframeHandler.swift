@@ -41,14 +41,6 @@ final class KeyframeHandler {
             opacity: 1.0
         )
 
-        let newKeyframe = InertiaAnimationKeyframe(
-            id: UUID().uuidString,
-            values: values,
-            duration: playbackManager.playheadTime - playbackManager.previousPlayheadTime
-        )
-        playbackManager.previousPlayheadTime = playbackManager.playheadTime
-        playbackManager.keyframes.append(newKeyframe)
-
         let initialValues = initialValues ?? InertiaAnimationValues(
             scale: 1.0,
             translate: .zero,
@@ -59,12 +51,36 @@ final class KeyframeHandler {
 
         var updatedAnimationsArray: [InertiaAnimationSchema] = Array(animations.values)
 
+        // Create keyframe for each selected actionable ID
         for id in message.actionableIds {
+            let inertiaId = InertiaID(id)
+
+            // Get previous playhead time for this specific actionable
+            let previousTime = playbackManager.previousPlayheadTime[inertiaId] ?? 0.0
+
+            let newKeyframe = InertiaAnimationKeyframe(
+                id: UUID().uuidString,
+                values: values,
+                duration: playbackManager.playheadTime - previousTime
+            )
+
+            // Update previous playhead time for this actionable
+            playbackManager.previousPlayheadTime[inertiaId] = playbackManager.playheadTime
+
+            // Append keyframe to this actionable's keyframes array
+            if playbackManager.keyframes[inertiaId] == nil {
+                playbackManager.keyframes[inertiaId] = []
+            }
+            playbackManager.keyframes[inertiaId]?.append(newKeyframe)
+
+            // Get keyframes for this specific actionable
+            let actionableKeyframes = playbackManager.keyframes[inertiaId] ?? []
+
             let animationSchema = InertiaAnimationSchema(
                 id: id,
                 initialValues: initialValues,
                 invokeType: .auto,
-                keyframes: playbackManager.keyframes
+                keyframes: actionableKeyframes
             )
 
             if let animationIndex = updatedAnimationsArray.firstIndex(where: { schema in
@@ -76,7 +92,7 @@ final class KeyframeHandler {
             }
 
             // Update local animations dict
-            animations[InertiaID(id)] = animationSchema
+            animations[inertiaId] = animationSchema
         }
 
         // Notify parent of animations update
