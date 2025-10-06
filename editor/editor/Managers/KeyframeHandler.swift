@@ -67,11 +67,14 @@ final class KeyframeHandler {
         var updatedAnimationsArray: [InertiaAnimationSchema] = Array(animations.values)
 
         // Create keyframe for each selected actionable ID
-        for id in message.actionableIds {
-            let inertiaId = InertiaID(id)
+        for pair in message.actionableIds {
+            let hierarchyIdPrefix = pair.hierarchyIdPrefix
+            let hierarchyId = pair.hierarchyId
+            let hierarchyIdForKeyframes = InertiaID(hierarchyId)
+            let hierarchyIdPrefixForSchema = InertiaID(hierarchyIdPrefix)
 
-            // Get previous playhead time for this specific actionable
-            let previousTime = playbackManager.previousPlayheadTime[inertiaId] ?? 0.0
+            // Get previous playhead time for this specific actionable (using hierarchyId for instance-specific tracking)
+            let previousTime = playbackManager.previousPlayheadTime[hierarchyIdForKeyframes] ?? 0.0
 
             // Only create and append keyframe if recording is enabled
             if isRecording {
@@ -82,35 +85,35 @@ final class KeyframeHandler {
                 )
 
                 // Update previous playhead time for this actionable
-                playbackManager.previousPlayheadTime[inertiaId] = playbackManager.playheadTime
+                playbackManager.previousPlayheadTime[hierarchyIdForKeyframes] = playbackManager.playheadTime
 
-                // Append keyframe to this actionable's keyframes array
-                if playbackManager.keyframes[inertiaId] == nil {
-                    playbackManager.keyframes[inertiaId] = []
+                // Append keyframe to this actionable's keyframes array (using hierarchyId for instance-specific keyframes)
+                if playbackManager.keyframes[hierarchyIdForKeyframes] == nil {
+                    playbackManager.keyframes[hierarchyIdForKeyframes] = []
                 }
-                playbackManager.keyframes[inertiaId]?.append(newKeyframe)
+                playbackManager.keyframes[hierarchyIdForKeyframes]?.append(newKeyframe)
             }
 
-            // Get keyframes for this specific actionable
-            let actionableKeyframes = playbackManager.keyframes[inertiaId] ?? []
+            // Get keyframes for this specific actionable instance
+            let actionableKeyframes = playbackManager.keyframes[hierarchyIdForKeyframes] ?? []
 
             let animationSchema = InertiaAnimationSchema(
-                id: id,
+                id: hierarchyIdPrefix,
                 initialValues: initialValues ?? defaultInitialValue,
                 invokeType: .auto,
                 keyframes: actionableKeyframes
             )
 
             if let animationIndex = updatedAnimationsArray.firstIndex(where: { schema in
-                schema.id == id
+                schema.id == hierarchyIdPrefix
             }) {
                 updatedAnimationsArray[animationIndex] = animationSchema
             } else {
                 updatedAnimationsArray.append(animationSchema)
             }
 
-            // Update local animations dict
-            animations[inertiaId] = animationSchema
+            // Update local animations dict (using hierarchyIdPrefix for schema storage)
+            animations[hierarchyIdPrefixForSchema] = animationSchema
         }
 
         // Notify parent of animations update

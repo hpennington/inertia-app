@@ -65,8 +65,8 @@ struct TimelineContainer: View {
     @Binding var isPlaying: Bool
     @Binding var isRecordingKeyframes: Bool
 
-    func keypoints(for actionableId: String) -> [Int] {
-        let inertiaId = InertiaID(actionableId)
+    func keypoints(for hierarchyId: String) -> [Int] {
+        let inertiaId = InertiaID(hierarchyId)
         guard let keyframes = keyframesMap[inertiaId] else { return [] }
 
         var xTime: CGFloat = 0.0
@@ -113,7 +113,7 @@ struct TimelineContainer: View {
                 .frame(maxHeight: .infinity)
                 
                 HStack(alignment: .bottom) {
-                    TimelineHierarchy(ids:  animations.map { $0.key }.sorted(), isExpanded: $isExpanded)
+                    TimelineHierarchy(ids:  keyframesMap.map { $0.key }.sorted(), isExpanded: $isExpanded)
                         .padding(.top, 32)
                         .frame(minWidth: 256 + 16)
 
@@ -122,7 +122,7 @@ struct TimelineContainer: View {
                             TimelineRuler()
                                 .padding(.bottom, 8)
                                 .padding(.horizontal, 8)
-                            
+
                             HStack {
                                 Text("0.0")
                                 Spacer()
@@ -157,17 +157,17 @@ struct TimelineContainer: View {
                                 Text("3.0")
                             }
                             .frame(maxWidth: .infinity)
-                            
+
                         }
                         .onChange(of: playheadProgress) { oldValue, newValue in
                             playheadTime = CGFloat(newValue) / 300.0 * animationDuration
                         }
                     } content: {
                         VStack {
-                            ForEach(animations.map { $0.key }.sorted(), id: \.self) { id in
+                            ForEach(keyframesMap.map { $0.key }.sorted(), id: \.self) { hierarchyId in
                                 TimelineRow(
-                                    isExpanded: isExpanded.contains(id),
-                                    keypoints: keypoints(for: id)
+                                    isExpanded: isExpanded.contains(hierarchyId),
+                                    keypoints: keypoints(for: hierarchyId)
                                 )
                             }
                         }

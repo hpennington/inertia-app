@@ -15,57 +15,29 @@
     "keyframes" : [
       {
         "duration" : 0,
-        "id" : "240A9531-2805-4D27-987B-E41FB0774BA7",
+        "id" : "93C00AA1-4F8E-408A-A478-DB2F25D53FC1",
         "values" : {
           "opacity" : 1,
           "rotate" : 0,
           "rotateCenter" : 0,
           "scale" : 1,
           "translate" : [
-            -0.7422417534722222,
-            -0.0007244302653360252
+            -0.7874348958333334,
+            0.007739965466485564
           ]
         }
       },
       {
         "duration" : 3,
-        "id" : "CBD1A005-C7F4-437E-B35D-56FD0AA47988",
+        "id" : "9A8B46B8-27FC-4EA7-9521-5D6BEA04635A",
         "values" : {
           "opacity" : 1,
           "rotate" : 0,
           "rotateCenter" : 0,
           "scale" : 1,
           "translate" : [
-            0.0027126736111111236,
-            -0.009516726011994003
-          ]
-        }
-      },
-      {
-        "duration" : -3,
-        "id" : "20AF8525-2A74-4A69-BAFC-45767703B4C0",
-        "values" : {
-          "opacity" : 1,
-          "rotate" : 0,
-          "rotateCenter" : 0,
-          "scale" : 1,
-          "translate" : [
-            0.7923719618055555,
-            0.019163086913574406
-          ]
-        }
-      },
-      {
-        "duration" : 3,
-        "id" : "D0D7D448-6A59-4B63-AFA7-982B85E7DB07",
-        "values" : {
-          "opacity" : 1,
-          "rotate" : 0,
-          "rotateCenter" : 0,
-          "scale" : 1,
-          "translate" : [
-            0.009060329861111162,
-            0.016852535646239324
+            0.7833116319444445,
+            0.022243821936687964
           ]
         }
       }
@@ -87,29 +59,29 @@
     "keyframes" : [
       {
         "duration" : 0,
-        "id" : "6E98CDDA-3F87-4F5F-82A8-520D78767B70",
+        "id" : "76ADA364-4D64-4C16-B641-B6A73E69C164",
         "values" : {
           "opacity" : 1,
           "rotate" : 0,
           "rotateCenter" : 0,
           "scale" : 1,
           "translate" : [
-            0.7923719618055555,
-            0.019163086913574406
+            -0.7874348958333334,
+            0.007739965466485564
           ]
         }
       },
       {
         "duration" : 3,
-        "id" : "24303E07-AC5A-44A7-A735-B1F55E21DC47",
+        "id" : "871F4230-E5E6-407B-9FC8-0A3A4605F014",
         "values" : {
           "opacity" : 1,
           "rotate" : 0,
           "rotateCenter" : 0,
           "scale" : 1,
           "translate" : [
-            0.009060329861111162,
-            0.016852535646239324
+            0.7833116319444445,
+            0.022243821936687964
           ]
         }
       }
