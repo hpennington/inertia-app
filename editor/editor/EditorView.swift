@@ -164,7 +164,8 @@ struct EditorView: View {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys] // optional: makes JSON readable and keys ordered
 
         do {
-            let jsonData = try encoder.encode(animations.first)
+            // Export all animations as an array
+            let jsonData = try encoder.encode(animations)
             if let jsonString = String(data: jsonData, encoding: .utf8) {
                 _exportAnimationFile(text: jsonString, url: url)
             }
