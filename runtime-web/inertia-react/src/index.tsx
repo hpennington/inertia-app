@@ -460,22 +460,32 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
 
       console.log(`[INERTIA_LOG]: found animation - hierarchyIdPrefix: ${hierarchyIdPrefix} -> animationId: ${animationId}`);
 
-      const keyframesWebAPI = [
-        schema.initialValues,
-        ...(schema.keyframes || []).map((k) => k.values),
-      ].map((values) => {
-        const tx = values.translate[0];
-        const ty = values.translate[1];
+      // Apply initial values as base CSS styles
+      const initTx = schema.initialValues.translate[0];
+      const initTy = schema.initialValues.translate[1];
+      element.style.transform = `
+        translateX(${initTx * inertiaCanvasSize.width}px)
+        translateY(${initTy * inertiaCanvasSize.height}px)
+        rotate(${schema.initialValues.rotateCenter}deg)
+        scale(${schema.initialValues.scale})
+      `.trim();
+      element.style.transformOrigin = "center";
+      element.style.opacity = schema.initialValues.opacity.toString();
+
+      // Only animate the keyframes (not including initialValues)
+      const keyframesWebAPI = (schema.keyframes || []).map((k) => {
+        const tx = k.values.translate[0];
+        const ty = k.values.translate[1];
 
         return {
           transform: `
             translateX(${tx * inertiaCanvasSize.width}px)
             translateY(${ty * inertiaCanvasSize.height}px)
-            rotate(${values.rotateCenter}deg)
-            scale(${values.scale})
+            rotate(${k.values.rotateCenter}deg)
+            scale(${k.values.scale})
           `,
           transformOrigin: "center",
-          opacity: values.opacity,
+          opacity: k.values.opacity,
         };
       });
 
@@ -485,7 +495,8 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
           0
         ) || 1000;
 
-      console.log("[INERTIA_LOG] Running animation:", keyframesWebAPI);
+      console.log("[INERTIA_LOG] Running animation with initialValues:", schema.initialValues);
+      console.log("[INERTIA_LOG] Keyframes:", keyframesWebAPI);
 
       const animationHandle = element.animate(keyframesWebAPI, {
         duration: totalDuration,
@@ -493,7 +504,12 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
         easing: "ease-in-out",
       });
 
-      return () => animationHandle.cancel();
+      return () => {
+        animationHandle.cancel();
+        // Reset styles when animation is cancelled
+        element.style.transform = "";
+        element.style.opacity = "";
+      };
     }, [
       hierarchyIdPrefix,
       inertiaDataModel,

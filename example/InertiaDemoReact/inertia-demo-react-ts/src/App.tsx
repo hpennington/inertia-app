@@ -111,7 +111,7 @@ export default function App() {
   };
 
   return (
-    <InertiaContainer id={"animation"} baseURL={"http://localhost:8000"} dev={false}>
+    <InertiaContainer id={"animation"} baseURL={"http://localhost:8000"} dev={true}>
       <div style={containerStyle}>
         <div style={contentStyle}>
           {/* Header row with circular image + text */}
