@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		108B3E102FEA64E49A8FC8A1 /* MacOSVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108B3E102FEA64E49A8FC8A0 /* MacOSVMView.swift */; };
+		ED4FD5DC2F2A4D53925B5B09 /* LinuxVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4FD5DC2F2A4D53925B5B08 /* LinuxVMView.swift */; };
+		E88F5BBD094D4A88A5259391 /* ReactRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88F5BBD094D4A88A5259390 /* ReactRenderView.swift */; };
+		7F0419231354428BF3A23404 /* WebSocketServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0419231354428BF3A23403 /* WebSocketServerManager.swift */; };
+		24F4B7F58AF242EA8AC6686E /* PlaybackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F4B7F58AF242EA8AC6686D /* PlaybackManager.swift */; };
+		3F71D09833654D8AA8AC9E16 /* KeyframeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F71D09833654D8AA8AC9E15 /* KeyframeHandler.swift */; };
 		F8036E7B2CD1200E0017E25A /* MacOSVMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */; };
 		F8067EF62CF4C2DA002E7B89 /* TreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8067EF52CF4C2DA002E7B89 /* TreeView.swift */; };
 		F809F47E2E74D8AB00EA6051 /* Inertia in Frameworks */ = {isa = PBXBuildFile; productRef = F809F47D2E74D8AB00EA6051 /* Inertia */; };
@@ -83,6 +89,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		108B3E102FEA64E49A8FC8A0 /* MacOSVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSVMView.swift; sourceTree = "<group>"; };
+		ED4FD5DC2F2A4D53925B5B08 /* LinuxVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxVMView.swift; sourceTree = "<group>"; };
+		E88F5BBD094D4A88A5259390 /* ReactRenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactRenderView.swift; sourceTree = "<group>"; };
+		7F0419231354428BF3A23403 /* WebSocketServerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketServerManager.swift; sourceTree = "<group>"; };
+		24F4B7F58AF242EA8AC6686D /* PlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackManager.swift; sourceTree = "<group>"; };
+		3F71D09833654D8AA8AC9E15 /* KeyframeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyframeHandler.swift; sourceTree = "<group>"; };
 		F8036E7A2CD1200E0017E25A /* MacOSVMInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSVMInstaller.swift; sourceTree = "<group>"; };
 		F8067EF52CF4C2DA002E7B89 /* TreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeView.swift; sourceTree = "<group>"; };
 		F80DC09B2E631F5C00D0F196 /* SettingsIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsIconButton.swift; sourceTree = "<group>"; };
@@ -171,6 +183,42 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7F841D1F7C7D41D29926DA29 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				7F0419231354428BF3A23403 /* WebSocketServerManager.swift */,
+				24F4B7F58AF242EA8AC6686D /* PlaybackManager.swift */,
+				3F71D09833654D8AA8AC9E15 /* KeyframeHandler.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		36DFF01BBEB94385B542DC2F /* VMViews */ = {
+			isa = PBXGroup;
+			children = (
+				108B3E102FEA64E49A8FC8A0 /* MacOSVMView.swift */,
+				ED4FD5DC2F2A4D53925B5B08 /* LinuxVMView.swift */,
+			);
+			path = VMViews;
+			sourceTree = "<group>";
+		};
+		2C285A3D46EF4031864E3CCE /* FrameworkViews */ = {
+			isa = PBXGroup;
+			children = (
+				E88F5BBD094D4A88A5259390 /* ReactRenderView.swift */,
+			);
+			path = FrameworkViews;
+			sourceTree = "<group>";
+		};
+		5CFCD7FA840948FEA0CC4053 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				36DFF01BBEB94385B542DC2F /* VMViews */,
+				2C285A3D46EF4031864E3CCE /* FrameworkViews */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		F8067EF42CF4C2B5002E7B89 /* ViewHierarchy */ = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +276,8 @@
 				F89023E12CBC70F1000C9282 /* FocusIndicator.swift */,
 				F89C085D2C8734DB00F58F9A /* SetupTitleView.swift */,
 				F8DD5AB42C7D5B38003A3330 /* LaunchLogo.swift */,
+				7F841D1F7C7D41D29926DA29 /* Managers */,
+				5CFCD7FA840948FEA0CC4053 /* Views */,
 				F8ACA5E82D1E000300D0B878 /* Playback */,
 				F8067EF42CF4C2B5002E7B89 /* ViewHierarchy */,
 				F89C08632C875AAE00F58F9A /* SetupFlow */,
@@ -394,6 +444,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				108B3E102FEA64E49A8FC8A1 /* MacOSVMView.swift in Sources */,
+				ED4FD5DC2F2A4D53925B5B09 /* LinuxVMView.swift in Sources */,
+				E88F5BBD094D4A88A5259391 /* ReactRenderView.swift in Sources */,
+				7F0419231354428BF3A23404 /* WebSocketServerManager.swift in Sources */,
+				24F4B7F58AF242EA8AC6686E /* PlaybackManager.swift in Sources */,
+				3F71D09833654D8AA8AC9E16 /* KeyframeHandler.swift in Sources */,
 				F8ACA5F72D1E11AA00D0B878 /* Assets.xcassets in Sources */,
 				F8ACA5F22D1E016D00D0B878 /* TimelineTransformBar.swift in Sources */,
 				F8B4956C2C87CE2F0076A42C /* SetupFlowWebConfigurationScreen.swift in Sources */,

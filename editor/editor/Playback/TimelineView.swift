@@ -6,13 +6,12 @@
 //
 
 import SwiftUI
+import Inertia
 
 struct TimelineRow: View {
     let isExpanded: Bool
     let keypoints: [Int]
-    
-    let insertKeypoint: (_ millis: Int) -> Void
-    
+        
     @State private var proxyWidth: CGFloat? = nil
     
     var body: some View {
@@ -61,8 +60,22 @@ struct TimelineContainer: View {
     @State private var playheadProgress: Int = .zero
     
     let animationDuration = 3.0
+    let actionableIds: Set<String>
+    let keyframes: [InertiaAnimationKeyframe]
+    
     @Binding var isPlaying: Bool
 
+    var keypoints: [Int] {
+        var xTime: CGFloat = 0.0
+        var keypoints: [Int] = []
+        for keyframe in keyframes {
+            keypoints.append(Int(xTime  * 1000))
+            xTime += keyframe.duration
+        }
+        
+        return keypoints
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: .zero) {
@@ -96,9 +109,9 @@ struct TimelineContainer: View {
                 }
                 .frame(maxHeight: .infinity)
                 HStack(alignment: .bottom) {
-//                    TimelineHierarchy(ids: rowData.map {$0.0}, isExpanded: $isExpanded)
-////                        .padding(.top, 32)
-//                        .frame(minWidth: 256 + 16)
+                    TimelineHierarchy(ids: actionableIds.sorted(), isExpanded: $isExpanded)
+                        .padding(.top, 32)
+                        .frame(minWidth: 256 + 16)
                     
                     TimelineColumn(playheadProgress: $playheadProgress, playheadLabel: "\(playheadTime.formatted())", tickCount: 300) {
                         Timeline {
@@ -148,9 +161,18 @@ struct TimelineContainer: View {
                             
                     } content: {
                         VStack {
-//                            ForEach(Array(rowData.keys.map {String($0)}), id: \.self) { key in
-//                                TimelineRow(isExpanded: isExpanded.contains(key), keypoints: rowData[key] ?? []) { millis in
-////                                    rowData[key]?.append(millis)
+                            ForEach(actionableIds.sorted(), id: \.self) { id in
+                                TimelineRow(
+                                    isExpanded: isExpanded.contains(id),
+                                    keypoints: keypoints
+                                )
+                            }
+//                            ForEach(actionableIds, id: \.self) { key in
+//                                let keypoints = keyframes.map { keyframe in
+//                                    Int(keyframe.duration)
+//                                }
+                                
+//
 //                                }
 //                            }
                         }

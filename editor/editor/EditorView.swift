@@ -12,28 +12,10 @@ import Virtualization
 import Foundation
 import Observation
 
-//@Observable
-//final class SelectedActionableIDTracker {
-//    var selectedActionableIds: Set<String> = []
-//}
-
 @Observable
 public final class EditorModel {
     public var animations: [InertiaID: InertiaAnimationSchema] = [:]
-//    public var containers: [ActionableContainerAssociater] = []
-//    public var animations: [ActionableAnimationAssociater] = []
 }
-
-//public struct ActionableAnimationAssociater: Hashable {
-//    public let actionableIds: Set<String>
-//    public let containerId: String
-//    public let animationId: String
-//}
-//
-//public struct ActionableContainerAssociater: Hashable {
-//    public let actionableIds: Set<String>
-//    public let containerId: String
-//}
 
 @MainActor
 struct EditorView: View {
@@ -79,19 +61,14 @@ struct EditorView: View {
     @State private var frameSize: CGSize? = nil
     @State private var selectedAnimation: String = ""
     @State private var attachActionTitle: String = "Attach Container"
-    @State private var downloadingMacOS: Bool = true
-    @State private var restoreImageDownloadProgress: Double = .zero
-    @State private var installationProgress: Double = .zero
     @State private var virtualMachineMacOS: VZVirtualMachine? = nil
     @State private var virtualMachineLinux: VZVirtualMachine? = nil
-//    @State private var installerFatory: MacOSVMInstalledFactory? = nil
-    @State private var installerFactoryLinux: LinuxVMFactory? = nil
-    @State private var playheadTime: CGFloat = .zero
     
-//    @State private var server: WebSocketServer? = nil
-    @State private var servers: [SetupFlowFramework: WebSocketServer] = [:]
+    @State private var serverManager = WebSocketServerManager()
+    @State private var playbackManager: PlaybackManager? = nil
+    @State private var keyframeHandler: KeyframeHandler? = nil
 
-    
+
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
     @Binding var animations: [InertiaAnimationSchema]
@@ -124,53 +101,9 @@ struct EditorView: View {
         return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
     }
     
-    func executeInertiaSwiftWebsocketFunction(schemaWrappers: [InertiaSchemaWrapper]) async -> Result<Int, InertiaSwiftWebsocketError> {
-        guard let server = servers[framework] else {
-            return .failure(.serverNil)
-        }
-        
-        for client in server.clients {
-            if client.value.state == .ready {
-                server.sendSchema(schemaWrappers, to: client.key)
-            } else {
-                return .failure(.serverNil)
-            }
-        }
-        
-        return .success(1)
-    }
-    
-    private func runInvokePlayback() async -> Bool {
-        // The container ID should be "animation" based on the InertiaContainer setup
-        let containerId = "animation"
-
-        let schemaWrappers = editorModel.animations.compactMap { (key: InertiaID, schema: InertiaAnimationSchema) -> InertiaSchemaWrapper? in
-            let container = AnimationContainer(
-                actionableId: key,
-                containerId: containerId
-            )
-
-            return InertiaSchemaWrapper(
-                schema: schema,
-                actionableId: key,
-                container: container,
-                animationId: schema.id
-            )
-        }
-
-        let result = await executeInertiaSwiftWebsocketFunction(schemaWrappers: schemaWrappers)
-
-        switch result {
-        case .success(let success):
-            return success == 1
-        case .failure(let failure):
-            print(failure)
-            return false
-        }
-    }
-    
     private func tapPlay() async {
-        print(await runInvokePlayback())
+        guard let playbackManager = playbackManager else { return }
+        await playbackManager.play()
     }
     
     private func determineFocused(newValue: Bool) async {
@@ -199,18 +132,14 @@ struct EditorView: View {
         return TreeItem(id: node.id, displayName: node.id, children: childrenOut)
     }
     
-    @State private var installOpacity = CGFloat.zero
     @State private var isMacOSVMLoaded = false
     @State private var isLinuxVMLoaded = false
-    @State private var installerFactory: MacOSVMInstalledFactory? = nil
-    @State private var isPlaying: Bool = false
-    @State private var keyframes: [InertiaAnimationKeyframe] = []
     
     @ViewBuilder
     var treeView: some View {
-        if let server = servers[framework] {
+        if let server = serverManager.servers[framework] {
             TreeViewContainer(appMode: framework, isFocused: $isFocused, server: server) { ids in
-                
+
 //                var localRowData: [String: [Int]] = rowData
 //                for id in ids {
 //                    if !localRowData.contains(where: { pair in
@@ -219,12 +148,12 @@ struct EditorView: View {
 //                        localRowData[id] = [Int]()
 //                    }
 //                }
-//                
+//
 //                self.rowData = localRowData
             }
             .id(server.clients.keys.description)
         }
-        
+
     }
     
     func attachAnimation(id: String, actionableIds: Set<String>) {
@@ -262,11 +191,24 @@ struct EditorView: View {
         PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
             .frame(height: timelineViewHeight)
             .overlay {
-                TimelineContainer(playheadTime: $playheadTime, isPlaying: $isPlaying)
-            }
-            .onChange(of: isPlaying) { oldValue, newValue in
-                Task {
-                    await tapPlay()
+                if let playbackManager = playbackManager {
+                    TimelineContainer(
+                        playheadTime: Binding(
+                            get: { playbackManager.playheadTime },
+                            set: { playbackManager.playheadTime = $0 }
+                        ),
+                        actionableIds: Set(editorModel.animations.keys),
+                        keyframes: playbackManager.keyframes,
+                        isPlaying: Binding(
+                            get: { playbackManager.isPlaying },
+                            set: { playbackManager.isPlaying = $0 }
+                        )
+                    )
+                    .onChange(of: playbackManager.isPlaying) { oldValue, newValue in
+                        Task {
+                            await tapPlay()
+                        }
+                    }
                 }
             }
     }
@@ -309,232 +251,50 @@ struct EditorView: View {
     }
     
     func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
-        print(message)
-        print(animations)
-
-        let values = InertiaAnimationValues(
-            scale: 1.0,
-            translate: .init(width: message.translationX, height: message.translationY),
-            rotate: .zero,
-            rotateCenter: .zero,
-            opacity: 1.0
-        )
-
-        let newKeyframe = InertiaAnimationKeyframe(id: UUID().uuidString, values: values, duration: 1.0)
-        keyframes.append(newKeyframe)
-
-        let initialValues = initialValues ?? InertiaAnimationValues(
-            scale: 1.0,
-            translate: .zero,
-            rotate: .zero,
-            rotateCenter: .zero,
-            opacity: 1.0
-        )
-
-        for id in message.actionableIds {
-            let animationSchema = InertiaAnimationSchema(
-                id: id,
-                initialValues: initialValues,
-                invokeType: .auto,
-                keyframes: keyframes
-            )
-
-            if let animationIndex = animations.firstIndex(where: { schema in
-                schema.id == id
-            }) {
-                animations[animationIndex] = animationSchema
-            } else {
-                animations.append(animationSchema)
-                editorModel.animations[InertiaID(id)] = animationSchema
-            }
-        }
+        keyframeHandler?.createKeyframe(message: message, initialValues: initialValues)
     }
     
     @ViewBuilder
     var composeView: some View {
-        VStack {
-            if self.isLinuxVMLoaded {
-                if let virtualMachineLinux {
-                    GeometryReader { proxy in
-                        MacRenderView(virtualMachine: virtualMachineLinux, paths: VirtualMachinePaths(system: .linux), size: viewportMinimumSize)
-                            .onAppear {
-                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
-                            }
-                            .onChange(of: proxy.size) { oldValue, newValue in
-                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
-                            }
-                    }
-                    .aspectRatio(16 / 10, contentMode: .fit)
-                    .cornerRadius(renderViewportCornerRadius)
-                    .padding(6 / 2)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
-                    }
-                    .onAppear {
-                        if servers[.compose] == nil {
-                            if let server = try? WebSocketServer(port: 8070) { message in
-                                createKeyframe(message: message)
-                            } {
-                                server.start()
-                                servers[.compose] = server
-                            }
-                        }
-                    }
-                }
-            } else {
-                ProgressView()
-                    .onAppear {
-                        let paths = VirtualMachinePaths(system: .linux)
-                        self.installerFactoryLinux = LinuxVMFactory(size: viewportMinimumSize, paths: paths)
-                        
-                        if FileManager.default.fileExists(atPath: paths.diskImageURL.path) {
-                            // Linux is already installed, boot normally
-                            self.virtualMachineLinux = self.installerFactoryLinux?.createVMForBoot()
-                        } else {
-                            // Linux not installed, boot from ISO for installation
-                            self.virtualMachineLinux = self.installerFactoryLinux?.createVMForInstallation(isoURL: URL("/Users/haydenpennington/Downloads/ubuntu-25.04-desktop-arm64.iso")!)
-                        }
-                        self.delegate.vmShutdownManagers.append(VirtualMachineShutdownManager(virtualMachine: self.virtualMachineLinux, paths: paths))
-                        
-                        self.virtualMachineLinux?.start { result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .success:
-                                    self.isLinuxVMLoaded = true
-                                case .failure(let error):
-                                    print("Failed to start VM: \(error)")
-                                }
-                            }
-                        }
-                    }
-            }
-            
-            Spacer(minLength: .zero)
-        }   
+        LinuxVMView(
+            isLoaded: $isLinuxVMLoaded,
+            virtualMachine: $virtualMachineLinux,
+            frameSize: $frameSize,
+            servers: $serverManager.servers,
+            viewportMinimumSize: viewportMinimumSize,
+            renderViewportCornerRadius: renderViewportCornerRadius,
+            delegate: delegate,
+            onKeyframeMessage: createKeyframe
+        )
     }
     
     var macOSView: some View {
-        VStack {
-            if isMacOSVMLoaded {
-                if let virtualMachineMacOS {
-                    GeometryReader { proxy in
-                        MacRenderView(virtualMachine: virtualMachineMacOS, paths: VirtualMachinePaths(system: .macos), size: viewportMinimumSize)
-                            .onAppear {
-                                frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
-                            }
-                            .onChange(of: proxy.size) { oldValue, newValue in
-                                frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
-                            }
-                        }
-                        .aspectRatio(16 / 10, contentMode: .fit)
-                        .cornerRadius(renderViewportCornerRadius)
-                        .padding(6 / 2)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
-                        }
-                        .onAppear {
-                            if servers[.swiftUI] == nil {
-                                if let server = try? WebSocketServer(port: 8060) { message in
-                                    if playheadTime == .zero {
-                                        let initialValues = InertiaAnimationValues(
-                                            scale: 1.0,
-                                            translate: .zero,
-                                            rotate: .zero,
-                                            rotateCenter: .zero,
-                                            opacity: 1.0
-                                        )
-                                        createKeyframe(message: message, initialValues: initialValues)
-                                    } else {
-                                        createKeyframe(message: message)
-                                    }
-                                } {
-                                    server.start()
-                                    servers[.swiftUI] = server
-                                }
-                            }
-                        }
-                }
-            } else {
-                ProgressView()
-                    .onAppear {
-                        let paths = VirtualMachinePaths(system: .macos)
-                        let downloader = MacOSVMDownloader(paths: paths) { value in
-//                                    progress = value
-                        }
-                        
-                        self.installerFactory = MacOSVMInstalledFactory(downloader: downloader, paths: paths) { progress in
-//                                    self.progress = progress
-                        }
-                        self.installerFactory?.createInitialzedVM(size: viewportMinimumSize, paths: paths, initCompletion: { vm in
-                            self.virtualMachineMacOS = vm
-                            self.delegate.vmShutdownManagers.append(VirtualMachineShutdownManager(virtualMachine: vm, paths: paths))
-                            self.isMacOSVMLoaded = true
-                        })
-                    }
-            }
-            
-            Spacer(minLength: .zero)
-        }
+        MacOSVMView(
+            isLoaded: $isMacOSVMLoaded,
+            virtualMachine: $virtualMachineMacOS,
+            frameSize: $frameSize,
+            servers: $serverManager.servers,
+            viewportMinimumSize: viewportMinimumSize,
+            renderViewportCornerRadius: renderViewportCornerRadius,
+            delegate: delegate,
+            onKeyframeMessage: createKeyframe,
+            playheadTime: playbackManager?.playheadTime ?? .zero
+        )
     }
     
     var reactView: some View {
-        VStack {
-            GeometryReader { proxy in
-                if let url = URL(string: url) {
-                    WebRenderView(
-                        url: url,
-                        contentController: contentController,
-                        coordinator: coordinator,
-                        webView: webView
-                    )
-                    .equatable()
-                    .id(url)
-                    .frame(width: 300)
-                    
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .aspectRatio(16 / 10, contentMode: .fit)
-                    .background(Color.black)
-                    .cornerRadius(renderViewportCornerRadius)
-                    .padding(6 / 2)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
-                    }
-                    .onAppear {
-                        frameSize = maxCGSize(lhs: proxy.size, rhs: viewportMinimumSize)
-                    }
-                    .onChange(of: proxy.size) { oldValue, newValue in
-                        frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
-                    }
-                    .onAppear {
-                        if servers[.react] == nil {
-                            if let server = try? WebSocketServer(port: 8080) { message in
-                                if playheadTime == .zero {
-                                    let initialValues = InertiaAnimationValues(
-                                        scale: 1.0,
-                                        translate: .init(width: message.translationX, height: message.translationY),
-                                        rotate: .zero,
-                                        rotateCenter: .zero,
-                                        opacity: 1.0
-                                    )
-                                    createKeyframe(message: message, initialValues: initialValues)
-                                } else {
-                                    createKeyframe(message: message)
-                                }
-                            } {
-                                server.start()
-                                servers[.react] = server
-                            }
-                        }
-                    }
-                } else {
-                    Color.black
-                }
-                Spacer()
-            }
-        }
+        ReactRenderView(
+            frameSize: $frameSize,
+            servers: $serverManager.servers,
+            url: url,
+            viewportMinimumSize: viewportMinimumSize,
+            renderViewportCornerRadius: renderViewportCornerRadius,
+            contentController: contentController,
+            coordinator: coordinator,
+            webView: webView,
+            onKeyframeMessage: createKeyframe,
+            playheadTime: playbackManager?.playheadTime ?? .zero
+        )
         .background(appColors.backgroundPrimary)
     }
     
@@ -651,5 +411,21 @@ struct EditorView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(appColors.backgroundSecondary)
         .environment(\.appColors, appColors)
+        .onAppear {
+            // Initialize managers
+            playbackManager = PlaybackManager(
+                editorModel: editorModel,
+                serverManager: serverManager,
+                framework: framework
+            )
+            keyframeHandler = KeyframeHandler(
+                editorModel: editorModel,
+                playbackManager: playbackManager!,
+                animations: $animations
+            )
+        }
+        .onChange(of: framework) { _, newValue in
+            playbackManager?.updateFramework(newValue)
+        }
     }
 }
