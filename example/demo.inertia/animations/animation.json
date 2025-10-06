@@ -15,73 +15,29 @@
     "keyframes" : [
       {
         "duration" : 0,
-        "id" : "93C00AA1-4F8E-408A-A478-DB2F25D53FC1",
+        "id" : "1A9DA10A-9E90-49B6-943B-D10756FA3C2C",
         "values" : {
           "opacity" : 1,
           "rotate" : 0,
           "rotateCenter" : 0,
           "scale" : 1,
           "translate" : [
-            -0.7874348958333334,
-            0.007739965466485564
+            -0.6482747395833334,
+            -0.0030121047874500533
           ]
         }
       },
       {
         "duration" : 3,
-        "id" : "9A8B46B8-27FC-4EA7-9521-5D6BEA04635A",
+        "id" : "F5F9E292-E987-442C-89CC-C2CB09B56971",
         "values" : {
           "opacity" : 1,
           "rotate" : 0,
           "rotateCenter" : 0,
           "scale" : 1,
           "translate" : [
-            0.7833116319444445,
-            0.022243821936687964
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "id" : "card1",
-    "initialValues" : {
-      "opacity" : 1,
-      "rotate" : 0,
-      "rotateCenter" : 0,
-      "scale" : 1,
-      "translate" : [
-        0,
-        0
-      ]
-    },
-    "invokeType" : "auto",
-    "keyframes" : [
-      {
-        "duration" : 0,
-        "id" : "76ADA364-4D64-4C16-B641-B6A73E69C164",
-        "values" : {
-          "opacity" : 1,
-          "rotate" : 0,
-          "rotateCenter" : 0,
-          "scale" : 1,
-          "translate" : [
-            -0.7874348958333334,
-            0.007739965466485564
-          ]
-        }
-      },
-      {
-        "duration" : 3,
-        "id" : "871F4230-E5E6-407B-9FC8-0A3A4605F014",
-        "values" : {
-          "opacity" : 1,
-          "rotate" : 0,
-          "rotateCenter" : 0,
-          "scale" : 1,
-          "translate" : [
-            0.7833116319444445,
-            0.022243821936687964
+            0.008463541666666666,
+            -0.012010291241098201
           ]
         }
       }

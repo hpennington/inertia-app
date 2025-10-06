@@ -149,12 +149,18 @@ function handleMessageSchema(
     inertiaDataModel: InertiaDataModel | null,
     setInertiaDataModel: React.Dispatch<React.SetStateAction<InertiaDataModel>>
 ): void {
-    if (!inertiaDataModel) return;
+    console.log(`[INERTIA_LOG]: [handleMessageSchema] Received ${schemaWrappers.length} schema wrappers`);
+
+    if (!inertiaDataModel) {
+        console.log(`[INERTIA_LOG]: [handleMessageSchema] ❌ No inertiaDataModel!`);
+        return;
+    }
 
     for (const schemaWrapper of schemaWrappers) {
         console.log(
             `[INERTIA_LOG]: [handleMessageSchema] wrapper - containerId: ${schemaWrapper.container.containerId}, actionableId: ${schemaWrapper.actionableId}, animationId: ${schemaWrapper.animationId}`
         );
+        console.log(`[INERTIA_LOG]: [handleMessageSchema] schema:`, schemaWrapper.schema);
         console.log(`[INERTIA_LOG]: [handleMessageSchema] my containerId: ${inertiaDataModel.containerId}`);
 
         if (schemaWrapper.container.containerId === inertiaDataModel.containerId) {
@@ -167,14 +173,15 @@ function handleMessageSchema(
                 updated.inertiaSchemas.set(schemaWrapper.animationId, schemaWrapper.schema);
 
                 console.log(
-                    `[INERTIA_LOG]: ✅ stored schema - animationId: ${schemaWrapper.animationId} actionableId: ${schemaWrapper.actionableId}`
+                    `[INERTIA_LOG]: ✅ stored schema - animationId: ${schemaWrapper.animationId} actionableId: ${schemaWrapper.actionableId}, keyframes: ${schemaWrapper.schema.keyframes?.length ?? 0}`
                 );
-                console.log(`[INERTIA_LOG]: map now:`, Object.fromEntries(updated.actionableIdToAnimationIdMap));
+                console.log(`[INERTIA_LOG]: actionableIdToAnimationIdMap:`, Object.fromEntries(updated.actionableIdToAnimationIdMap));
+                console.log(`[INERTIA_LOG]: inertiaSchemas keys:`, Array.from(updated.inertiaSchemas.keys()));
 
                 return updated;
             });
         } else {
-            console.log(`[INERTIA_LOG]: ❌ skipped - container mismatch`);
+            console.log(`[INERTIA_LOG]: ❌ skipped - container mismatch (wanted: ${schemaWrapper.container.containerId}, have: ${inertiaDataModel.containerId})`);
         }
     }
 }
@@ -185,6 +192,56 @@ export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContaine
     );
     const [bounds, setBounds] = React.useState<InertiaCanvasSize | null>(null);
     const ref = React.useRef<HTMLDivElement | null>(null);
+
+    // Load animation schemas from JSON file if not in dev mode
+    React.useEffect(() => {
+        console.log(`[INERTIA_LOG]: InertiaContainer init - dev: ${dev}, id: ${id}, baseURL: ${baseURL}`);
+
+        if (dev) {
+            console.log(`[INERTIA_LOG]: Dev mode enabled - schemas will be loaded via WebSocket`);
+            return;
+        }
+
+        console.log(`[INERTIA_LOG]: Production mode - attempting to load ${baseURL}/${id}.json`);
+
+        const loadAnimations = async () => {
+            try {
+                const url = `${baseURL}/${id}.json`;
+                console.log(`[INERTIA_LOG]: Fetching ${url}`);
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    console.error(`[INERTIA_LOG]: Failed to load animation file: ${url} (status: ${response.status})`);
+                    return;
+                }
+
+                const schemas: InertiaAnimationSchema[] = await response.json();
+                console.log(`[INERTIA_LOG]: Loaded ${schemas.length} schemas from ${id}.json`, schemas);
+
+                const schemaMap = new Map<string, InertiaAnimationSchema>();
+                const actionableIdToAnimationIdMap = new Map<string, string>();
+
+                for (const schema of schemas) {
+                    // Store schema by its ID (hierarchyIdPrefix)
+                    schemaMap.set(schema.id, schema);
+                    // Map hierarchyIdPrefix to animationId
+                    actionableIdToAnimationIdMap.set(schema.id, schema.id);
+                    console.log(`[INERTIA_LOG]: Loaded schema - id: ${schema.id}, keyframes: ${schema.keyframes?.length ?? 0}`);
+                }
+
+                console.log(`[INERTIA_LOG]: Setting inertiaDataModel with ${schemaMap.size} schemas`);
+                setInertiaDataModel(prev => ({
+                    ...prev,
+                    inertiaSchemas: schemaMap,
+                    actionableIdToAnimationIdMap
+                }));
+            } catch (error) {
+                console.error(`[INERTIA_LOG]: Error loading animation file ${id}.json:`, error);
+            }
+        };
+
+        loadAnimations();
+    }, [dev, baseURL, id]);
 
     React.useEffect(() => {
         if (!ref.current) return;
@@ -205,11 +262,23 @@ export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContaine
 
     // ✅ WebSocket logic stays the same
     React.useEffect(() => {
-        const ws = WebSocketClient.shared;
-        if (!inertiaDataModel?.tree) return;
+        if (!dev) {
+            console.log(`[INERTIA_LOG]: Not in dev mode, skipping WebSocket connection`);
+            return;
+        }
 
+        const ws = WebSocketClient.shared;
+        if (!inertiaDataModel?.tree) {
+            console.log(`[INERTIA_LOG]: No tree in inertiaDataModel, skipping WebSocket connection`);
+            return;
+        }
+
+        console.log(`[INERTIA_LOG]: Connecting to WebSocket ws://127.0.0.1:8080`);
         ws.connect("ws://127.0.0.1:8080", () => {
+            console.log(`[INERTIA_LOG]: WebSocket connected, setting up handlers`);
+
             ws.messageReceived = (msg) => {
+                console.log(`[INERTIA_LOG]: Received messageReceived with ${msg.size} IDs`);
                 // Filter existing pairs to keep only those in msg
                 setInertiaDataModel(prev => ({
                     ...prev,
@@ -218,19 +287,22 @@ export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContaine
             };
 
             ws.messageReceivedSchema = (msg) => {
+                console.log(`[INERTIA_LOG]: Received messageReceivedSchema`);
                 handleMessageSchema(msg, inertiaDataModel, setInertiaDataModel)
             };
 
             ws.messageReceivedIsActionable = (msg) => {
+                console.log(`[INERTIA_LOG]: Received messageReceivedIsActionable: ${msg}`);
                 setInertiaDataModel(prev => ({ ...prev, isActionable: msg }));
             };
 
+            console.log(`[INERTIA_LOG]: Sending initial MessageActionables`);
             ws.sendMessageActionables({
                 tree: inertiaDataModel.tree,
                 actionableIds: Array.from(inertiaDataModel.actionableIdPairs).map(pair => pair.hierarchyId),
             });
         });
-    }, [inertiaDataModel?.tree]);
+    }, [inertiaDataModel?.tree, dev]);
 
     return (
         <InertiaCanvasSizeContext.Provider value={bounds}>
