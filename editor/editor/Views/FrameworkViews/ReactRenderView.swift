@@ -20,7 +20,7 @@ struct ReactRenderView: View {
     let contentController: WKUserContentController
     let coordinator: WKWebViewWrapper.Coordinator
     let webView: WKWebView
-    let onKeyframeMessage: (WebSocketClient.MessageTranslation, InertiaAnimationValues?) -> Void
+    let onKeyframeMessage: (WebSocketClient.MessageTranslation) -> Void
     var playheadTime: CGFloat
 
     private func maxCGSize(lhs: CGSize, rhs: CGSize) -> CGSize {

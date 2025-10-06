@@ -20,7 +20,7 @@ struct MacOSVMView: View {
     let viewportMinimumSize: CGSize
     let renderViewportCornerRadius: CGFloat
     let delegate: AppDelegate
-    let onKeyframeMessage: (WebSocketClient.MessageTranslation, InertiaAnimationValues?) -> Void
+    let onKeyframeMessage: (WebSocketClient.MessageTranslation) -> Void
     var playheadTime: CGFloat
 
     @State private var installerFactory: MacOSVMInstalledFactory?

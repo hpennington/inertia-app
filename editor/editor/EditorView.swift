@@ -182,8 +182,8 @@ struct EditorView: View {
         }
     }
     
-    func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
-        viewModel.createKeyframe(message: message, initialValues: initialValues)
+    func createKeyframe(message: WebSocketClient.MessageTranslation) {
+        viewModel.createKeyframe(message: message)
     }
     
     @ViewBuilder

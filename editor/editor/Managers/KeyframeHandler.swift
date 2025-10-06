@@ -40,14 +40,29 @@ final class KeyframeHandler {
             rotateCenter: .zero,
             opacity: 1.0
         )
-
-        let initialValues = initialValues ?? InertiaAnimationValues(
-            scale: 1.0,
-            translate: .zero,
-            rotate: .zero,
-            rotateCenter: .zero,
-            opacity: 1.0
-        )
+        
+        
+        let defaultInitialValue: InertiaAnimationValues = {
+            if playbackManager.playheadTime == .zero {
+                let initialValues = InertiaAnimationValues(
+                    scale: 1.0,
+                    translate: .init(width: message.translationX, height: message.translationY),
+                    rotate: .zero,
+                    rotateCenter: .zero,
+                    opacity: 1.0
+                )
+                return initialValues
+            } else {
+                let initialValues = InertiaAnimationValues(
+                    scale: 1.0,
+                    translate: .zero,
+                    rotate: .zero,
+                    rotateCenter: .zero,
+                    opacity: 1.0
+                )
+                return initialValues
+            }
+        }()
 
         var updatedAnimationsArray: [InertiaAnimationSchema] = Array(animations.values)
 
@@ -81,7 +96,7 @@ final class KeyframeHandler {
 
             let animationSchema = InertiaAnimationSchema(
                 id: id,
-                initialValues: initialValues,
+                initialValues: initialValues ?? defaultInitialValue,
                 invokeType: .auto,
                 keyframes: actionableKeyframes
             )

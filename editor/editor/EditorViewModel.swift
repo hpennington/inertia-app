@@ -91,18 +91,7 @@ final class EditorViewModel {
     }
 
     private func handleKeyframeMessage(_ message: WebSocketClient.MessageTranslation) {
-        if playbackManager.playheadTime == .zero {
-            let initialValues = InertiaAnimationValues(
-                scale: 1.0,
-                translate: .init(width: message.translationX, height: message.translationY),
-                rotate: .zero,
-                rotateCenter: .zero,
-                opacity: 1.0
-            )
-            createKeyframe(message: message, initialValues: initialValues)
-        } else {
-            createKeyframe(message: message, initialValues: nil)
-        }
+        createKeyframe(message: message)
     }
 
     // MARK: - Computed Properties
@@ -120,8 +109,8 @@ final class EditorViewModel {
         // TODO: Implement animation attachment
     }
 
-    func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
-        keyframeHandler.createKeyframe(message: message, initialValues: initialValues, isRecording: isRecordingKeyframes)
+    func createKeyframe(message: WebSocketClient.MessageTranslation) {
+        keyframeHandler.createKeyframe(message: message, isRecording: isRecordingKeyframes)
     }
 
     func play() async {
