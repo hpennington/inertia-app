@@ -11,14 +11,22 @@ import Inertia
 
 @MainActor
 final class KeyframeHandler {
-    private let editorModel: EditorModel
+    private var animations: [InertiaID: InertiaAnimationSchema]
     private let playbackManager: PlaybackManager
-    @Binding private var animations: [InertiaAnimationSchema]
+    private var onAnimationsUpdate: (([InertiaAnimationSchema]) -> Void)?
 
-    init(editorModel: EditorModel, playbackManager: PlaybackManager, animations: Binding<[InertiaAnimationSchema]>) {
-        self.editorModel = editorModel
+    init(animations: [InertiaID: InertiaAnimationSchema], playbackManager: PlaybackManager, onAnimationsUpdate: (([InertiaAnimationSchema]) -> Void)? = nil) {
+        self.animations = animations
         self.playbackManager = playbackManager
-        self._animations = animations
+        self.onAnimationsUpdate = onAnimationsUpdate
+    }
+
+    func updateAnimations(_ animations: [InertiaID: InertiaAnimationSchema]) {
+        self.animations = animations
+    }
+
+    func setAnimationsUpdateHandler(_ handler: @escaping ([InertiaAnimationSchema]) -> Void) {
+        self.onAnimationsUpdate = handler
     }
 
     func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
@@ -49,6 +57,8 @@ final class KeyframeHandler {
             opacity: 1.0
         )
 
+        var updatedAnimationsArray: [InertiaAnimationSchema] = Array(animations.values)
+
         for id in message.actionableIds {
             let animationSchema = InertiaAnimationSchema(
                 id: id,
@@ -57,14 +67,19 @@ final class KeyframeHandler {
                 keyframes: playbackManager.keyframes
             )
 
-            if let animationIndex = animations.firstIndex(where: { schema in
+            if let animationIndex = updatedAnimationsArray.firstIndex(where: { schema in
                 schema.id == id
             }) {
-                animations[animationIndex] = animationSchema
+                updatedAnimationsArray[animationIndex] = animationSchema
             } else {
-                animations.append(animationSchema)
-                editorModel.animations[InertiaID(id)] = animationSchema
+                updatedAnimationsArray.append(animationSchema)
             }
+
+            // Update local animations dict
+            animations[InertiaID(id)] = animationSchema
         }
+
+        // Notify parent of animations update
+        onAnimationsUpdate?(updatedAnimationsArray)
     }
 }

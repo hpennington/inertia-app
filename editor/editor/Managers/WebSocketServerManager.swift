@@ -19,11 +19,19 @@ final class WebSocketServerManager {
         port: Int,
         onMessage: @escaping (WebSocketClient.MessageTranslation) -> Void
     ) {
-        guard servers[framework] == nil else { return }
+        // Don't start if server already exists for this framework
+        guard servers[framework] == nil else {
+            print("⚠️ Server for \(framework) already running on port \(port)")
+            return
+        }
 
-        if let server = try? WebSocketServer(port: UInt16(port), translation: onMessage) {
+        do {
+            let server = try WebSocketServer(port: UInt16(port), translation: onMessage)
             server.start()
             servers[framework] = server
+            print("✅ Started server for \(framework) on port \(port)")
+        } catch {
+            print("❌ Failed to start server for \(framework) on port \(port): \(error)")
         }
     }
 

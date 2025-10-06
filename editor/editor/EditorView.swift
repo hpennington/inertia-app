@@ -12,20 +12,15 @@ import Virtualization
 import Foundation
 import Observation
 
-@Observable
-public final class EditorModel {
-    public var animations: [InertiaID: InertiaAnimationSchema] = [:]
-}
-
 @MainActor
 struct EditorView: View {
     @Environment(\.colorScheme) var colorScheme
     @FocusState var focusState: FocusableElement?
-    
+
     enum FocusableElement: Hashable {
         case viewport
     }
-    
+
     private let hierarchyViewWidth: CGFloat = 300
     private let viewportMinimumSize = CGSize(width: 320, height: 180)
     private let propertiesViewWidth: CGFloat = 300
@@ -34,7 +29,7 @@ struct EditorView: View {
     private let segmentedPickerWidth: CGFloat = 250
     private let spacing: CGFloat = 3
     private let cornerRadius: CGFloat = 4
-    
+
     init(
         url: Binding<String>,
         framework: Binding<SetupFlowFramework>,
@@ -43,7 +38,8 @@ struct EditorView: View {
         coordinator: WKWebViewWrapper.Coordinator,
         contentController: WKUserContentController,
         configuration: WKWebViewConfiguration,
-        delegate: AppDelegate
+        delegate: AppDelegate,
+        viewModel: EditorViewModel
     ) {
         self._url = url
         self._framework = framework
@@ -53,21 +49,10 @@ struct EditorView: View {
         self.contentController = contentController
         self.configuration = configuration
         self.delegate = delegate
+        self._viewModel = State(wrappedValue: viewModel)
     }
-    
-//    @State private var appMode: AppMode = .react
-    @State private var editorModel = EditorModel()
-    @State private var isFocused = false
-    @State private var frameSize: CGSize? = nil
-    @State private var selectedAnimation: String = ""
-    @State private var attachActionTitle: String = "Attach Container"
-    @State private var virtualMachineMacOS: VZVirtualMachine? = nil
-    @State private var virtualMachineLinux: VZVirtualMachine? = nil
-    
-    @State private var serverManager = WebSocketServerManager()
-    @State private var playbackManager: PlaybackManager? = nil
-    @State private var keyframeHandler: KeyframeHandler? = nil
 
+    @State var viewModel: EditorViewModel
 
     @Binding var url: String
     @Binding var framework: SetupFlowFramework
@@ -102,25 +87,9 @@ struct EditorView: View {
     }
     
     private func tapPlay() async {
-        guard let playbackManager = playbackManager else { return }
-        await playbackManager.play()
+        await viewModel.play()
     }
-    
-    private func determineFocused(newValue: Bool) async {
-        // TODO: Does this eneed sometings?
-    }
-    
-    var animationsAvailableContents: [String: [String]] {
-        var map: [String: [String]] = [:]
-//        for animation in animations {
-//            map[animation.id] = animation.objects.map {
-//                $0.id
-//            }.sorted()
-//        }
-        
-        return map
-    }
-    
+
     func transformTreeToTreeItems(node: Node) -> TreeItem {
         var childrenOut: [TreeItem]? = nil
         if let children = node.children {
@@ -128,86 +97,44 @@ struct EditorView: View {
                 childrenOut?.append(transformTreeToTreeItems(node: child))
             }
         }
-        
+
         return TreeItem(id: node.id, displayName: node.id, children: childrenOut)
     }
-    
-    @State private var isMacOSVMLoaded = false
-    @State private var isLinuxVMLoaded = false
-    
+
     @ViewBuilder
     var treeView: some View {
-        if let server = serverManager.servers[framework] {
-            TreeViewContainer(appMode: framework, isFocused: $isFocused, server: server) { ids in
-
-//                var localRowData: [String: [Int]] = rowData
-//                for id in ids {
-//                    if !localRowData.contains(where: { pair in
-//                        pair.key == id
-//                    }) {
-//                        localRowData[id] = [Int]()
-//                    }
-//                }
-//
-//                self.rowData = localRowData
+        if let server = viewModel.serverManager.servers[framework] {
+            TreeViewContainer(appMode: framework, isFocused: $viewModel.isFocused, server: server) { ids in
+                // Handle tree selection updates
             }
             .id(server.clients.keys.description)
         }
-
-    }
-    
-    func attachAnimation(id: String, actionableIds: Set<String>) {
-//        let containers = self.animations
-//        let animations = self.animations.flatMap({$0.objects})
-//        
-//        if let container = containers.first(where: { container in container.id == id }) {
-//            
-//            editorModel.containers.append(ActionableContainerAssociater(actionableIds: actionableIds, containerId: container.id))
-//        } else if let animation = animations.first(where: { animation in animation.id == id }) {
-//            editorModel.containers.append(ActionableContainerAssociater(actionableIds: Set(["animation1"]), containerId: animation.containerId))
-//            
-//            if let server = servers[framework] {
-//                for treePacket in server.treePackets {
-//                    for id in treePacket.actionableIds {
-//                        selectedActionableIDTracker?.selectedActionableIds.insert(id)
-//                    }
-//                }
-//                
-//                if let selectedActionableIds = selectedActionableIDTracker?.selectedActionableIds {
-//                    editorModel.animations.append(
-//                        ActionableAnimationAssociater(
-//                            actionableIds: selectedActionableIds,
-//                            containerId: animation.containerId,
-//                            animationId: animation.id
-//                        )
-//                    )
-//                }
-//                   
-//            }
-//        }
     }
     
     var timelineView: some View {
-        PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
+        let _ = viewModel.keyframesVersion // Force dependency tracking
+
+        return PanelView(color: colorScheme == .light ? ColorPalette.gray6 : ColorPalette.gray0_5)
             .frame(height: timelineViewHeight)
             .overlay {
-                if let playbackManager = playbackManager {
-                    TimelineContainer(
-                        playheadTime: Binding(
-                            get: { playbackManager.playheadTime },
-                            set: { playbackManager.playheadTime = $0 }
-                        ),
-                        actionableIds: Set(editorModel.animations.keys),
-                        keyframes: playbackManager.keyframes,
-                        isPlaying: Binding(
-                            get: { playbackManager.isPlaying },
-                            set: { playbackManager.isPlaying = $0 }
-                        )
+                TimelineContainer(
+                    playheadTime: Binding(
+                        get: { viewModel.playbackManager.playheadTime },
+                        set: { viewModel.playbackManager.playheadTime = $0 }
+                    ),
+                    actionableIds: Set(viewModel.animations.keys),
+                    keyframes: viewModel.playbackManager.keyframes,
+                    isPlaying: Binding(
+                        get: { viewModel.playbackManager.isPlaying },
+                        set: { viewModel.playbackManager.isPlaying = $0 }
                     )
-                    .onChange(of: playbackManager.isPlaying) { oldValue, newValue in
-                        Task {
-                            await tapPlay()
-                        }
+                )
+                .onChange(of: viewModel.keyframesVersion) { oldValue, newValue in
+                    print("📊 Timeline notified of keyframes version change: \(oldValue) -> \(newValue)")
+                }
+                .onChange(of: viewModel.playbackManager.isPlaying) { oldValue, newValue in
+                    Task {
+                        await tapPlay()
                     }
                 }
             }
@@ -251,41 +178,41 @@ struct EditorView: View {
     }
     
     func createKeyframe(message: WebSocketClient.MessageTranslation, initialValues: InertiaAnimationValues? = nil) {
-        keyframeHandler?.createKeyframe(message: message, initialValues: initialValues)
+        viewModel.createKeyframe(message: message, initialValues: initialValues)
     }
     
     @ViewBuilder
     var composeView: some View {
         LinuxVMView(
-            isLoaded: $isLinuxVMLoaded,
-            virtualMachine: $virtualMachineLinux,
-            frameSize: $frameSize,
-            servers: $serverManager.servers,
+            isLoaded: $viewModel.isLinuxVMLoaded,
+            virtualMachine: $viewModel.virtualMachineLinux,
+            frameSize: $viewModel.frameSize,
+            servers: $viewModel.serverManager.servers,
             viewportMinimumSize: viewportMinimumSize,
             renderViewportCornerRadius: renderViewportCornerRadius,
             delegate: delegate,
             onKeyframeMessage: createKeyframe
         )
     }
-    
+
     var macOSView: some View {
         MacOSVMView(
-            isLoaded: $isMacOSVMLoaded,
-            virtualMachine: $virtualMachineMacOS,
-            frameSize: $frameSize,
-            servers: $serverManager.servers,
+            isLoaded: $viewModel.isMacOSVMLoaded,
+            virtualMachine: $viewModel.virtualMachineMacOS,
+            frameSize: $viewModel.frameSize,
+            servers: $viewModel.serverManager.servers,
             viewportMinimumSize: viewportMinimumSize,
             renderViewportCornerRadius: renderViewportCornerRadius,
             delegate: delegate,
             onKeyframeMessage: createKeyframe,
-            playheadTime: playbackManager?.playheadTime ?? .zero
+            playheadTime: viewModel.playheadTime
         )
     }
-    
+
     var reactView: some View {
         ReactRenderView(
-            frameSize: $frameSize,
-            servers: $serverManager.servers,
+            frameSize: $viewModel.frameSize,
+            servers: $viewModel.serverManager.servers,
             url: url,
             viewportMinimumSize: viewportMinimumSize,
             renderViewportCornerRadius: renderViewportCornerRadius,
@@ -293,7 +220,7 @@ struct EditorView: View {
             coordinator: coordinator,
             webView: webView,
             onKeyframeMessage: createKeyframe,
-            playheadTime: playbackManager?.playheadTime ?? .zero
+            playheadTime: viewModel.playheadTime
         )
         .background(appColors.backgroundPrimary)
     }
@@ -330,11 +257,11 @@ struct EditorView: View {
                     }
 
                     AnimationsAvailableColumn(
-                        animations: animationsAvailableContents,
-                        selected: $selectedAnimation,
+                        animations: viewModel.animationsAvailableContents,
+                        selected: $viewModel.selectedAnimation,
                         actionableIds: Set(),
                         disabled: false,
-                        actionTitle: attachActionTitle, attachAnimation: self.attachAnimation)
+                        actionTitle: viewModel.attachActionTitle, attachAnimation: viewModel.attachAnimation)
                         .padding(.vertical)
                     
                 }
@@ -343,21 +270,11 @@ struct EditorView: View {
                 .modifier(WithPanelBackground())
                 .frame(minHeight: 600)
                 .cornerRadius(bottomLeft: cornerRadius)
-                .onChange(of: selectedAnimation) { _, newValue in
-//                    let containers = self.animations
-//                    let animations = self.animations.flatMap({$0.objects})
-//                    if let container = containers.first(where: { container in container.id == newValue }) {
-//                        attachActionTitle = "Attach Container"
-//                    } else if let animation = animations.first(where: { animation in animation.id == newValue }) {
-//                        attachActionTitle = "Attach Animation"
-//                    }
-                }
-                
+
                 Spacer(minLength: spacing)
-                
+
                 VStack {
-//                            AnimationsAttachedList(animations: editorModel.animations)
-//                                .padding(.vertical)
+                    // Animation attachments list
                 }
                 .padding(.horizontal)
                 .modifier(WithPanelBackground())
@@ -391,15 +308,10 @@ struct EditorView: View {
                 }
                 .padding()
                 .modifier(WithPanelBackground())
-                .frame(minWidth: frameSize?.width ?? viewportMinimumSize.width, minHeight: frameSize?.height ?? viewportMinimumSize.height)
+                .frame(minWidth: viewModel.frameSize?.width ?? viewportMinimumSize.width, minHeight: viewModel.frameSize?.height ?? viewportMinimumSize.height)
                 .focused($focusState, equals: .viewport)
                 .onAppear {
                     focusState = .viewport
-                }
-                .onChange(of: isFocused) { _, newValue in
-                    Task {
-                        await determineFocused(newValue: newValue)
-                    }
                 }
 
             } trailing: {
@@ -411,21 +323,12 @@ struct EditorView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(appColors.backgroundSecondary)
         .environment(\.appColors, appColors)
-        .onAppear {
-            // Initialize managers
-            playbackManager = PlaybackManager(
-                editorModel: editorModel,
-                serverManager: serverManager,
-                framework: framework
-            )
-            keyframeHandler = KeyframeHandler(
-                editorModel: editorModel,
-                playbackManager: playbackManager!,
-                animations: $animations
-            )
-        }
         .onChange(of: framework) { _, newValue in
-            playbackManager?.updateFramework(newValue)
+            viewModel.updateFramework(newValue)
+        }
+        .onChange(of: viewModel.animations) { _, newValue in
+            viewModel.playbackManager.updateAnimations(newValue)
+            viewModel.keyframeHandler.updateAnimations(newValue)
         }
     }
 }

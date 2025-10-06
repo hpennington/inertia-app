@@ -49,6 +49,7 @@
 		F899B9CE2C88E21700633B83 /* SetupFlowCopyingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899B9CD2C88E21700633B83 /* SetupFlowCopyingScreen.swift */; };
 		F89BA0AC2C48C85A0006603C /* Inertia_AnimationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AB2C48C85A0006603C /* Inertia_AnimationApp.swift */; };
 		F89BA0AE2C48C85A0006603C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0AD2C48C85A0006603C /* EditorView.swift */; };
+		F89BA0ED2C48C85A0006603D /* EditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0EC2C48C85A0006603D /* EditorViewModel.swift */; };
 		F89BA0B02C48C85B0006603C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F89BA0AF2C48C85B0006603C /* Assets.xcassets */; };
 		F89BA0B32C48C85B0006603C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F89BA0B22C48C85B0006603C /* Preview Assets.xcassets */; };
 		F89BA0BB2C48CA280006603C /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89BA0BA2C48CA280006603C /* Colors.swift */; };
@@ -129,6 +130,7 @@
 		F89BA0A82C48C85A0006603C /* Inertia App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Inertia App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F89BA0AB2C48C85A0006603C /* Inertia_AnimationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inertia_AnimationApp.swift; sourceTree = "<group>"; };
 		F89BA0AD2C48C85A0006603C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		F89BA0EC2C48C85A0006603D /* EditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewModel.swift; sourceTree = "<group>"; };
 		F89BA0AF2C48C85B0006603C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F89BA0B22C48C85B0006603C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F89BA0B42C48C85B0006603C /* Inertia_Pro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Inertia_Pro.entitlements; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				F8067EF42CF4C2B5002E7B89 /* ViewHierarchy */,
 				F89C08632C875AAE00F58F9A /* SetupFlow */,
 				F89BA0AD2C48C85A0006603C /* EditorView.swift */,
+				F89BA0EC2C48C85A0006603D /* EditorViewModel.swift */,
 				F82483432E6FC79D0009682E /* WebSocketServer.swift */,
 				F82483412E6FC73D0009682E /* TreePacket.swift */,
 				F824833F2E6FC7140009682E /* FakeDB.swift */,
@@ -460,6 +463,7 @@
 				F8C639A22C89509900B060CA /* SetupFlowCompilingScreen.swift in Sources */,
 				F86E02AC2C96DF1B005F6254 /* SetupFlowContainerScreen.swift in Sources */,
 				F89BA0AE2C48C85A0006603C /* EditorView.swift in Sources */,
+				F89BA0ED2C48C85A0006603D /* EditorViewModel.swift in Sources */,
 				F8DD5AAF2C7D40B4003A3330 /* ProjectsContainerView.swift in Sources */,
 				F89BA0BF2C48CD370006603C /* PanelView.swift in Sources */,
 				F8DD5AB12C7D421F003A3330 /* ProjectsContainerSplitView.swift in Sources */,

@@ -40,7 +40,8 @@ struct Inertia_AnimationApp: App {
                     coordinator: vm.coordinator,
                     contentController: vm.contentController,
                     configuration: vm.configuration,
-                    delegate: delegate
+                    delegate: delegate,
+                    viewModel: vm.editorViewModel
                 )
                     .frame(minWidth: editorViewMinimumSize.width, minHeight: editorViewMinimumSize.height)
                     .task {

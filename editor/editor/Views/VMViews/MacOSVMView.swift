@@ -49,27 +49,6 @@ struct MacOSVMView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                     }
-                    .onAppear {
-                        if servers[.swiftUI] == nil {
-                            if let server = try? WebSocketServer(port: 8060) { message in
-                                if playheadTime == .zero {
-                                    let initialValues = InertiaAnimationValues(
-                                        scale: 1.0,
-                                        translate: .zero,
-                                        rotate: .zero,
-                                        rotateCenter: .zero,
-                                        opacity: 1.0
-                                    )
-                                    onKeyframeMessage(message, initialValues)
-                                } else {
-                                    onKeyframeMessage(message, nil)
-                                }
-                            } {
-                                server.start()
-                                servers[.swiftUI] = server
-                            }
-                        }
-                    }
                 }
             } else {
                 ProgressView()

@@ -48,16 +48,6 @@ struct LinuxVMView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(colorScheme == .light ? ColorPalette.gray5 : ColorPalette.gray2, lineWidth: 6)
                     }
-                    .onAppear {
-                        if servers[.compose] == nil {
-                            if let server = try? WebSocketServer(port: 8070) { message in
-                                onKeyframeMessage(message, nil)
-                            } {
-                                server.start()
-                                servers[.compose] = server
-                            }
-                        }
-                    }
                 }
             } else {
                 ProgressView()

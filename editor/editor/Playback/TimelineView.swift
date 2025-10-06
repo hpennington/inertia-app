@@ -69,10 +69,10 @@ struct TimelineContainer: View {
         var xTime: CGFloat = 0.0
         var keypoints: [Int] = []
         for keyframe in keyframes {
-            keypoints.append(Int(xTime  * 1000))
             xTime += keyframe.duration
+            keypoints.append(Int(xTime * 1000))
         }
-        
+
         return keypoints
     }
     

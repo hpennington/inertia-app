@@ -55,27 +55,6 @@ struct ReactRenderView: View {
                     .onChange(of: proxy.size) { oldValue, newValue in
                         frameSize = maxCGSize(lhs: newValue, rhs: viewportMinimumSize)
                     }
-                    .onAppear {
-                        if servers[.react] == nil {
-                            if let server = try? WebSocketServer(port: 8080) { message in
-                                if playheadTime == .zero {
-                                    let initialValues = InertiaAnimationValues(
-                                        scale: 1.0,
-                                        translate: .init(width: message.translationX, height: message.translationY),
-                                        rotate: .zero,
-                                        rotateCenter: .zero,
-                                        opacity: 1.0
-                                    )
-                                    onKeyframeMessage(message, initialValues)
-                                } else {
-                                    onKeyframeMessage(message, nil)
-                                }
-                            } {
-                                server.start()
-                                servers[.react] = server
-                            }
-                        }
-                    }
                 } else {
                     Color.black
                 }

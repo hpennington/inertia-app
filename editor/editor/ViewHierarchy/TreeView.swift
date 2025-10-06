@@ -174,17 +174,29 @@ struct TreeView: View {
 
 struct TreeViewContainer: View {
     @Environment(\.isEnabled) var isEnabled
-    
-    @State private var oldActionableIds: Set<String> = []
-    
+
     let appMode: SetupFlowFramework
     let isFocused: Binding<Bool>
     let server: WebSocketServer
     let updateDelegates: (_ ids: Set<String>) -> Void
-    
+
+    @State private var treeItemCache: [String: TreeItem] = [:]
+
     func convertTreeToTreeItem(tree: Tree) -> TreeItem {
+        // Check cache first
+        if let cached = treeItemCache[tree.id] {
+            return cached
+        }
+
         guard let rootNode = tree.rootNode else { fatalError("rootNode is nil") }
-        return convertNodeToTreeItem(node: rootNode)
+        let item = convertNodeToTreeItem(node: rootNode)
+
+        // Update cache
+        DispatchQueue.main.async {
+            treeItemCache[tree.id] = item
+        }
+
+        return item
     }
     
     private func convertNodeToTreeItem(treeItem: TreeItem) -> TreeItem {
@@ -212,7 +224,7 @@ struct TreeViewContainer: View {
     var body: some View {
         ScrollView {
             VStack {
-                ForEach(server.treePackets, id: \.hashValue) { treePacket in
+                ForEach(server.treePackets, id: \.id) { treePacket in
                     VStack(alignment: .leading) {
                         HStack {
                             Text("View Hierarchy")
@@ -232,30 +244,24 @@ struct TreeViewContainer: View {
                                 id: treePacket.tree.id,
                                 displayName: convertTreeToTreeItem(tree: treePacket.tree).displayName,
                                 rootItem: convertTreeToTreeItem(tree: treePacket.tree),
-        //                        isSelected: server.projectedValue.treePackets[index].actionableIds
                                 isSelected: Binding(
                                     get: {
-        //                                print(treePacket.actionableIds)
-                                        if oldActionableIds != treePacket.actionableIds {
-                                            DispatchQueue.main.async {
-                                                self.updateDelegates(treePacket.actionableIds)
-                                                oldActionableIds = treePacket.actionableIds
-                                            }
-                                            
-                                        }
-                                        
                                         return treePacket.actionableIds
                                     },
-                                    set: {
+                                    set: { newIds in
+                                        // Only update if actually different
+                                        guard newIds != treePacket.actionableIds else { return }
+
+                                        // Send to clients
                                         for client in server.clients.keys {
-                                            server.sendSelectedIds($0, tree: treePacket.tree, to: client)
+                                            server.sendSelectedIds(newIds, tree: treePacket.tree, to: client)
                                         }
-                                        
-                                        if $0 != treePacket.actionableIds {
-                                            self.updateDelegates($0)
-                                        }
-                                        
-                                        treePacket.actionableIds = $0
+
+                                        // Update local state
+                                        treePacket.actionableIds = newIds
+
+                                        // Notify delegates
+                                        updateDelegates(newIds)
                                     }
                                 )
                             )

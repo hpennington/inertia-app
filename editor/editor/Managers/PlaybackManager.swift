@@ -15,14 +15,19 @@ final class PlaybackManager {
     var isPlaying: Bool = false
     var playheadTime: CGFloat = .zero
     var previousPlayheadTime: CGFloat = .zero
-    var keyframes: [InertiaAnimationKeyframe] = []
+    var keyframes: [InertiaAnimationKeyframe] = [] {
+        didSet {
+            onKeyframesChanged?()
+        }
+    }
 
-    private let editorModel: EditorModel
+    private var animations: [InertiaID: InertiaAnimationSchema]
     private let serverManager: WebSocketServerManager
     private var framework: SetupFlowFramework
+    private var onKeyframesChanged: (() -> Void)?
 
-    init(editorModel: EditorModel, serverManager: WebSocketServerManager, framework: SetupFlowFramework) {
-        self.editorModel = editorModel
+    init(animations: [InertiaID: InertiaAnimationSchema], serverManager: WebSocketServerManager, framework: SetupFlowFramework) {
+        self.animations = animations
         self.serverManager = serverManager
         self.framework = framework
     }
@@ -31,10 +36,18 @@ final class PlaybackManager {
         self.framework = framework
     }
 
+    func updateAnimations(_ animations: [InertiaID: InertiaAnimationSchema]) {
+        self.animations = animations
+    }
+
+    func setKeyframesChangedHandler(_ handler: @escaping () -> Void) {
+        self.onKeyframesChanged = handler
+    }
+
     func runInvokePlayback() async -> Bool {
         let containerId = "animation"
 
-        let schemaWrappers = editorModel.animations.compactMap { (key: InertiaID, schema: InertiaAnimationSchema) -> InertiaSchemaWrapper? in
+        let schemaWrappers = animations.compactMap { (key: InertiaID, schema: InertiaAnimationSchema) -> InertiaSchemaWrapper? in
             let container = AnimationContainer(
                 actionableId: key,
                 containerId: containerId
