@@ -129,7 +129,7 @@ struct TreeNode: View {
             }
 
             if let children = item.children {
-                ForEach(children) { child in
+                ForEach(children, id: \.hashValue) { child in
                     Group {
                         if isNodeExpanded {
                             TreeNode(item: child, isExpanded: $isExpanded, isSelected: $isSelected)
