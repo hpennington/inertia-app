@@ -90,7 +90,7 @@ fun DemoApp() {
             Spacer(modifier = Modifier.height(12.dp))
 
             Inertiaable(hierarchyIdPrefix = "card0") {
-                DemoCard(cardColor)
+                 DemoCard(cardColor)
             }
             Spacer(modifier = Modifier.height(12.dp))
             Inertiaable(hierarchyIdPrefix = "card1") {

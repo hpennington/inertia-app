@@ -44,6 +44,8 @@ struct Card: View {
 }
 
 struct ContentView: View {
+    @Environment(\.inertiaDataModel) private var inertiaDM: InertiaDataModel!
+    
     @State private var cardColor: Color = .white
     
     var body: some View {
@@ -77,6 +79,17 @@ struct ContentView: View {
                         .inertia("card1")
                     
                     Spacer()
+                    
+                    Button(action: {
+                        inertiaDM.trigger("card0")
+                    }, label: {
+                        Text("Trigger")
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color.orange)
+                            .cornerRadius(10)
+                    })
                     
                     // Button to change card color
                     Button(action: {
