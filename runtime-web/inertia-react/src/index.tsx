@@ -74,7 +74,7 @@ const useInertiaIsContainer = () => {
 
 // --- MessageSelected ---
 export type MessageSelected = {
-    selectedIds: Set<string>;
+    selectedIds: Set<ActionableIdPair>;
 };
 
 // --- MessageSchema ---
@@ -277,14 +277,34 @@ export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContaine
         ws.connect("ws://127.0.0.1:8080", () => {
             console.log(`[INERTIA_LOG]: WebSocket connected, setting up handlers`);
 
+            // ws.messageReceived = (msg) => {
+            //     console.log(`[INERTIA_LOG]: Received messageReceived with ${msg.size} IDs`);
+            //     // Filter existing pairs to keep only those in msg
+
+            //     console.log({msg})
+            //     setInertiaDataModel(prev => ({
+            //         ...prev,
+            //         actionableIdPairs: new Set(Array.from(prev.actionableIdPairs).filter(pair => msg.has(pair)))
+            //     }));
+            // };
             ws.messageReceived = (msg) => {
-                console.log(`[INERTIA_LOG]: Received messageReceived with ${msg.size} IDs`);
-                // Filter existing pairs to keep only those in msg
-                setInertiaDataModel(prev => ({
-                    ...prev,
-                    actionableIdPairs: new Set(Array.from(prev.actionableIdPairs).filter(pair => msg.has(pair.hierarchyId)))
-                }));
+              console.log(`[INERTIA_LOG]: Received messageReceived with ${msg.size} IDs`);
+
+              setInertiaDataModel(prev => {
+                const newPairs = new Set<ActionableIdPair>();
+
+                // Each msg item is a hierarchyId
+                for (const pair of msg) {
+                  // Try to find prefix (optional: infer from tree or split)
+                  newPairs.add({ hierarchyIdPrefix: pair.hierarchyIdPrefix, hierarchyId: pair.hierarchyId });
+                }
+
+                console.log("[INERTIA_LOG]: ✅ Updating actionableIdPairs from WS:", Array.from(newPairs));
+
+                return { ...prev, actionableIdPairs: newPairs };
+              });
             };
+
 
             ws.messageReceivedSchema = (msg) => {
                 console.log(`[INERTIA_LOG]: Received messageReceivedSchema`);
@@ -299,7 +319,7 @@ export const InertiaContainer = ({ children, id, baseURL, dev }: InertiaContaine
             console.log(`[INERTIA_LOG]: Sending initial MessageActionables`);
             ws.sendMessageActionables({
                 tree: inertiaDataModel.tree,
-                actionableIds: Array.from(inertiaDataModel.actionableIdPairs).map(pair => pair.hierarchyId),
+                actionableIds: Array.from(inertiaDataModel.actionableIdPairs),
             });
         });
     }, [inertiaDataModel?.tree, dev]);
@@ -511,6 +531,7 @@ const InertiaableGuts: React.FC<DraggableProps> = React.memo(
         element.style.opacity = "";
       };
     }, [
+      hierarchyId,
       hierarchyIdPrefix,
       inertiaDataModel,
       inertiaCanvasSize,
@@ -570,9 +591,13 @@ export const Inertiaable: React.FC<InertiaableProps> = ({ children, hierarchyIdP
   const [hierarchyId, setHierarchyId] = useState<string>();
 
   useEffect(() => {
+    console.log("USER EFFECT")
     const indexValue = indexManager.indexMap[hierarchyIdPrefix] ?? 0;
+
     const newId = `${hierarchyIdPrefix}--${indexValue}`;
     indexManager.indexMap[hierarchyIdPrefix] = indexValue + 1;
+    console.log(indexValue)
+    console.log(newId)
     setHierarchyId(newId);
   }, [hierarchyIdPrefix]);
 
@@ -589,27 +614,28 @@ export const Inertiaable: React.FC<InertiaableProps> = ({ children, hierarchyIdP
   const isSelected = hierarchyId ? Array.from(inertiaDataModel?.actionableIdPairs ?? []).some(pair => pair.hierarchyId === hierarchyId) : false;
 
   const handleClick = () => {
-      if (!hierarchyId || !hierarchyIdPrefix || !inertiaDataModel?.isActionable) return;
+  if (!hierarchyId || !hierarchyIdPrefix || !inertiaDataModel?.isActionable) return;
 
-      const pair: ActionableIdPair = { hierarchyIdPrefix, hierarchyId };
-      const newActionableIdPairs = new Set(inertiaDataModel.actionableIdPairs);
+  const pair: ActionableIdPair = { hierarchyIdPrefix, hierarchyId };
 
-      const existingPair = Array.from(newActionableIdPairs).find(p => p.hierarchyId === hierarchyId);
-      if (existingPair) {
-        newActionableIdPairs.delete(existingPair);
-      } else {
-        newActionableIdPairs.add(pair);
-      }
+  setInertiaDataModel(prev => {
+    const currentPairs = prev.actionableIdPairs ?? new Set<ActionableIdPair>();
+    const exists = Array.from(currentPairs).some(p => p.hierarchyId === hierarchyId);
 
-      // Update UI immediately
-      setInertiaDataModel(prev => ({ ...prev, actionableIdPairs: newActionableIdPairs }));
+    const newPairs = exists
+      ? new Set(Array.from(currentPairs).filter(p => p.hierarchyId !== hierarchyId))
+      : new Set([...Array.from(currentPairs), pair]);
 
-      // Sync to server separately (maybe debounced)
-      manager.sendMessageActionables({
-        tree: inertiaDataModel.tree,
-        actionableIds: Array.from(newActionableIdPairs).map(p => p.hierarchyId)
-      });
-    }
+    // Send update outside of setState for clarity
+    manager.sendMessageActionables({
+      tree: prev.tree,
+      actionableIds: Array.from(newPairs),
+    });
+
+    return { ...prev, actionableIdPairs: newPairs };
+  });
+};
+
 
   return (
     <DraggableInertiaableGuts

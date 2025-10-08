@@ -27,9 +27,9 @@ final class TreePacket: Identifiable, Equatable, Hashable, CustomStringConvertib
     }
     
     var tree: Tree
-    var actionableIds: Set<String>
+    var actionableIds: Set<ActionableIdPair>
     
-    init(tree: Tree, actionableIds: Set<String>) {
+    init(tree: Tree, actionableIds: Set<ActionableIdPair>) {
         self.tree = tree
         self.actionableIds = actionableIds
     }

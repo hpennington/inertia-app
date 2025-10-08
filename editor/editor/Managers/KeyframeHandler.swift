@@ -67,11 +67,10 @@ final class KeyframeHandler {
         var updatedAnimationsArray: [InertiaAnimationSchema] = Array(animations.values)
 
         // Create keyframe for each selected actionable ID
-        for hierarchyId in message.actionableIds {
+        for pair in message.actionableIds {
+            let hierarchyId = pair.hierarchyId
+            let hierarchyIdPrefix = pair.hierarchyIdPrefix
             let hierarchyIdForKeyframes = InertiaID(hierarchyId)
-            
-            let pattern = #"--\d+(?!.*--\d+)"#
-            let hierarchyIdPrefix = hierarchyId.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
             let hierarchyIdPrefixForSchema = InertiaID(hierarchyIdPrefix)
 
             // Get previous playhead time for this specific actionable (using hierarchyId for instance-specific tracking)

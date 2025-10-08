@@ -213,7 +213,7 @@ final class WebSocketServer {
         send(type: .actionable, payload: WebSocketClient.MessageActionable(isActionable: isActionable), to: clientId)
     }
 
-    func sendSelectedIds(_ ids: Set<String>, tree: Tree, to clientId: UUID) {
+    func sendSelectedIds(_ ids: Set<ActionableIdPair>, tree: Tree, to clientId: UUID) {
         send(type: .actionables, payload: WebSocketClient.MessageActionables(tree: tree, actionableIds: ids), to: clientId)
     }
 

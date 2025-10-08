@@ -224,7 +224,7 @@ function base64Encode(str: string): string {
 
 export interface MessageActionables {
     tree: Tree;
-    actionableIds: Array<string>;
+    actionableIds: Array<ActionableIdPair>;
 }
 
 export interface MessageActionable {
@@ -246,7 +246,7 @@ export class WebSocketClient {
     private socket: WebSocket | null = null;
     public isConnected = false;
 
-    public messageReceived?: (selectedIds: Set<string>) => void;
+    public messageReceived?: (selectedIds: Set<ActionableIdPair>) => void;
     public messageReceivedSchema?: (schemas: InertiaSchemaWrapper[]) => void;
     public messageReceivedIsActionable?: (isActionable: boolean) => void;
     public messageReceivedTranslationEnded?: (actionableIds: Set<ActionableIdPair>, translationX: number, translationY: number) => void;

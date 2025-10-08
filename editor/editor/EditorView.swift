@@ -104,8 +104,8 @@ struct EditorView: View {
     @ViewBuilder
     var treeView: some View {
         if let server = viewModel.serverManager.servers[framework] {
-            TreeViewContainer(appMode: framework, isFocused: $viewModel.isFocused, server: server) { ids in
-                // Handle tree selection updates
+            TreeViewContainerTreeViewContainer(appMode: framework, isFocused: $viewModel.isFocused, server: server) { ids in
+                
             }
             .id(server.clients.keys.description)
         }

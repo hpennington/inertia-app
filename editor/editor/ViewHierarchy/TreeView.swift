@@ -172,13 +172,13 @@ struct TreeView: View {
     }
 }
 
-struct TreeViewContainer: View {
+struct TreeViewContainerTreeViewContainer: View {
     @Environment(\.isEnabled) var isEnabled
 
     let appMode: SetupFlowFramework
     let isFocused: Binding<Bool>
     let server: WebSocketServer
-    let updateDelegates: (_ ids: Set<String>) -> Void
+    let updateDelegates: (_ ids: Set<ActionableIdPair>) -> Void
 
     @State private var treeItemCache: [String: TreeItem] = [:]
 
@@ -246,22 +246,25 @@ struct TreeViewContainer: View {
                                 rootItem: convertTreeToTreeItem(tree: treePacket.tree),
                                 isSelected: Binding(
                                     get: {
-                                        return treePacket.actionableIds
+                                        return Set(treePacket.actionableIds.map(\.hierarchyId))
                                     },
                                     set: { newIds in
-                                        // Only update if actually different
-                                        guard newIds != treePacket.actionableIds else { return }
-
-                                        // Send to clients
+                                        let idPairs = Set(newIds.map {
+                                            let pattern = #"--\d+(?!.*--\d+)"#
+                                            let hierarchyIdPrefix = $0.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+                                            return ActionableIdPair(hierarchyIdPrefix: hierarchyIdPrefix, hierarchyId: $0)
+                                        })
+//
+//                                        // Send to clients
                                         for client in server.clients.keys {
-                                            server.sendSelectedIds(newIds, tree: treePacket.tree, to: client)
+                                            server.sendSelectedIds(idPairs, tree: treePacket.tree, to: client)
                                         }
-
-                                        // Update local state
-                                        treePacket.actionableIds = newIds
-
-                                        // Notify delegates
-                                        updateDelegates(newIds)
+//
+//                                        // Update local state
+                                        treePacket.actionableIds = idPairs
+//
+//                                        // Notify delegates
+                                        updateDelegates(idPairs)
                                     }
                                 )
                             )
