@@ -82,6 +82,7 @@ struct ContentView: View {
                     
                     Button(action: {
                         inertiaDM.trigger("card0")
+                        inertiaDM.trigger("card1")
                     }, label: {
                         Text("Trigger")
                             .foregroundColor(.white)
